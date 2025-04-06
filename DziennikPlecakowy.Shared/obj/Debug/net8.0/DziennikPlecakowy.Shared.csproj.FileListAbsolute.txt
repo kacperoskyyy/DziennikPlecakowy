@@ -1,0 +1,16 @@
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Shared\obj\Debug\net8.0\DziennikPlecakowy.Shared.csproj.AssemblyReference.cache
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Shared\obj\Debug\net8.0\DziennikPlecakowy.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Shared\obj\Debug\net8.0\DziennikPlecakowy.Shared.AssemblyInfoInputs.cache
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Shared\obj\Debug\net8.0\DziennikPlecakowy.Shared.AssemblyInfo.cs
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Shared\obj\Debug\net8.0\DziennikPlecakowy.Shared.csproj.CoreCompileInputs.cache
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Shared\obj\Debug\net8.0\DziennikPlecakowy.Shared.sourcelink.json
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Shared\bin\Debug\net8.0\DziennikPlecakowy.Shared.deps.json
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Shared\bin\Debug\net8.0\DziennikPlecakowy.Shared.dll
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Shared\bin\Debug\net8.0\DziennikPlecakowy.Shared.pdb
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Shared\bin\Debug\net8.0\DziennikPlecakowy.Models.dll
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Shared\bin\Debug\net8.0\DziennikPlecakowy.Models.pdb
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Shared\obj\Debug\net8.0\Dziennik.74CB11F7.Up2Date
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Shared\obj\Debug\net8.0\DziennikPlecakowy.Shared.dll
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Shared\obj\Debug\net8.0\refint\DziennikPlecakowy.Shared.dll
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Shared\obj\Debug\net8.0\DziennikPlecakowy.Shared.pdb
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Shared\obj\Debug\net8.0\ref\DziennikPlecakowy.Shared.dll

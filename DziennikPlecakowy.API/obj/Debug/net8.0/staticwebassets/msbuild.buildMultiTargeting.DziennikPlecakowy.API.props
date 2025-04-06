@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\DziennikPlecakowy.API.props" />
+</Project>

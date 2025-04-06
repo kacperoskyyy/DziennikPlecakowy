@@ -1,0 +1,13 @@
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Models\bin\Debug\net8.0\DziennikPlecakowy.Models.deps.json
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Models\bin\Debug\net8.0\DziennikPlecakowy.Models.dll
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Models\bin\Debug\net8.0\DziennikPlecakowy.Models.pdb
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Models\obj\Debug\net8.0\DziennikPlecakowy.Models.csproj.AssemblyReference.cache
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Models\obj\Debug\net8.0\DziennikPlecakowy.Models.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Models\obj\Debug\net8.0\DziennikPlecakowy.Models.AssemblyInfoInputs.cache
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Models\obj\Debug\net8.0\DziennikPlecakowy.Models.AssemblyInfo.cs
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Models\obj\Debug\net8.0\DziennikPlecakowy.Models.csproj.CoreCompileInputs.cache
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Models\obj\Debug\net8.0\DziennikPlecakowy.Models.sourcelink.json
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Models\obj\Debug\net8.0\DziennikPlecakowy.Models.dll
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Models\obj\Debug\net8.0\refint\DziennikPlecakowy.Models.dll
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Models\obj\Debug\net8.0\DziennikPlecakowy.Models.pdb
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.Models\obj\Debug\net8.0\ref\DziennikPlecakowy.Models.dll

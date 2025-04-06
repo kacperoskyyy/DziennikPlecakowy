@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DziennikPlecakowy.DTO\DziennikPlecakowy.DTO.csproj" />
+    <ProjectReference Include="..\DziennikPlecakowy.Interfaces\DziennikPlecakowy.Interfaces.csproj" />
+    <ProjectReference Include="..\DziennikPlecakowy.Models\DziennikPlecakowy.Models.csproj" />
+    <ProjectReference Include="..\DziennikPlecakowy.Shared\DziennikPlecakowy.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
