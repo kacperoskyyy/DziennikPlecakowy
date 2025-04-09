@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Shared\\DziennikPlecakowy.Shared.csproj": {}
+    "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Shared\\DziennikPlecakowy.Shared.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\DziennikPlecakowy.Models.csproj": {
+    "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\DziennikPlecakowy.Models.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\DziennikPlecakowy.Models.csproj",
+        "projectUniqueName": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\DziennikPlecakowy.Models.csproj",
         "projectName": "DziennikPlecakowy.Models",
-        "projectPath": "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\DziennikPlecakowy.Models.csproj",
-        "packagesPath": "C:\\Users\\Kacper\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\obj\\",
+        "projectPath": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\DziennikPlecakowy.Models.csproj",
+        "packagesPath": "C:\\Users\\Dell\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Kacper\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Dell\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -76,20 +76,20 @@
         }
       }
     },
-    "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Shared\\DziennikPlecakowy.Shared.csproj": {
+    "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Shared\\DziennikPlecakowy.Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Shared\\DziennikPlecakowy.Shared.csproj",
+        "projectUniqueName": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Shared\\DziennikPlecakowy.Shared.csproj",
         "projectName": "DziennikPlecakowy.Shared",
-        "projectPath": "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Shared\\DziennikPlecakowy.Shared.csproj",
-        "packagesPath": "C:\\Users\\Kacper\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Shared\\obj\\",
+        "projectPath": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Shared\\DziennikPlecakowy.Shared.csproj",
+        "packagesPath": "C:\\Users\\Dell\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Shared\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Kacper\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Dell\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -105,8 +105,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\DziennikPlecakowy.Models.csproj": {
-                "projectPath": "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\DziennikPlecakowy.Models.csproj"
+              "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\DziennikPlecakowy.Models.csproj": {
+                "projectPath": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\DziennikPlecakowy.Models.csproj"
               }
             }
           }

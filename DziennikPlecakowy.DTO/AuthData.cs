@@ -12,12 +12,14 @@ namespace DziennikPlecakowy.DTO
         public string Username { get; set; }
         public string Email { get; set; }
         public bool IsAdmin { get; set; }
-        public AuthData(string id, string username, string email, bool isAdmin)
+        public bool IsSuperUser { get; set; }
+        public AuthData(string id, string username, string email, bool isAdmin, bool isSuperUser)
         {
             UserId = id;
             Username = username;
             Email = email;
             IsAdmin = isAdmin;
+            IsSuperUser = isSuperUser;
         }
     }
 }

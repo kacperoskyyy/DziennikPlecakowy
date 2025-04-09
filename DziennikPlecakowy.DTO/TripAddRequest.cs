@@ -14,7 +14,6 @@ namespace DziennikPlecakowy.DTO
         public string UserId { get; set; }
 
         public DateTime TripDate { get; set; }
-        public string MountainId { get; set; }
 
         public double Distance { get; set; }
 

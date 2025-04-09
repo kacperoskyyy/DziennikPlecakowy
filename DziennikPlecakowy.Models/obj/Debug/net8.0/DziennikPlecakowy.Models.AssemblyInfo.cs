@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DziennikPlecakowy.Models")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7fba72ec1705c83764474f4bacec20983412ed1b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+60c1095bd897d9b0679c2fed5b6c3befd1586848")]
 [assembly: System.Reflection.AssemblyProductAttribute("DziennikPlecakowy.Models")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DziennikPlecakowy.Models")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

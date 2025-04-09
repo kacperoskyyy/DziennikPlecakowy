@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Interfaces;
 using DziennikPlecakowy.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DziennikPlecakowy.API.Controllers
 {
@@ -17,6 +18,7 @@ namespace DziennikPlecakowy.API.Controllers
             _userService = userService;
             _authService = authService;
         }
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterRequest userRegisterData)
         {
@@ -42,6 +44,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się zarejestrować użytkownika. " + e);
             }
         }
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserAuthRequest userAuthData)
         {
@@ -62,6 +65,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return Unauthorized("Nieprawidłowe dane logowania. " + e);
             }
         }
+        [Authorize]
         [HttpPut("changeName")]
         public async Task<IActionResult> UpdateName([FromBody] UserChangeNameRequest userChangeName)
         {
@@ -88,6 +92,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się zaktualizować danych użytkownika. " + e);
             }
         }
+        [Authorize]
         [HttpPut("changePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] UserChangePasswordRequest userChangePassword)
         {
@@ -117,6 +122,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się zaktualizować hasła. " + e);
             }
         }
+        [Authorize]
         [HttpPut("changeEmail")]
         public async Task<IActionResult> ChangeEmail([FromBody] UserChangeEmailRequest userChangeEmail)
         {
@@ -142,6 +148,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się zaktualizować adresu email. " + e);
             }
         }
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
@@ -167,6 +174,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się usunąć użytkownika. " + e);
             }
         }
+        [Authorize]
         [HttpPut("makeAdmin/{Id}")]
         public async Task<IActionResult> ChangeRole([FromBody] string Id)
         {
@@ -193,6 +201,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return Unauthorized("Nie masz uprawnień do wykonania tej operacji. " + e);
             }
         }
+        [Authorize]
         [HttpPost("checkAdmin/{Id}")]
         public async Task<IActionResult> CheckAdmin([FromBody]string Id)
         {
@@ -207,6 +216,7 @@ namespace DziennikPlecakowy.API.Controllers
             }
 
         }
+        [Authorize]
         [HttpPost("setLastLogin/{Id}")]
         public async Task<IActionResult> SetLastLogin([FromBody]string Id)
         {
@@ -227,6 +237,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się zaktualizować daty ostatniego logowania. " + e);
             }
         }
+        [Authorize]
         [HttpGet("checkSuperUser/{Id}")]
         public async Task<IActionResult> ActionResult([FromBody] string Id)
         {
@@ -252,6 +263,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się sprawdzić uprawnień superużytkownika. " + e);
             }
         }
+        [Authorize]
         [HttpPut("setSuperUser/{Id}")]
         public async Task<IActionResult> SetSuperUser([FromBody] string Id)
         {

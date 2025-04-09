@@ -9,12 +9,16 @@ namespace DziennikPlecakowy.Models
         [BsonElement("userId")]
         [BsonRepresentation(BsonType.ObjectId)]
         public string UserId { get; set; }
-        [BsonElement("reachedMountains")]
-        public int ReachedMountains { get; set; }
-        [BsonElement("highestMountain")]
-        public Mountain HighestMountain { get; set; }
+        [BsonElement("tripsCount")]
+        public int TripsCount { get; set; }
+
         [BsonElement("totalDistance")]
         public double TotalDistance { get; set; }
-
+        [BsonElement("totalDuration")]
+        public double TotalDuration { get; set; }
+        [BsonElement("periodStart")]
+        public DateTime PeriodStart { get; set; }
+        [BsonElement("periodEnd")]
+        public DateTime PeriodEnd { get; set; }
     }
 }

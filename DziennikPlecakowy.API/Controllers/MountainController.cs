@@ -3,6 +3,7 @@ using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Interfaces;
 using DziennikPlecakowy.Models;
 using DziennikPlecakowy.Shared;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DziennikPlecakowy.API.Controllers
 {
@@ -17,6 +18,7 @@ namespace DziennikPlecakowy.API.Controllers
             _mountainService = mountainService;
             _userService = userService;
         }
+        [Authorize]
         [HttpGet("getMountainById/{Id}")]
         public IActionResult GetMountainById(string Id)
         {
@@ -30,6 +32,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się pobrać góry o podanym Id.");
             }
         }
+        [Authorize]
         [HttpPut("updateMountain/{mountain}")]
         public IActionResult UpdateMountain(Mountain mountain)
         {
@@ -43,6 +46,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się zaktualizować góry.");
             }
         }
+        [Authorize]
         [HttpPost("addMountain")]
         public IActionResult AddMountain([FromBody]MountainCreateRequest mountainCreateRequest)
         {
@@ -64,6 +68,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się dodać góry.");
             }
         }
+        [Authorize]
         [HttpDelete("deleteMountain/{Id}")]
         public IActionResult DeleteMountain(string Id)
         {

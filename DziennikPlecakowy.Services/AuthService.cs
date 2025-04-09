@@ -33,7 +33,7 @@ namespace DziennikPlecakowy.Services
                 {
                     //Ustawienie daty ostatniego logowania i zwrócenie danych
                     await _userService.SetLastLogin(user.Id);
-                    return new AuthData(user.Id, user.Username,user.Email,user.IsAdmin);
+                    return new AuthData(user.Id, user.Username,user.Email,user.IsAdmin, user.IsSuperUser);
                 }
                 return null;
             }

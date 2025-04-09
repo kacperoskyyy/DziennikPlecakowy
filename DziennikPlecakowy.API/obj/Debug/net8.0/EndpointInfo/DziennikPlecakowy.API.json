@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "DziennikPlecakowy.API",
-    "version": "1.0"
+    "title": "Moje API",
+    "version": "v1"
   },
   "paths": {
     "/api/Mountain/getMountainById/{Id}": {
@@ -658,6 +658,9 @@
           },
           "isAdmin": {
             "type": "boolean"
+          },
+          "isSuperUser": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -737,10 +740,6 @@
             "type": "string",
             "format": "date-time"
           },
-          "mountainId": {
-            "type": "string",
-            "nullable": true
-          },
           "distance": {
             "type": "number",
             "format": "double"
@@ -769,10 +768,6 @@
           "tripDate": {
             "type": "string",
             "format": "date-time"
-          },
-          "mountainId": {
-            "type": "string",
-            "nullable": true
           },
           "distance": {
             "type": "number",
@@ -870,6 +865,19 @@
         },
         "additionalProperties": false
       }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "Wpisz 'Bearer {twój token JWT}'",
+        "scheme": "Bearer",
+        "bearerFormat": "JWT"
+      }
     }
-  }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ]
 }

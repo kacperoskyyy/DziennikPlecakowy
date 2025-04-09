@@ -881,23 +881,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Kacper\\.nuget\\packages\\": {},
+    "C:\\Users\\Dell\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Services\\DziennikPlecakowy.Services.csproj",
+      "projectUniqueName": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Services\\DziennikPlecakowy.Services.csproj",
       "projectName": "DziennikPlecakowy.Services",
-      "projectPath": "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Services\\DziennikPlecakowy.Services.csproj",
-      "packagesPath": "C:\\Users\\Kacper\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Services\\obj\\",
+      "projectPath": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Services\\DziennikPlecakowy.Services.csproj",
+      "packagesPath": "C:\\Users\\Dell\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Services\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Kacper\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Dell\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -913,17 +913,17 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.DTO\\DziennikPlecakowy.DTO.csproj": {
-              "projectPath": "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.DTO\\DziennikPlecakowy.DTO.csproj"
+            "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.DTO\\DziennikPlecakowy.DTO.csproj": {
+              "projectPath": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.DTO\\DziennikPlecakowy.DTO.csproj"
             },
-            "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Interfaces\\DziennikPlecakowy.Interfaces.csproj": {
-              "projectPath": "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Interfaces\\DziennikPlecakowy.Interfaces.csproj"
+            "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Interfaces\\DziennikPlecakowy.Interfaces.csproj": {
+              "projectPath": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Interfaces\\DziennikPlecakowy.Interfaces.csproj"
             },
-            "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\DziennikPlecakowy.Models.csproj": {
-              "projectPath": "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\DziennikPlecakowy.Models.csproj"
+            "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\DziennikPlecakowy.Models.csproj": {
+              "projectPath": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\DziennikPlecakowy.Models.csproj"
             },
-            "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Shared\\DziennikPlecakowy.Shared.csproj": {
-              "projectPath": "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Shared\\DziennikPlecakowy.Shared.csproj"
+            "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Shared\\DziennikPlecakowy.Shared.csproj": {
+              "projectPath": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Shared\\DziennikPlecakowy.Shared.csproj"
             }
           }
         }

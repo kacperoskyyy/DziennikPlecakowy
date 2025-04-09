@@ -16,9 +16,9 @@ namespace DziennikPlecakowy.Models
         [BsonElement("tripDate")]
         public DateTime TripDate { get; set; }
 
-        [BsonElement("mountainId")]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string MountainId { get; set; }
+        //[BsonElement("mountainId")]
+        //[BsonRepresentation(BsonType.ObjectId)]
+        //public string MountainId { get; set; }
 
         [BsonElement("distance")]
         public double Distance { get; set; }

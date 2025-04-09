@@ -3,6 +3,7 @@ using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Interfaces;
 using DziennikPlecakowy.Models;
 using DziennikPlecakowy.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DziennikPlecakowy.API.Controllers
 {
@@ -15,6 +16,7 @@ namespace DziennikPlecakowy.API.Controllers
         {
             _tripService = tripService;
         }
+        [Authorize]
         [HttpPost("addTrip")]
         public async Task<IActionResult> AddTrip([FromBody] TripAddRequest tripAddRequest)
         {
@@ -24,7 +26,6 @@ namespace DziennikPlecakowy.API.Controllers
                 {
                     UserId = tripAddRequest.UserId,
                     TripDate = tripAddRequest.TripDate,
-                    MountainId = tripAddRequest.MountainId,
                     Distance = tripAddRequest.Distance,
                     Duration = tripAddRequest.Duration,
                     GeopointList = tripAddRequest.GeopointList
@@ -44,6 +45,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się dodać wycieczki. " + e);
             }
         }
+        [Authorize]
         [HttpPost("updateTrip/{trip}")]
         public async Task<IActionResult> UpdateTrip([FromBody] Trip trip)
         {
@@ -64,6 +66,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się zaktualizować wycieczki. " + e);
             }
         }
+        [Authorize]
         [HttpPost("deleteTrip/{tripId}")]
         public async Task<IActionResult> DeleteTrip(string tripId)
         {
@@ -84,6 +87,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się usunąć wycieczki. " + e);
             }
         }
+        [Authorize]
         [HttpGet("getUserTrips/{user}")]
         public async Task<IActionResult> GetUserTrips([FromBody] AuthData user)
         {
