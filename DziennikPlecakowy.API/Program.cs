@@ -18,7 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 ///SPRAWDZIC
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Moje API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "DziennikPlecakowyAPI", Version = "v1" });
 
     // Dodanie autoryzacji JWT
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -64,17 +64,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
 //// DO T¥D
 
 
 builder.Services.AddSingleton<DziennikPlecakowyDbContext>();
-
-builder.Services.Configure<CypherServiceOptions>(options =>
-{
-    options.Key = "1234567890123456";
-    options.IV = "1234567890123456";
-});
-
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();

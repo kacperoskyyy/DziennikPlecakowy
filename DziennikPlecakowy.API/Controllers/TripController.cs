@@ -16,7 +16,7 @@ namespace DziennikPlecakowy.API.Controllers
         {
             _tripService = tripService;
         }
-        [Authorize]
+        [Authorize(Roles = "User, SuperUser, Admin")]
         [HttpPost("addTrip")]
         public async Task<IActionResult> AddTrip([FromBody] TripAddRequest tripAddRequest)
         {
@@ -45,7 +45,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się dodać wycieczki. " + e);
             }
         }
-        [Authorize]
+        [Authorize(Roles = "User, SuperUser, Admin")]
         [HttpPost("updateTrip/{trip}")]
         public async Task<IActionResult> UpdateTrip([FromBody] Trip trip)
         {
@@ -66,7 +66,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się zaktualizować wycieczki. " + e);
             }
         }
-        [Authorize]
+        [Authorize(Roles = "User, SuperUser, Admin")]
         [HttpPost("deleteTrip/{tripId}")]
         public async Task<IActionResult> DeleteTrip(string tripId)
         {
@@ -87,7 +87,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się usunąć wycieczki. " + e);
             }
         }
-        [Authorize]
+        [Authorize(Roles = "User, SuperUser, Admin")]
         [HttpGet("getUserTrips/{user}")]
         public async Task<IActionResult> GetUserTrips([FromBody] AuthData user)
         {

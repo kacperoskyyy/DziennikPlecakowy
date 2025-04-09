@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DziennikPlecakowy.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+60c1095bd897d9b0679c2fed5b6c3befd1586848")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1c5cde02038237dd1165d4f3881f0b0d0d0b9e06")]
 [assembly: System.Reflection.AssemblyProductAttribute("DziennikPlecakowy.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DziennikPlecakowy.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

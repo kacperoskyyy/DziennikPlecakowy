@@ -538,7 +538,8 @@
           "DziennikPlecakowy.Interfaces": "1.0.0",
           "DziennikPlecakowy.Models": "1.0.0",
           "DziennikPlecakowy.Shared": "1.0.0",
-          "Microsoft.Extensions.Options": "9.0.3"
+          "Microsoft.Extensions.Options": "9.0.3",
+          "System.IdentityModel.Tokens.Jwt": "7.1.2"
         },
         "runtime": {
           "DziennikPlecakowy.Services.dll": {

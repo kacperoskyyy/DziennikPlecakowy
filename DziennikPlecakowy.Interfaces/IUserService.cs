@@ -22,7 +22,7 @@ namespace DziennikPlecakowy.Interfaces
         public bool CheckPassword(User user, string password);
         public bool IsAdmin(string Id);
         public Task<int> SetLastLogin(string Id);
-        public Task<int> CheckIsSuperUser(User user);
+        public Task<bool> CheckIsSuperUser(User user);
         public Task<int> SetSuperUser(string Id);
     }
 }

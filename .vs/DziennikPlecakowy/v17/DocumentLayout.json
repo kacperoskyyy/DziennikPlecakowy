@@ -3,12 +3,24 @@
   "WorkspaceRootPath": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{738DBEA8-4FC5-40D7-AFBF-ECB895F9F820}|DziennikPlecakowy.API\\DziennikPlecakowy.API.csproj|c:\\users\\dell\\source\\repos\\dziennikplecakowy\\dziennikplecakowy.api\\controllers\\mountaincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{738DBEA8-4FC5-40D7-AFBF-ECB895F9F820}|DziennikPlecakowy.API\\DziennikPlecakowy.API.csproj|solutionrelative:dziennikplecakowy.api\\controllers\\mountaincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{738DBEA8-4FC5-40D7-AFBF-ECB895F9F820}|DziennikPlecakowy.API\\DziennikPlecakowy.API.csproj|c:\\users\\dell\\source\\repos\\dziennikplecakowy\\dziennikplecakowy.api\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{738DBEA8-4FC5-40D7-AFBF-ECB895F9F820}|DziennikPlecakowy.API\\DziennikPlecakowy.API.csproj|solutionrelative:dziennikplecakowy.api\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{738DBEA8-4FC5-40D7-AFBF-ECB895F9F820}|DziennikPlecakowy.API\\DziennikPlecakowy.API.csproj|c:\\users\\dell\\source\\repos\\dziennikplecakowy\\dziennikplecakowy.api\\controllers\\tripcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{738DBEA8-4FC5-40D7-AFBF-ECB895F9F820}|DziennikPlecakowy.API\\DziennikPlecakowy.API.csproj|solutionrelative:dziennikplecakowy.api\\controllers\\tripcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2A104242-967A-4FC8-BBCF-6A11B86DA8BB}|DziennikPlecakowy.Services\\DziennikPlecakowy.Services.csproj|c:\\users\\dell\\source\\repos\\dziennikplecakowy\\dziennikplecakowy.services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2A104242-967A-4FC8-BBCF-6A11B86DA8BB}|DziennikPlecakowy.Services\\DziennikPlecakowy.Services.csproj|solutionrelative:dziennikplecakowy.services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B547E8B9-D09C-413C-96BD-9A39331FD407}|DziennikPlecakowy.Interfaces\\DziennikPlecakowy.Interfaces.csproj|c:\\users\\dell\\source\\repos\\dziennikplecakowy\\dziennikplecakowy.interfaces\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B547E8B9-D09C-413C-96BD-9A39331FD407}|DziennikPlecakowy.Interfaces\\DziennikPlecakowy.Interfaces.csproj|solutionrelative:dziennikplecakowy.interfaces\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{738DBEA8-4FC5-40D7-AFBF-ECB895F9F820}|DziennikPlecakowy.API\\DziennikPlecakowy.API.csproj|c:\\users\\dell\\source\\repos\\dziennikplecakowy\\dziennikplecakowy.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{738DBEA8-4FC5-40D7-AFBF-ECB895F9F820}|DziennikPlecakowy.API\\DziennikPlecakowy.API.csproj|solutionrelative:dziennikplecakowy.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D1F25E73-10A7-41E4-89F2-CD30E6D59D2C}|DziennikPlecakowy.Models\\DziennikPlecakowy.Models.csproj|c:\\users\\dell\\source\\repos\\dziennikplecakowy\\dziennikplecakowy.models\\userstat.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D1F25E73-10A7-41E4-89F2-CD30E6D59D2C}|DziennikPlecakowy.Models\\DziennikPlecakowy.Models.csproj|solutionrelative:dziennikplecakowy.models\\userstat.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -23,27 +35,66 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "MountainController.cs",
-              "DocumentMoniker": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.API\\Controllers\\MountainController.cs",
-              "RelativeDocumentMoniker": "DziennikPlecakowy.API\\Controllers\\MountainController.cs",
-              "ToolTip": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.API\\Controllers\\MountainController.cs",
-              "RelativeToolTip": "DziennikPlecakowy.API\\Controllers\\MountainController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFYAAAAAAAAAAAAAAA==",
+              "Title": "UserController.cs",
+              "DocumentMoniker": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.API\\Controllers\\UserController.cs",
+              "RelativeDocumentMoniker": "DziennikPlecakowy.API\\Controllers\\UserController.cs",
+              "ToolTip": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.API\\Controllers\\UserController.cs",
+              "RelativeToolTip": "DziennikPlecakowy.API\\Controllers\\UserController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-09T14:35:22.585Z",
+              "WhenOpened": "2025-04-09T15:07:41.478Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "IUserService.cs",
+              "DocumentMoniker": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Interfaces\\IUserService.cs",
+              "RelativeDocumentMoniker": "DziennikPlecakowy.Interfaces\\IUserService.cs",
+              "ToolTip": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Interfaces\\IUserService.cs",
+              "RelativeToolTip": "DziennikPlecakowy.Interfaces\\IUserService.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABYAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-09T15:07:26.654Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "TripController.cs",
-              "DocumentMoniker": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.API\\Controllers\\TripController.cs",
-              "RelativeDocumentMoniker": "DziennikPlecakowy.API\\Controllers\\TripController.cs",
-              "ToolTip": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.API\\Controllers\\TripController.cs",
-              "RelativeToolTip": "DziennikPlecakowy.API\\Controllers\\TripController.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAQwFkAAAATAAAAAAAAAA==",
+              "Title": "UserService.cs",
+              "DocumentMoniker": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Services\\UserService.cs",
+              "RelativeDocumentMoniker": "DziennikPlecakowy.Services\\UserService.cs",
+              "ToolTip": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Services\\UserService.cs",
+              "RelativeToolTip": "DziennikPlecakowy.Services\\UserService.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAgwBQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-09T14:35:21.866Z",
+              "WhenOpened": "2025-04-09T15:04:56.798Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UserStat.cs",
+              "DocumentMoniker": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\UserStat.cs",
+              "RelativeDocumentMoniker": "DziennikPlecakowy.Models\\UserStat.cs",
+              "ToolTip": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Models\\UserStat.cs",
+              "RelativeToolTip": "DziennikPlecakowy.Models\\UserStat.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-09T14:48:58.255Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.API\\Program.cs",
+              "RelativeDocumentMoniker": "DziennikPlecakowy.API\\Program.cs",
+              "ToolTip": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.API\\Program.cs",
+              "RelativeToolTip": "DziennikPlecakowy.API\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-09T14:47:25.216Z",
               "EditorCaption": ""
             }
           ]

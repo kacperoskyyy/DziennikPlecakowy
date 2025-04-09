@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DziennikPlecakowy.Interfaces;
 using DziennikPlecakowy.Shared;
+using Microsoft.Extensions.Configuration;
 
 
 namespace DziennikPlecakowy.Services
@@ -15,15 +16,14 @@ namespace DziennikPlecakowy.Services
     {
         private static string? _key;
         private static string? _iv;
-        public CypherService(IOptions<CypherServiceOptions> options)
+        public CypherService(IConfiguration _config)
         {
             //TODO: Odczytanie klucza i wektora inicjalizacyjnego z pliku
             //TODO: Obsługa błędów
             //TODO: Obsługa braku pliku
             //TODO: Obługa pustego klucza lub wektora inicjalizacyjnego
-            var cypherOptions = options.Value;
-            _key = cypherOptions.Key;
-            _iv = cypherOptions.IV;
+            _key = _config["Cypher:Key"];
+            _iv = _config["Cypher:IV"];
         }
         //Metoda do zaszyfrowania tekstu
         public string Encrypt(string text)

@@ -65,7 +65,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return Unauthorized("Nieprawidłowe dane logowania. " + e);
             }
         }
-        [Authorize]
+        [Authorize(Roles = "User, SuperUser, Admin")]
         [HttpPut("changeName")]
         public async Task<IActionResult> UpdateName([FromBody] UserChangeNameRequest userChangeName)
         {
@@ -92,7 +92,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się zaktualizować danych użytkownika. " + e);
             }
         }
-        [Authorize]
+        [Authorize(Roles = "User, SuperUser, Admin")]
         [HttpPut("changePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] UserChangePasswordRequest userChangePassword)
         {
@@ -122,7 +122,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się zaktualizować hasła. " + e);
             }
         }
-        [Authorize]
+        [Authorize(Roles = "User, SuperUser, Admin")]
         [HttpPut("changeEmail")]
         public async Task<IActionResult> ChangeEmail([FromBody] UserChangeEmailRequest userChangeEmail)
         {
@@ -148,7 +148,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się zaktualizować adresu email. " + e);
             }
         }
-        [Authorize]
+        [Authorize(Roles = "User, SuperUser, Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
@@ -174,7 +174,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się usunąć użytkownika. " + e);
             }
         }
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPut("makeAdmin/{Id}")]
         public async Task<IActionResult> ChangeRole([FromBody] string Id)
         {
@@ -185,7 +185,7 @@ namespace DziennikPlecakowy.API.Controllers
                 {
                     return NotFound("Nie znaleziono użytkownika o podanym Id.");
                 }
-                user.IsAdmin = true;
+                user.Roles.Add(UserRole.Admin);
                 var result = await _userService.UpdateUser(user);
                 if (result > 0)
                 {
@@ -201,7 +201,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return Unauthorized("Nie masz uprawnień do wykonania tej operacji. " + e);
             }
         }
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost("checkAdmin/{Id}")]
         public async Task<IActionResult> CheckAdmin([FromBody]string Id)
         {
@@ -216,7 +216,7 @@ namespace DziennikPlecakowy.API.Controllers
             }
 
         }
-        [Authorize]
+        [Authorize(Roles = "User, SuperUser, Admin")]
         [HttpPost("setLastLogin/{Id}")]
         public async Task<IActionResult> SetLastLogin([FromBody]string Id)
         {
@@ -248,10 +248,9 @@ namespace DziennikPlecakowy.API.Controllers
                 {
                     return NotFound("Nie znaleziono użytkownika o podanym Id.");
                 }
-                var result = await _userService.CheckIsSuperUser(user);
-                if (result > 0)
+                if (await _userService.CheckIsSuperUser(user))
                 {
-                    return Ok(result);
+                    return Ok();
                 }
                 else
                 {
@@ -263,7 +262,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się sprawdzić uprawnień superużytkownika. " + e);
             }
         }
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPut("setSuperUser/{Id}")]
         public async Task<IActionResult> SetSuperUser([FromBody] string Id)
         {
@@ -274,7 +273,7 @@ namespace DziennikPlecakowy.API.Controllers
                 {
                     return NotFound("Nie znaleziono użytkownika o podanym Id.");
                 }
-                user.IsSuperUser = true;
+                user.Roles.Add(UserRole.SuperUser);
                 var result = await _userService.UpdateUser(user);
                 if (result > 0)
                 {

@@ -24,10 +24,14 @@ namespace DziennikPlecakowy.Models
         [BsonElement("lastLoginTime")]
         public DateTime? LastLoginTime { get; set; }
 
-        [BsonElement("isAdmin")]
-        public bool IsAdmin { get; set; }
-        [BsonElement("isSuperUser")]
-        public bool IsSuperUser { get; set; }
-        
+        [BsonElement("Roles")]
+        public ICollection<UserRole> Roles { get; set; } = new List<UserRole>();
+
+    }
+    public enum UserRole
+    {
+        User,
+        SuperUser,
+        Admin
     }
 }

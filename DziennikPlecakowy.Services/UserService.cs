@@ -163,8 +163,27 @@ namespace DziennikPlecakowy.Services
 
         public bool IsAdmin(string Id)
         {
-            var user = GetUserById(Id).Result;
-            return user.IsAdmin;
+            try
+            {
+                var user = GetUserById(Id).Result;
+                if (user == null)
+                {
+                    return false;
+                }
+                foreach (var role in user.Roles)
+                {
+                    if (role == UserRole.Admin)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred: {ex.Message}");
+                return false;
+            }
         }
 
         public async Task<int> SetLastLogin(string Id)
@@ -181,16 +200,27 @@ namespace DziennikPlecakowy.Services
                 return -1;
             }
         }
-        public async Task<int> CheckIsSuperUser(User user)
+        public async Task<bool> CheckIsSuperUser(User user)
         {
             try
             {
-                return user.IsSuperUser ? 1 : -1;
+                if (user == null)
+                {
+                    return false;
+                }
+                foreach (var role in user.Roles)
+                {
+                    if (role == UserRole.SuperUser)
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error occurred: {ex.Message}");
-                return -1;
+                return false;
             }
         }
         public async Task<int> SetSuperUser(string Id)
@@ -202,7 +232,7 @@ namespace DziennikPlecakowy.Services
                 {
                     return -1; // User not found
                 }
-                user.IsSuperUser = true;
+                user.Roles.Add(UserRole.SuperUser);
                 return await UpdateUser(user);
             }
             catch (Exception ex)
