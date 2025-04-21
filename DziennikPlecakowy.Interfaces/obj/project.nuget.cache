@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "sZGbWxMDYJc=",
+  "dgSpecHash": "spkkWHezNfA=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Dell\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Interfaces\\DziennikPlecakowy.Interfaces.csproj",
+  "projectFilePath": "C:\\Users\\Kacper\\source\\repos\\DziennikPlecakowy\\DziennikPlecakowy.Interfaces\\DziennikPlecakowy.Interfaces.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Dell\\.nuget\\packages\\mongodb.bson\\3.3.0\\mongodb.bson.3.3.0.nupkg.sha512",
-    "C:\\Users\\Dell\\.nuget\\packages\\system.memory\\4.5.5\\system.memory.4.5.5.nupkg.sha512",
-    "C:\\Users\\Dell\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\5.0.0\\system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512"
+    "C:\\Users\\Kacper\\.nuget\\packages\\mongodb.bson\\3.3.0\\mongodb.bson.3.3.0.nupkg.sha512",
+    "C:\\Users\\Kacper\\.nuget\\packages\\system.memory\\4.5.5\\system.memory.4.5.5.nupkg.sha512",
+    "C:\\Users\\Kacper\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\5.0.0\\system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512"
   ],
   "logs": []
 }

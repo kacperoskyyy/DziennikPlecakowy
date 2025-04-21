@@ -120,3 +120,11 @@ C:\Users\Dell\source\repos\DziennikPlecakowy\DziennikPlecakowy.API\bin\Debug\net
 C:\Users\Dell\source\repos\DziennikPlecakowy\DziennikPlecakowy.API\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Users\Dell\source\repos\DziennikPlecakowy\DziennikPlecakowy.API\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\Dell\source\repos\DziennikPlecakowy\DziennikPlecakowy.API\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.API\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.API\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.API\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.API\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.API\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.API\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.API\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\Kacper\source\repos\DziennikPlecakowy\DziennikPlecakowy.API\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll

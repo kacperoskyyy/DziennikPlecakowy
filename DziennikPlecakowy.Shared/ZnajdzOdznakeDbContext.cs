@@ -20,7 +20,6 @@ namespace DziennikPlecakowy.Shared
         }
 
         public IMongoCollection<User> Users => _database.GetCollection<User>("Users");
-        public IMongoCollection<Mountain> Mountains => _database.GetCollection<Mountain>("Mountains");
         public IMongoCollection<Trip> Trips => _database.GetCollection<Trip>("Trips");
         public IMongoCollection<UserStat> UserStats => _database.GetCollection<UserStat>("UserStats");
     }

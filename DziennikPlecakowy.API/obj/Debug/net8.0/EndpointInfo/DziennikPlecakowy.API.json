@@ -1,126 +1,10 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "DziennikPlecakowyAPI",
-    "version": "v1"
+    "title": "DziennikPlecakowy.API",
+    "version": "1.0"
   },
   "paths": {
-    "/api/Mountain/getMountainById/{Id}": {
-      "get": {
-        "tags": [
-          "Mountain"
-        ],
-        "parameters": [
-          {
-            "name": "Id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Mountain/updateMountain/{mountain}": {
-      "put": {
-        "tags": [
-          "Mountain"
-        ],
-        "parameters": [
-          {
-            "name": "mountain",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Mountain"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Mountain"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Mountain"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Mountain/addMountain": {
-      "post": {
-        "tags": [
-          "Mountain"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MountainCreateRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MountainCreateRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MountainCreateRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Mountain/deleteMountain/{Id}": {
-      "delete": {
-        "tags": [
-          "Mountain"
-        ],
-        "parameters": [
-          {
-            "name": "Id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/Trip/addTrip": {
       "post": {
         "tags": [
@@ -684,48 +568,6 @@
         },
         "additionalProperties": false
       },
-      "Mountain": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "location": {
-            "$ref": "#/components/schemas/GeoPoint"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "MountainCreateRequest": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "height": {
-            "type": "number",
-            "format": "double"
-          },
-          "location": {
-            "$ref": "#/components/schemas/GeoPoint"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "Trip": {
         "type": "object",
         "properties": {
@@ -875,19 +717,6 @@
         "type": "integer",
         "format": "int32"
       }
-    },
-    "securitySchemes": {
-      "Bearer": {
-        "type": "http",
-        "description": "Wpisz 'Bearer {twój token JWT}'",
-        "scheme": "Bearer",
-        "bearerFormat": "JWT"
-      }
     }
-  },
-  "security": [
-    {
-      "Bearer": [ ]
-    }
-  ]
+  }
 }
