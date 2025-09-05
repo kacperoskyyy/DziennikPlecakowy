@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DziennikPlecakowy.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -11,7 +12,8 @@ namespace DziennikPlecakowy.Interfaces
     {
         public string Encrypt(string text);
         public string Decrypt(string text);
-        public string GenerateJwtToken(string Id);
+        public string GenerateJwtToken(User user);
         public ClaimsPrincipal ValidateJwtToken(string token);
+        public Task<User?> GetUserInfoFromTokenAsync(string token);
     }
 }

@@ -15,7 +15,7 @@ namespace DziennikPlecakowy.Shared
 
         public DziennikPlecakowyDbContext(IConfiguration configuration)
         {
-            var client = new MongoClient(configuration.GetConnectionString("MongoDB"));
+            var client = new MongoClient(configuration["MongoDB:ConnectionString"]);
             _database = client.GetDatabase(configuration["MongoDB:DatabaseName"]);
         }
 

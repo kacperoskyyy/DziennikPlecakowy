@@ -26,7 +26,7 @@ namespace DziennikPlecakowy.Services
             _cypherService = cypherService;
         }
 
-        public async Task<string> Login(UserAuthRequest userAuthData)
+        public async Task<string?> Login(UserAuthRequest userAuthData)
         {
             try
             {
@@ -35,8 +35,8 @@ namespace DziennikPlecakowy.Services
                 {
                     return null;
                 }
-                var token = _cypherService.GenerateJwtToken(user.Username);
 
+                var token = _cypherService.GenerateJwtToken(user);
                 await _userService.SetLastLogin(user.Id);
                 return token;
             }
@@ -47,17 +47,11 @@ namespace DziennikPlecakowy.Services
             }
         }
         //TU JEST PROBLEM
-        public async Task<User> GetUserInfoFromToken(string token)
+        public async Task<User?> GetUserInfoFromToken(string token)
         {
             try
             {
-                var claims = _cypherService.ValidateJwtToken(token);
-                var userId = claims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userId == null)
-                {
-                    return null;
-                }
-                return await _userService.GetUserById(userId);
+                return await _cypherService.GetUserInfoFromTokenAsync(token);
             }
             catch (Exception ex)
             {

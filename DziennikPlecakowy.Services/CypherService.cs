@@ -71,14 +71,15 @@ namespace DziennikPlecakowy.Services
             }
         }
         //Generowanie tokena
-        public string GenerateJwtToken(string Id)
+        public string GenerateJwtToken(User user)
         {
             var claims = new[]
             {
-                    new Claim(ClaimTypes.NameIdentifier, Id),
-                };
+        new Claim(ClaimTypes.NameIdentifier, user.Id),
+        new Claim(ClaimTypes.Name, user.Username ?? string.Empty),
+        new Claim(ClaimTypes.Email, user.Email ?? string.Empty)
+    };
 
-            // Pobranie klucza i konfiguracji z appsettings.json
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -91,6 +92,7 @@ namespace DziennikPlecakowy.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
 
         //Walidacja tokena
         public ClaimsPrincipal ValidateJwtToken(string token)
@@ -122,31 +124,15 @@ namespace DziennikPlecakowy.Services
                 throw new SecurityTokenException("Invalid token.", ex);
             }
         }
-        public async Task<User> GetUserInfoFromTokenAsync(string token)
+        public async Task<User?> GetUserInfoFromTokenAsync(string token)
         {
             var principal = ValidateJwtToken(token);
             var userIdClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 
             if (userIdClaim == null || string.IsNullOrEmpty(userIdClaim.Value))
-            {
-                throw new SecurityTokenException("Token does not contain a valid user ID.");
-            }
+                return null;
 
-            var userId = userIdClaim.Value;
-            var user = await _userService.GetUserById(userId);
-
-            if (user == null)
-            {
-                throw new KeyNotFoundException($"User with ID {userId} not found.");
-            }
-
-            return new User
-            {
-                Id = user.Id,
-                Username = user.Username,
-                Email = user.Email,
-                Roles = user.Roles
-            };
+            return await _userService.GetUserById(userIdClaim.Value);
         }
 
     }

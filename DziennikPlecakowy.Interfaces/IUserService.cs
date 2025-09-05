@@ -20,7 +20,7 @@ namespace DziennikPlecakowy.Interfaces
         public Task<int> ChangeEmail(User user, string newEmail);
         public Task<int> ChangeName(User user, string newUsername);
         public bool CheckPassword(User user, string password);
-        public bool IsAdmin(string Id);
+        public Task<bool> IsAdmin(string id);
         public Task<int> SetLastLogin(string Id);
         public Task<bool> CheckIsSuperUser(User user);
         public Task<int> SetSuperUser(string Id);

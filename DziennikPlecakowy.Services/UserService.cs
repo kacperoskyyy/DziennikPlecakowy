@@ -26,7 +26,8 @@ namespace DziennikPlecakowy.Services
                     Email = userRegister.Email,
                     Username = userRegister.Username,
                     HashedPassword = _hash.Hash(userRegister.Password),
-                    CreatedTime = DateTime.Now
+                    CreatedTime = DateTime.Now,
+                    Roles =  { UserRole.User }
                 };
                 await _context.Users.InsertOneAsync(user);
                 return 1;
@@ -159,23 +160,15 @@ namespace DziennikPlecakowy.Services
             return user.HashedPassword == _hash.Hash(password);
         }
 
-        public bool IsAdmin(string Id)
+        public async Task<bool> IsAdmin(string id)
         {
             try
             {
-                var user = GetUserById(Id).Result;
+                var user = await GetUserById(id);
                 if (user == null)
-                {
                     return false;
-                }
-                foreach (var role in user.Roles)
-                {
-                    if (role == UserRole.Admin)
-                    {
-                        return true;
-                    }
-                }
-                return false;
+
+                return user.Roles != null && user.Roles.Contains(UserRole.Admin);
             }
             catch (Exception ex)
             {
@@ -183,6 +176,7 @@ namespace DziennikPlecakowy.Services
                 return false;
             }
         }
+
 
         public async Task<int> SetLastLogin(string Id)
         {
