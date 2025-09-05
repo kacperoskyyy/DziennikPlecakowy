@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DziennikPlecakowy.API", "DziennikPlecakowy.API\DziennikPlecakowy.API.csproj", "{738DBEA8-4FC5-40D7-AFBF-ECB895F9F820}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DziennikPlecakowy.DTO", "DziennikPlecakowy.DTO\DziennikPlecakowy.DTO.csproj", "{91D94F88-3685-47C5-AA97-B463C4DA5ADA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DziennikPlecakowy.Interfaces", "DziennikPlecakowy.Interfaces\DziennikPlecakowy.Interfaces.csproj", "{B547E8B9-D09C-413C-96BD-9A39331FD407}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DziennikPlecakowy.Models", "DziennikPlecakowy.Models\DziennikPlecakowy.Models.csproj", "{D1F25E73-10A7-41E4-89F2-CD30E6D59D2C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DziennikPlecakowy.Services", "DziennikPlecakowy.Services\DziennikPlecakowy.Services.csproj", "{2A104242-967A-4FC8-BBCF-6A11B86DA8BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DziennikPlecakowy.Shared", "DziennikPlecakowy.Shared\DziennikPlecakowy.Shared.csproj", "{26C741A2-1793-4D4D-8129-83C005106670}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{738DBEA8-4FC5-40D7-AFBF-ECB895F9F820}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{738DBEA8-4FC5-40D7-AFBF-ECB895F9F820}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{738DBEA8-4FC5-40D7-AFBF-ECB895F9F820}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{738DBEA8-4FC5-40D7-AFBF-ECB895F9F820}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91D94F88-3685-47C5-AA97-B463C4DA5ADA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91D94F88-3685-47C5-AA97-B463C4DA5ADA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91D94F88-3685-47C5-AA97-B463C4DA5ADA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91D94F88-3685-47C5-AA97-B463C4DA5ADA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B547E8B9-D09C-413C-96BD-9A39331FD407}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B547E8B9-D09C-413C-96BD-9A39331FD407}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B547E8B9-D09C-413C-96BD-9A39331FD407}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B547E8B9-D09C-413C-96BD-9A39331FD407}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1F25E73-10A7-41E4-89F2-CD30E6D59D2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1F25E73-10A7-41E4-89F2-CD30E6D59D2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1F25E73-10A7-41E4-89F2-CD30E6D59D2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1F25E73-10A7-41E4-89F2-CD30E6D59D2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A104242-967A-4FC8-BBCF-6A11B86DA8BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A104242-967A-4FC8-BBCF-6A11B86DA8BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A104242-967A-4FC8-BBCF-6A11B86DA8BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A104242-967A-4FC8-BBCF-6A11B86DA8BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26C741A2-1793-4D4D-8129-83C005106670}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26C741A2-1793-4D4D-8129-83C005106670}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26C741A2-1793-4D4D-8129-83C005106670}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26C741A2-1793-4D4D-8129-83C005106670}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {562258E8-1CC5-48E0-84CB-0860B7D8A2AA}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.15" />
+    <PackageReference Include="MongoDB.Driver" Version="3.3.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DziennikPlecakowy.DTO\DziennikPlecakowy.DTO.csproj" />
+    <ProjectReference Include="..\DziennikPlecakowy.Interfaces\DziennikPlecakowy.Interfaces.csproj" />
+    <ProjectReference Include="..\DziennikPlecakowy.Models\DziennikPlecakowy.Models.csproj" />
+    <ProjectReference Include="..\DziennikPlecakowy.Services\DziennikPlecakowy.Services.csproj" />
+    <ProjectReference Include="..\DziennikPlecakowy.Shared\DziennikPlecakowy.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
