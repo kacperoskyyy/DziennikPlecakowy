@@ -1,0 +1,9 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DziennikPlecakowy.Views.TripPage"
+             Title="Nowa wycieczka">
+    <StackLayout Padding="20" Spacing="15">
+        <Label Text="{Binding Status}" />
+        <Button Text="{Binding StartButtonText}" Command="{Binding ToggleCommand}" />
+    </StackLayout>
+</ContentPage>

@@ -1,0 +1,10 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DziennikPlecakowy.Views.StatsPage"
+             Title="Statystyki">
+    <StackLayout Padding="20">
+        <Label Text="{Binding TotalTrips, StringFormat='Liczba wycieczek: {0}'}"/>
+        <Label Text="{Binding TotalDistance, StringFormat='Łączna odległość: {0} km'}"/>
+        <Label Text="{Binding TotalDuration, StringFormat='Łączny czas: {0} s'}"/>
+    </StackLayout>
+</ContentPage>
