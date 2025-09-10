@@ -5,7 +5,7 @@ using Microsoft.Maui.Storage;
 
 namespace DziennikPlecakowy.Services
 {
-    public class AuthServiceClient : IAuthService
+    public class AuthServiceClient
     {
         private readonly ApiServiceClient _api;
 

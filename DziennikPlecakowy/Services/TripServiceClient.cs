@@ -10,7 +10,7 @@ using Microsoft.Maui.Devices.Sensors;
 
 namespace DziennikPlecakowy.Services
 {
-    public class TripServiceClient : ITripService
+    public class TripServiceClient
     {
         private const string OfflineKey = "offline_trips";
         private readonly ApiServiceClient _api;

@@ -1,3 +1,5 @@
+using DziennikPlecakowy.ViewModels;
+
 namespace DziennikPlecakowy.Views
 {
     public partial class LoginPage : ContentPage

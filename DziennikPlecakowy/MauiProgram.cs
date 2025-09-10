@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
-using Windows.Networking.NetworkOperators;
 
 namespace DziennikPlecakowy
 {
@@ -20,10 +19,10 @@ namespace DziennikPlecakowy
                 .ConfigureFonts(fonts => { /* opcjonalnie */ });
 
             // rejestracja serwisów mobilnych - implementacje interfejsów
-            builder.Services.AddSingleton<ApiServiceClient>(); // helper http
-            builder.Services.AddSingleton<IAuthService, AuthServiceClient>();
-            builder.Services.AddSingleton<ITripService, TripServiceClient>();
-            builder.Services.AddSingleton<IUserService, UserServiceClient>();
+            //builder.Services.AddSingleton<ApiServiceClient>();
+            //builder.Services.AddSingleton<IAuthService, AuthServiceClient>();
+            //builder.Services.AddSingleton<ITripService, TripServiceClient>();
+            //builder.Services.AddSingleton<IUserService, UserServiceClient>();
 
             // viewmodels
             builder.Services.AddTransient<LoginViewModel>();

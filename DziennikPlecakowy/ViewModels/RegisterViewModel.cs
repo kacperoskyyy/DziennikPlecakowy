@@ -21,7 +21,7 @@ namespace DziennikPlecakowy.ViewModels
 
         private async Task RegisterAsync()
         {
-            var req = new UserRegisterRequest { Email = Email, UserName = Username, Password = Password };
+            var req = new UserRegisterRequest { Email = Email, Username = Username, Password = Password };
             var ok = await _auth.RegisterAsync(req);
             if (ok) await Application.Current.MainPage.DisplayAlert("OK", "Zarejestrowano", "OK");
             else await Application.Current.MainPage.DisplayAlert("Błąd", "Rejestracja nie powiodła się", "OK");

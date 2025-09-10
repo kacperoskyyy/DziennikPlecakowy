@@ -3,12 +3,13 @@ using DziennikPlecakowy.Interfaces;
 using DziennikPlecakowy.DTO;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
+using DziennikPlecakowy.Services;
 
 namespace DziennikPlecakowy.ViewModels
 {
     public class LoginViewModel : BaseViewModel
     {
-        private readonly IAuthService _auth;
+        private readonly  AuthServiceClient _auth;
         public string Email { get; set; }
         public string Password { get; set; }
 
