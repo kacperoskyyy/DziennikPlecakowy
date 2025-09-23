@@ -13,6 +13,6 @@ namespace DziennikPlecakowy.Interfaces
         public Task<int> AddTrip(Trip trip);
         public Task<int> UpdateTrip(Trip trip);
         public Task<int> DeleteTrip(string tripId);
-        public Task<List<Trip>> GetUserTrips(AuthData auth);
+        public Task<List<Trip>> GetUserTrips(string token);
     }
 }

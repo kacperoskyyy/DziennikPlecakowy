@@ -15,14 +15,10 @@ namespace DziennikPlecakowy.Interfaces
         public Task<User?> GetUserById(string id);
         public Task<int> UpdateUser(User user);
         public Task<int> DeleteUser(User user);
-        public Task<int> DeleteUserById(string id);
         public Task<int> ChangePassword(User user, string newPassword);
         public Task<int> ChangeEmail(User user, string newEmail);
         public Task<int> ChangeName(User user, string newUsername);
         public bool CheckPassword(User user, string password);
-        public Task<bool> IsAdmin(string id);
         public Task<int> SetLastLogin(string Id);
-        public Task<bool> CheckIsSuperUser(User user);
-        public Task<int> SetSuperUser(string Id);
     }
 }

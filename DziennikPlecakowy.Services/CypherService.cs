@@ -75,10 +75,11 @@ namespace DziennikPlecakowy.Services
         {
             var claims = new[]
             {
-        new Claim(ClaimTypes.NameIdentifier, user.Id),
-        new Claim(ClaimTypes.Name, user.Username ?? string.Empty),
-        new Claim(ClaimTypes.Email, user.Email ?? string.Empty)
-    };
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("username", user.Username),
+                new Claim("roles", string.Join(",", user.Roles.Select(r => r.ToString())))
+            };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -133,6 +134,16 @@ namespace DziennikPlecakowy.Services
                 return null;
 
             return await _userService.GetUserById(userIdClaim.Value);
+        }
+        public string GetUserIdFromToken(string token)
+        {
+            var principal = ValidateJwtToken(token);
+            if (principal == null)
+                return null;
+
+            var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier)
+                              ?? principal.FindFirst("sub");
+            return userIdClaim?.Value;
         }
 
     }

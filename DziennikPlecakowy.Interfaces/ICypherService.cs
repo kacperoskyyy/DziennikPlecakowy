@@ -15,5 +15,6 @@ namespace DziennikPlecakowy.Interfaces
         public string GenerateJwtToken(User user);
         public ClaimsPrincipal ValidateJwtToken(string token);
         public Task<User?> GetUserInfoFromTokenAsync(string token);
+        public string GetUserIdFromToken(string token);
     }
 }

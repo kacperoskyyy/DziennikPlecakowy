@@ -16,7 +16,7 @@ namespace DziennikPlecakowy.API.Controllers
         {
             _tripService = tripService;
         }
-        [Authorize(Roles = "User, SuperUser, Admin")]
+        [Authorize(Roles = "User, Admin")]
         [HttpPost("addTrip")]
         public async Task<IActionResult> AddTrip([FromBody] TripAddRequest tripAddRequest)
         {
@@ -45,7 +45,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się dodać wycieczki. " + e);
             }
         }
-        [Authorize(Roles = "User, SuperUser, Admin")]
+        [Authorize(Roles = "User, Admin")]
         [HttpPost("updateTrip")]
         public async Task<IActionResult> UpdateTrip([FromBody] Trip trip)
         {
@@ -66,7 +66,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się zaktualizować wycieczki. " + e);
             }
         }
-        [Authorize(Roles = "User, SuperUser, Admin")]
+        [Authorize(Roles = "User, Admin")]
         [HttpPost("deleteTrip")]
         public async Task<IActionResult> DeleteTrip(string tripId)
         {
@@ -87,13 +87,13 @@ namespace DziennikPlecakowy.API.Controllers
                 return BadRequest("Nie udało się usunąć wycieczki. " + e);
             }
         }
-        [Authorize(Roles = "User, SuperUser, Admin")]
+        [Authorize(Roles = "User, Admin")]
         [HttpGet("getUserTrips")]
-        public async Task<IActionResult> GetUserTrips([FromBody] AuthData user)
+        public async Task<IActionResult> GetUserTrips([FromBody] string token)
         {
             try
             {
-                var result = await _tripService.GetUserTrips(user);
+                var result = await _tripService.GetUserTrips(token);
                 if (result != null)
                 {
                     return Ok(result);

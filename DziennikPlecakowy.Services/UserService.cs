@@ -99,20 +99,6 @@ namespace DziennikPlecakowy.Services
             }
         }
 
-        public async Task<int> DeleteUserById(string id)
-        {
-            try
-            {
-                var result = await _context.Users.DeleteOneAsync(u => u.Id == id);
-                return result.DeletedCount > 0 ? 1 : -1;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return -1;
-            }
-        }
-
         public async Task<int> ChangePassword(User user, string newPassword)
         {
             try
@@ -160,71 +146,12 @@ namespace DziennikPlecakowy.Services
             return user.HashedPassword == _hash.Hash(password);
         }
 
-        public async Task<bool> IsAdmin(string id)
-        {
-            try
-            {
-                var user = await GetUserById(id);
-                if (user == null)
-                    return false;
-
-                return user.Roles != null && user.Roles.Contains(UserRole.Admin);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return false;
-            }
-        }
-
-
         public async Task<int> SetLastLogin(string Id)
         {
             try
             {
                 var user = await GetUserById(Id);
                 user.LastLoginTime = DateTime.Now;
-                return await UpdateUser(user);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return -1;
-            }
-        }
-        public async Task<bool> CheckIsSuperUser(User user)
-        {
-            try
-            {
-                if (user == null)
-                {
-                    return false;
-                }
-                foreach (var role in user.Roles)
-                {
-                    if (role == UserRole.SuperUser)
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return false;
-            }
-        }
-        public async Task<int> SetSuperUser(string Id)
-        {
-            try
-            {
-                var user = await GetUserById(Id);
-                if(user ==null)
-                {
-                    return -1; // User not found
-                }
-                user.Roles.Add(UserRole.SuperUser);
                 return await UpdateUser(user);
             }
             catch (Exception ex)

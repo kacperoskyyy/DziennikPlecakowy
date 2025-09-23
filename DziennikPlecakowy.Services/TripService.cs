@@ -14,11 +14,13 @@ namespace DziennikPlecakowy.Services
     public class TripService : ITripService
     {
         private readonly DziennikPlecakowyDbContext _context;
+        private readonly ICypherService _cypherService;
 
         // Konstruktor
-        public TripService(DziennikPlecakowyDbContext context)
+        public TripService(DziennikPlecakowyDbContext context, ICypherService cypherService)
         {
             _context = context;
+            _cypherService = cypherService;
         }
 
         // Dodawanie wycieczki
@@ -67,17 +69,11 @@ namespace DziennikPlecakowy.Services
         }
 
         // Wycieczki użytkownika
-        public async Task<List<Trip>> GetUserTrips(AuthData auth)
+        public async Task<List<Trip>> GetUserTrips(string token)
         {
-            try
-            {
-                return await _context.Trips.Find(t => t.UserId == auth.UserId).ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return null;
-            }
+            var userId = _cypherService.GetUserIdFromToken(token);
+
+            return await _context.Trips.Find(t => t.UserId == userId).ToListAsync();
         }
     }
 }

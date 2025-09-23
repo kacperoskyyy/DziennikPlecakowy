@@ -26,45 +26,8 @@ namespace DziennikPlecakowy.API.Controllers
             return User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
 
-        // --- AUTH ---
-        [AllowAnonymous]
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] UserRegisterRequest userRegisterData)
-        {
-            try
-            {
-                var user = await _userService.GetUserByEmail(userRegisterData.Email);
-                if (user != null)
-                {
-                    return BadRequest("Użytkownik o podanym adresie email już istnieje.");
-                }
-
-                var result = await _userService.UserRegister(userRegisterData);
-                return result > 0 ? Ok(result) : BadRequest("Nie udało się zarejestrować użytkownika.");
-            }
-            catch (Exception e)
-            {
-                return BadRequest("Błąd podczas rejestracji: " + e.Message);
-            }
-        }
-
-        [AllowAnonymous]
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UserAuthRequest userAuthData)
-        {
-            try
-            {
-                var authData = await _authService.Login(userAuthData);
-                return authData != null ? Ok(authData) : Unauthorized("Nieprawidłowe dane logowania.");
-            }
-            catch (Exception e)
-            {
-                return Unauthorized("Błąd logowania: " + e.Message);
-            }
-        }
-
         // --- USER ACTIONS ---
-        [Authorize(Roles = "User, SuperUser, Admin")]
+        [Authorize(Roles = "User, Admin")]
         [HttpPut("changeName")]
         public async Task<IActionResult> UpdateName([FromBody] UserChangeNameRequest userChangeName)
         {
@@ -87,7 +50,7 @@ namespace DziennikPlecakowy.API.Controllers
             }
         }
 
-        [Authorize(Roles = "User, SuperUser, Admin")]
+        [Authorize(Roles = "User, Admin")]
         [HttpPut("changePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] UserChangePasswordRequest userChangePassword)
         {
@@ -112,7 +75,7 @@ namespace DziennikPlecakowy.API.Controllers
             }
         }
 
-        [Authorize(Roles = "User, SuperUser, Admin")]
+        [Authorize(Roles = "User,Admin")]
         [HttpPut("changeEmail")]
         public async Task<IActionResult> ChangeEmail([FromBody] UserChangeEmailRequest userChangeEmail)
         {
@@ -134,7 +97,7 @@ namespace DziennikPlecakowy.API.Controllers
             }
         }
 
-        [Authorize(Roles = "User, SuperUser, Admin")]
+        [Authorize(Roles = "User, Admin")]
         [HttpDelete("delete")]
         public async Task<IActionResult> DeleteUser()
         {
@@ -156,7 +119,7 @@ namespace DziennikPlecakowy.API.Controllers
             }
         }
 
-        [Authorize(Roles = "User, SuperUser, Admin")]
+        [Authorize(Roles = "User, Admin")]
         [HttpPost("setLastLogin")]
         public async Task<IActionResult> SetLastLogin()
         {
@@ -197,27 +160,6 @@ namespace DziennikPlecakowy.API.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpPut("setSuperUser")]
-        public async Task<IActionResult> SetSuperUser([FromBody] string Id)
-        {
-            try
-            {
-                var user = await _userService.GetUserById(Id);
-                if (user == null) return NotFound("Nie znaleziono użytkownika.");
-
-                if (!user.Roles.Contains(UserRole.SuperUser))
-                    user.Roles.Add(UserRole.SuperUser);
-
-                var result = await _userService.UpdateUser(user);
-                return result > 0 ? Ok(result) : BadRequest("Nie udało się ustawić roli SuperUser.");
-            }
-            catch (Exception e)
-            {
-                return Unauthorized("Błąd: " + e.Message);
-            }
-        }
-
         // --- SIMPLE ROLE CHECKS ---
         [Authorize(Roles = "Admin")]
         [HttpGet("checkAdmin")]
@@ -226,11 +168,5 @@ namespace DziennikPlecakowy.API.Controllers
             return Ok(true);
         }
 
-        [Authorize(Roles = "SuperUser")]
-        [HttpGet("checkSuperUser")]
-        public IActionResult CheckSuperUser()
-        {
-            return Ok(true);
-        }
     }
 }
