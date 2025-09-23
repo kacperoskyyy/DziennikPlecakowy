@@ -13,6 +13,7 @@ namespace DziennikPlecakowy.ViewModels
         public string StartButtonText => _isTracking ? "Zakończ" : "Start";
 
         public ICommand ToggleCommand { get; }
+        public TimeOnly Duration { get; set; } = TimeOnly.FromTimeSpan(TimeSpan.Zero);
 
         public TripViewModel(TripServiceClient tripService)
         {

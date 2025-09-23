@@ -15,12 +15,14 @@ namespace DziennikPlecakowy.ViewModels
 
         public ICommand LoginCommand { get; }
         public ICommand GoRegisterCommand { get; }
+        public bool IsErrorVisible { get; set; }
 
         public LoginViewModel(AuthServiceClient auth)
         {
             _auth = auth;
             LoginCommand = new Command(async () => await LoginAsync());
             GoRegisterCommand = new Command(async () => await Application.Current.MainPage.Navigation.PushAsync(new Views.RegisterPage()));
+            IsErrorVisible = false;
         }
 
         private async Task LoginAsync()
@@ -30,7 +32,7 @@ namespace DziennikPlecakowy.ViewModels
             if (res != null)
             {
                 await SecureStorage.Default.SetAsync("auth_token",  res);
-                Application.Current.MainPage = new AppShell();
+                Application.Current.MainPage = new NavigationPage(new Views.TripPage());
             }
             else
             {
