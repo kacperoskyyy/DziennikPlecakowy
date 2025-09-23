@@ -9,7 +9,7 @@ namespace DziennikPlecakowy.Views
         public TripPage()
         {
             InitializeComponent();
-            BindingContext = App.Current.Services.GetService<TripViewModel>();
+            BindingContext = App.Services.GetService<TripViewModel>();
         }
     }
 }

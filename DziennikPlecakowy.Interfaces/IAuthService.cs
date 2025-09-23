@@ -12,5 +12,6 @@ namespace DziennikPlecakowy.Interfaces
     {
         public Task<string> Login(UserAuthRequest userAuthData);
         public Task<User> GetUserInfoFromToken(string token);
+        public Task<bool> RegisterAsync(UserRegisterRequest request);
     }
 }

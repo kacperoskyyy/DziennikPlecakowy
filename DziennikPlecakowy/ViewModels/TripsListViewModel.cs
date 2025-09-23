@@ -20,11 +20,10 @@ namespace DziennikPlecakowy.ViewModels
 
         private async Task LoadAsync()
         {
-            // w praktyce pobierz id użytkownika (np. z SecureStorage)
-            var userId = "dummy"; // zastąp realnym
+            var userId = SecureStorage.Default.GetAsync("userId").Result;
             var list = await _tripService.GetUserTripsAsync(userId);
             Trips.Clear();
-            foreach (var t in list) Trips.Add(t);
+            foreach (var t in list) Trips.Add((Trip)t);
         }
     }
 }

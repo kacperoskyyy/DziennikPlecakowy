@@ -16,7 +16,7 @@ namespace DziennikPlecakowy.ViewModels
         public ICommand LoginCommand { get; }
         public ICommand GoRegisterCommand { get; }
 
-        public LoginViewModel(IAuthService auth)
+        public LoginViewModel(AuthServiceClient auth)
         {
             _auth = auth;
             LoginCommand = new Command(async () => await LoginAsync());
@@ -29,8 +29,7 @@ namespace DziennikPlecakowy.ViewModels
             var res = await _auth.LoginAsync(req);
             if (res != null)
             {
-                // ustaw token i przejscie do shell
-                await SecureStorage.Default.SetAsync("auth_token", res.Token);
+                await SecureStorage.Default.SetAsync("auth_token",  res);
                 Application.Current.MainPage = new AppShell();
             }
             else

@@ -7,7 +7,7 @@ namespace DziennikPlecakowy.Views
         public LoginPage()
         {
             InitializeComponent();
-            BindingContext = App.Current.Services.GetService<LoginViewModel>();
+            BindingContext = App.Services.GetService<LoginViewModel>();
         }
     }
 }

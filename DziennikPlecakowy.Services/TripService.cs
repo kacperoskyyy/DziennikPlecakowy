@@ -75,5 +75,10 @@ namespace DziennikPlecakowy.Services
 
             return await _context.Trips.Find(t => t.UserId == userId).ToListAsync();
         }
+
+        public async Task<IEnumerable<object>> GetUserTripsAsync(string? userId)
+        {
+            return await _context.Trips.Find(t => t.UserId == userId).ToListAsync();
+        }
     }
 }

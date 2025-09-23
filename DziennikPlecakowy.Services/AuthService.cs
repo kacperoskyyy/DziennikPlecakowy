@@ -60,6 +60,18 @@ namespace DziennikPlecakowy.Services
             }
         }
 
-
+        public async Task<bool> RegisterAsync(UserRegisterRequest request)
+        {
+            try
+            {
+                var result = await _userService.UserRegister(request);
+                return result == 1;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

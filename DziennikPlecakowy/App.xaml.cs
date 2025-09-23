@@ -6,14 +6,18 @@ namespace DziennikPlecakowy
 {
     public partial class App : Application
     {
+        public static IServiceProvider Services { get; private set; }
+
         public App()
         {
             InitializeComponent();
 
-            if (Preferences.ContainsKey("auth_token"))
-                MainPage = new AppShell();
-            else
-                MainPage = new NavigationPage(new Views.LoginPage());
+            var builder = MauiApp.CreateBuilder();
+            // ... konfiguracja DI
+            var mauiApp = builder.Build();
+            Services = mauiApp.Services;
+
+            MainPage = new AppShell();
         }
     }
 }

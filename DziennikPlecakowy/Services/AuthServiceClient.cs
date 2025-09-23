@@ -14,14 +14,14 @@ namespace DziennikPlecakowy.Services
             _api = api;
         }
 
-        public async Task<AuthData> LoginAsync(UserAuthRequest request)
+        public async Task<string> LoginAsync(UserAuthRequest request)
         {
-            var result = await _api.PostAsync<UserAuthRequest, AuthData>("auth/login", request);
+            var result = await _api.PostAsync<UserAuthRequest, string>("api/auth/login", request);
             if (result != null)
             {
                 // zapisz token w SecureStorage
-                await SecureStorage.Default.SetAsync("auth_token", result.Token);
-                _api.SetAuthToken(result.Token);
+                await SecureStorage.Default.SetAsync("auth_token", result);
+                _api.SetAuthToken(result);
             }
             return result;
         }

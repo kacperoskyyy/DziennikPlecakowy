@@ -14,5 +14,6 @@ namespace DziennikPlecakowy.Interfaces
         public Task<int> UpdateTrip(Trip trip);
         public Task<int> DeleteTrip(string tripId);
         public Task<List<Trip>> GetUserTrips(string token);
+        public Task<IEnumerable<object>> GetUserTripsAsync(string? userId);
     }
 }
