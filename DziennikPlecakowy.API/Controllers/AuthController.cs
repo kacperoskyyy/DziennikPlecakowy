@@ -24,19 +24,30 @@ namespace DziennikPlecakowy.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterRequest userRegisterData)
         {
+            Console.WriteLine("Auth/register");
             try
             {
                 var user = await _userService.GetUserByEmail(userRegisterData.Email);
                 if (user != null)
                 {
+                    Console.WriteLine("User not found");
                     return BadRequest("Użytkownik o podanym adresie email już istnieje.");
                 }
 
                 var result = await _userService.UserRegister(userRegisterData);
-                return result > 0 ? Ok(result) : BadRequest("Nie udało się zarejestrować użytkownika.");
+                if (result > 0)
+                {
+                    Console.WriteLine("User registered with ID: " + result);
+                }
+                else
+                {
+                    Console.WriteLine("User registration failed");
+                }
+                return result > 0 ? Ok(result) : BadRequest("Nie udało się zarejestrować użytkownika."); 
             }
             catch (Exception e)
             {
+                Console.WriteLine("Exception: " + e.Message);
                 return BadRequest("Błąd podczas rejestracji: " + e.Message);
             }
         }
@@ -45,13 +56,21 @@ namespace DziennikPlecakowy.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserAuthRequest userAuthData)
         {
+            Console.WriteLine("Auth/login");
             try
             {
                 var authData = await _authService.Login(userAuthData);
+                if (authData != null) {
+                    Console.WriteLine("User logged in, token: " + authData);
+                } else
+                {
+                    Console.WriteLine("Login failed");
+                }
                 return authData != null ? Ok(authData) : Unauthorized("Nieprawidłowe dane logowania.");
             }
             catch (Exception e)
             {
+                Console.WriteLine("Exception: " + e.Message);
                 return Unauthorized("Błąd logowania: " + e.Message);
             }
         }

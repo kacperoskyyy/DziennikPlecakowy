@@ -13,7 +13,7 @@ namespace DziennikPlecakowy.Services
         {
             _http = new HttpClient
             {
-                BaseAddress = new Uri("https://your.api.url/") //URL API
+                BaseAddress = new Uri("https://localhost:7046/api/") //URL API
             };
         }
 

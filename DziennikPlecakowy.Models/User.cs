@@ -31,7 +31,6 @@ namespace DziennikPlecakowy.Models
     public enum UserRole
     {
         User,
-        SuperUser,
         Admin
     }
 }

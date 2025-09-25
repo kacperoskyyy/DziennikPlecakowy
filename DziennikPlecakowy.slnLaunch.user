@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Apka + API",
+    "Projects": [
+      {
+        "Path": "DziennikPlecakowy.API\\DziennikPlecakowy.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "DziennikPlecakowy\\DziennikPlecakowy.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

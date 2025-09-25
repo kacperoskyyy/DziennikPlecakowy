@@ -1,4 +1,5 @@
-﻿using Microsoft.Maui;
+﻿using DziennikPlecakowy.Views;
+using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
 
@@ -17,7 +18,7 @@ namespace DziennikPlecakowy
             var mauiApp = builder.Build();
             Services = mauiApp.Services;
 
-            MainPage = new AppShell();
+            MainPage = new NavigationPage(new LoginPage());
         }
     }
 }

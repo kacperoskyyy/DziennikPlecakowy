@@ -20,5 +20,6 @@ namespace DziennikPlecakowy.Interfaces
         public Task<int> ChangeName(User user, string newUsername);
         public bool CheckPassword(User user, string password);
         public Task<int> SetLastLogin(string Id);
+        public Task<int> SetAdmin(User user);
     }
 }

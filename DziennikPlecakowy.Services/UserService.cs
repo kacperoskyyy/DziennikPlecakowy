@@ -160,5 +160,21 @@ namespace DziennikPlecakowy.Services
                 return -1;
             }
         }
+        public async Task<int> SetAdmin(User user) { 
+            try
+            {
+                if (!user.Roles.Contains(UserRole.Admin))
+                {
+                    user.Roles.Add(UserRole.Admin);
+                    return await UpdateUser(user);
+                }
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred: {ex.Message}");
+                return -1;
+            }
+        }
     }
 }

@@ -46,7 +46,6 @@ namespace DziennikPlecakowy.Services
                 return null;
             }
         }
-        //TU JEST PROBLEM
         public async Task<User?> GetUserInfoFromToken(string token)
         {
             try

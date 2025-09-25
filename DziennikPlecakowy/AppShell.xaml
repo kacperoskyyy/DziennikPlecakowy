@@ -18,5 +18,5 @@
         <ShellContent Title="Statystyki" ContentTemplate="{DataTemplate views:StatsPage}" />
     </FlyoutItem>
 
-    <MenuItem Text="Wyloguj" Clicked="OnLogoutClicked" IconImageSource="icon_logout.png" />
+    <MenuItem Text="Wyloguj" Clicked="OnLogoutClicked" />
 </Shell>

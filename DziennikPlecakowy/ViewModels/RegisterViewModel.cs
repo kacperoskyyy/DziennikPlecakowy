@@ -24,7 +24,7 @@ namespace DziennikPlecakowy.ViewModels
             var req = new UserRegisterRequest { Email = Email, Username = Username, Password = Password };
             var ok = await _auth.RegisterAsync(req);
             if (ok) await Application.Current.MainPage.DisplayAlert("OK", "Zarejestrowano", "OK");
-            else await Application.Current.MainPage.DisplayAlert("Błąd", "Rejestracja nie powiodła się", "OK");
+            else await Application.Current.MainPage.DisplayAlert("Błąd", "Rejestracja nie powiodła się, spróbuj ponownie później.", "OK");
         }
     }
 }

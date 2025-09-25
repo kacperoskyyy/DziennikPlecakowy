@@ -4,10 +4,9 @@
              Title="Logowanie">
     <StackLayout Padding="20" Spacing="15">
         <Label Text="Dziennik Plecakowy" FontSize="24" HorizontalOptions="Center"/>
-        <Label Text="" TextColor="Red" FontSize="Body" HorizontalOptions="Center" IsVisible="{Binding IsErrorVisible}"/>
         <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email"/>
         <Entry Placeholder="Hasło" Text="{Binding Password}" IsPassword="True"/>
-        <Button Text="Zaloguj" Command="{Binding LoginCommand}"/>
+        <Button Text="Zaloguj" Command="{Binding LoginCommand}" />
         <Button Text="Zarejestruj" Command="{Binding GoRegisterCommand}" BackgroundColor="Transparent" TextColor="{StaticResource PrimaryColor}"/>
     </StackLayout>
 </ContentPage>
