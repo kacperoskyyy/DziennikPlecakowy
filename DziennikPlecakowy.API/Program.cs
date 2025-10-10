@@ -1,4 +1,5 @@
 ﻿using DziennikPlecakowy.Infrastructure;
+using DziennikPlecakowy.Infrastructure;
 using DziennikPlecakowy.Interfaces;
 using DziennikPlecakowy.Models;
 using DziennikPlecakowy.Services;
@@ -42,6 +43,7 @@ builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITripRepository, TripRepository>();
 builder.Services.AddScoped<IUserStatRepository, UserStatRepository>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
 // WAŻNE: Naprawiona rejestracja cyklu (CypherService używa IServiceProvider)
 builder.Services.AddScoped<IUserService, UserService>();

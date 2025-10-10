@@ -13,5 +13,6 @@ namespace DziennikPlecakowy.Interfaces
         IMongoCollection<User> Users { get; }
         IMongoCollection<Trip> Trips { get; }
         IMongoCollection<UserStat> UserStats { get; }
+        IMongoCollection<RefreshToken> RefreshTokens { get; }
     }
 }

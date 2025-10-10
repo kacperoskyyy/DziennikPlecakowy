@@ -10,8 +10,8 @@ namespace DziennikPlecakowy.Interfaces
 {
     public interface IAuthService
     {
-        public Task<string> Login(UserAuthRequest userAuthData);
-        public Task<User> GetUserInfoFromToken(string token);
-        public Task<bool> RegisterAsync(UserRegisterRequest request);
+        Task<bool> RegisterAsync(UserRegisterRequest request);
+        Task<AuthResponse?> Login(UserAuthRequest userAuthData);
+        Task<AuthResponse?> RefreshTokenAsync(string refreshToken);
     }
 }

@@ -3,6 +3,7 @@ using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
 
 namespace DziennikPlecakowy.API.Controllers
 {
@@ -31,14 +32,12 @@ namespace DziennikPlecakowy.API.Controllers
 
                 if (success)
                 {
-                    _logger.LogInformation("User registration successful for email {Email}.", request.Email);
                     return Ok(new { Message = "Rejestracja zakończona pomyślnie." });
                 }
 
-                _logger.LogWarning("User registration failed for email {Email}.", request.Email);
                 return BadRequest("Rejestracja nie powiodła się. Sprawdź, czy email nie jest już zajęty.");
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 _logger.LogError(e, "Unexpected error during registration for email {Email}.", request.Email);
                 return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
@@ -53,20 +52,57 @@ namespace DziennikPlecakowy.API.Controllers
 
             try
             {
-                var token = await _authService.Login(userAuthData);
+                var authResponse = await _authService.Login(userAuthData);
 
-                if (token != null)
+                if (authResponse != null)
                 {
                     _logger.LogInformation("User logged in successfully with email {Email}.", userAuthData.Email);
-                    return Ok(new { Token = token, Message = "Pomyślnie zalogowano." });
+                    return Ok(new
+                    {
+                        Token = authResponse.Token,
+                        RefreshToken = authResponse.RefreshToken,
+                        Message = "Pomyślnie zalogowano."
+                    });
                 }
 
-                _logger.LogWarning("Login failed for email {Email}. Invalid credentials.", userAuthData.Email);
                 return Unauthorized("Nieprawidłowy login lub hasło.");
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 _logger.LogError(e, "Unexpected error during login for email {Email}.", userAuthData.Email);
+                return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request)
+        {
+            _logger.LogInformation("Endpoint: POST api/Auth/refresh invoked.");
+
+            if (request == null || string.IsNullOrEmpty(request.RefreshToken))
+            {
+                return BadRequest("Refresh token jest wymagany.");
+            }
+
+            try
+            {
+                var authResponse = await _authService.RefreshTokenAsync(request.RefreshToken);
+
+                if (authResponse != null)
+                {
+                    return Ok(new
+                    {
+                        Token = authResponse.Token,
+                        RefreshToken = authResponse.RefreshToken
+                    });
+                }
+
+                return Unauthorized("Nieprawidłowy lub wygasły refresh token.");
+            }
+            catch (System.Exception e)
+            {
+                _logger.LogError(e, "Unexpected error during token refresh.");
                 return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
         }

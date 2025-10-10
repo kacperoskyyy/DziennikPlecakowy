@@ -23,5 +23,6 @@ namespace DziennikPlecakowy.Infrastructure
         public IMongoCollection<User> Users => _database.GetCollection<User>("Users");
         public IMongoCollection<Trip> Trips => _database.GetCollection<Trip>("Trips");
         public IMongoCollection<UserStat> UserStats => _database.GetCollection<UserStat>("UserStats");
+        public IMongoCollection<RefreshToken> RefreshTokens => _database.GetCollection<RefreshToken>("RefreshTokens");
     }
 }
