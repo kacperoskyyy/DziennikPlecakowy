@@ -6,14 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DziennikPlecakowy.Models;
+using DziennikPlecakowy.Interfaces;
 
-namespace DziennikPlecakowy.Shared
+namespace DziennikPlecakowy.Infrastructure
 {
-    public class DziennikPlecakowyDbContext
+    public class MongoDbContext : IMongoDbContext
     {
         private readonly IMongoDatabase _database;
 
-        public DziennikPlecakowyDbContext(IConfiguration configuration)
+        public MongoDbContext(IConfiguration configuration)
         {
             var client = new MongoClient(configuration["MongoDB:ConnectionString"]);
             _database = client.GetDatabase(configuration["MongoDB:DatabaseName"]);

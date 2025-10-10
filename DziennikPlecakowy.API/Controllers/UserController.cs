@@ -1,236 +1,233 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Interfaces;
 using DziennikPlecakowy.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Microsoft.Extensions.Logging;
 
 namespace DziennikPlecakowy.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "User, Admin")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly IAuthService _authService;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(IUserService userService, IAuthService authService)
+        public UserController(IUserService userService, ILogger<UserController> logger)
         {
             _userService = userService;
-            _authService = authService;
+            _logger = logger;
         }
 
         private string? GetUserIdFromToken()
         {
-            return User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
-        // --- AUTH ---
-        [AllowAnonymous]
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] UserRegisterRequest userRegisterData)
+        [HttpPut("changeName")]
+        public async Task<IActionResult> ChangeName([FromBody] UserChangeNameRequest request)
         {
+            _logger.LogInformation("Endpoint: PUT api/User/changeName invoked.");
+
+            var userId = GetUserIdFromToken();
+            if (userId == null) return Unauthorized();
+
             try
             {
-                var user = await _userService.GetUserByEmail(userRegisterData.Email);
-                if (user != null)
+                var success = await _userService.ChangeUsernameAsync(userId, request.NewUsername);
+
+                if (success)
                 {
-                    return BadRequest("Użytkownik o podanym adresie email już istnieje.");
+                    _logger.LogInformation("Username updated successfully for user {UserId}.", userId);
+                    return Ok(new { Message = "Nazwa użytkownika została pomyślnie zmieniona." });
                 }
 
-                var result = await _userService.UserRegister(userRegisterData);
-                return result > 0 ? Ok(result) : BadRequest("Nie udało się zarejestrować użytkownika.");
+                _logger.LogWarning("Failed to update username for user {UserId}.", userId);
+                return BadRequest("Nie udało się zaktualizować nazwy użytkownika. Użytkownik nie istnieje lub nazwa jest zajęta.");
             }
             catch (Exception e)
             {
-                return BadRequest("Błąd podczas rejestracji: " + e.Message);
+                _logger.LogError(e, "Error during changeName for user {UserId}.", userId);
+                return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
         }
 
-        [AllowAnonymous]
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UserAuthRequest userAuthData)
-        {
-            try
-            {
-                var authData = await _authService.Login(userAuthData);
-                return authData != null ? Ok(authData) : Unauthorized("Nieprawidłowe dane logowania.");
-            }
-            catch (Exception e)
-            {
-                return Unauthorized("Błąd logowania: " + e.Message);
-            }
-        }
-
-        // --- USER ACTIONS ---
-        [Authorize(Roles = "User, SuperUser, Admin")]
-        [HttpPut("changeName")]
-        public async Task<IActionResult> UpdateName([FromBody] UserChangeNameRequest userChangeName)
-        {
-            try
-            {
-                var userId = GetUserIdFromToken();
-                if (string.IsNullOrEmpty(userId))
-                    return Unauthorized("Brak Id użytkownika w tokenie.");
-
-                var user = await _userService.GetUserById(userId);
-                if (user == null) return NotFound("Nie znaleziono użytkownika.");
-
-                user.Username = userChangeName.NewUsername;
-                var result = await _userService.UpdateUser(user);
-                return result > 0 ? Ok(result) : BadRequest("Nie udało się zaktualizować nazwy użytkownika.");
-            }
-            catch (Exception e)
-            {
-                return BadRequest("Błąd: " + e.Message);
-            }
-        }
-
-        [Authorize(Roles = "User, SuperUser, Admin")]
         [HttpPut("changePassword")]
-        public async Task<IActionResult> ChangePassword([FromBody] UserChangePasswordRequest userChangePassword)
+        public async Task<IActionResult> ChangePassword([FromBody] UserChangePasswordRequest request)
         {
+            _logger.LogInformation("Endpoint: PUT api/User/changePassword invoked.");
+
+            var userId = GetUserIdFromToken();
+            if (userId == null) return Unauthorized();
+
             try
             {
-                var userId = GetUserIdFromToken();
-                if (string.IsNullOrEmpty(userId))
-                    return Unauthorized("Brak Id użytkownika w tokenie.");
+                var success = await _userService.ChangePasswordAsync(userId, request.Password, request.NewPassword);
 
-                var user = await _userService.GetUserById(userId);
-                if (user == null) return NotFound("Nie znaleziono użytkownika.");
+                if (success)
+                {
+                    _logger.LogInformation("Password changed successfully for user {UserId}.", userId);
+                    return Ok(new { Message = "Hasło zostało pomyślnie zmienione." });
+                }
 
-                if (!_userService.CheckPassword(user, userChangePassword.Password))
-                    return Unauthorized("Nieprawidłowe hasło.");
-
-                var result = await _userService.ChangePassword(user, userChangePassword.NewPassword);
-                return result > 0 ? Ok(result) : BadRequest("Nie udało się zmienić hasła.");
+                _logger.LogWarning("Failed to change password for user {UserId}.", userId);
+                return Unauthorized("Nieprawidłowe hasło lub nie udało się zmienić hasła.");
             }
             catch (Exception e)
             {
-                return BadRequest("Błąd: " + e.Message);
+                _logger.LogError(e, "Error during changePassword for user {UserId}.", userId);
+                return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
         }
 
-        [Authorize(Roles = "User, SuperUser, Admin")]
         [HttpPut("changeEmail")]
-        public async Task<IActionResult> ChangeEmail([FromBody] UserChangeEmailRequest userChangeEmail)
+        public async Task<IActionResult> ChangeEmail([FromBody] UserChangeEmailRequest request)
         {
+            _logger.LogInformation("Endpoint: PUT api/User/changeEmail invoked.");
+
+            var userId = GetUserIdFromToken();
+            if (userId == null) return Unauthorized();
+
             try
             {
-                var userId = GetUserIdFromToken();
-                if (string.IsNullOrEmpty(userId))
-                    return Unauthorized("Brak Id użytkownika w tokenie.");
+                var success = await _userService.ChangeEmailAsync(userId, request.NewEmail);
 
-                var user = await _userService.GetUserById(userId);
-                if (user == null) return NotFound("Nie znaleziono użytkownika.");
+                if (success)
+                {
+                    _logger.LogInformation("Email updated successfully for user {UserId}.", userId);
+                    return Ok(new { Message = "Email został pomyślnie zmieniony." });
+                }
 
-                var result = await _userService.ChangeEmail(user, userChangeEmail.NewEmail);
-                return result > 0 ? Ok(result) : BadRequest("Nie udało się zaktualizować emaila.");
+                _logger.LogWarning("Failed to update email for user {UserId}.", userId);
+                return BadRequest("Nie udało się zaktualizować emaila. Użytkownik nie istnieje lub email jest zajęty.");
             }
             catch (Exception e)
             {
-                return BadRequest("Błąd: " + e.Message);
+                _logger.LogError(e, "Error during changeEmail for user {UserId}.", userId);
+                return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
         }
 
-        [Authorize(Roles = "User, SuperUser, Admin")]
         [HttpDelete("delete")]
         public async Task<IActionResult> DeleteUser()
         {
+            _logger.LogInformation("Endpoint: DELETE api/User/delete invoked.");
+
+            var userId = GetUserIdFromToken();
+            if (userId == null) return Unauthorized();
+
             try
             {
-                var userId = GetUserIdFromToken();
-                if (string.IsNullOrEmpty(userId))
-                    return Unauthorized("Brak Id użytkownika w tokenie.");
+                var success = await _userService.DeleteUserAsync(userId);
 
-                var user = await _userService.GetUserById(userId);
-                if (user == null) return NotFound("Nie znaleziono użytkownika.");
+                if (success)
+                {
+                    _logger.LogInformation("User {UserId} deleted successfully.", userId);
+                    return Ok(new { Message = "Użytkownik został pomyślnie usunięty." });
+                }
 
-                var result = await _userService.DeleteUser(user);
-                return result > 0 ? Ok(result) : BadRequest("Nie udało się usunąć użytkownika.");
+                _logger.LogWarning("Failed to delete user {UserId}.", userId);
+                return NotFound("Nie udało się usunąć użytkownika. Nie znaleziono użytkownika.");
             }
             catch (Exception e)
             {
-                return BadRequest("Błąd: " + e.Message);
+                _logger.LogError(e, "Error during delete user {UserId}.", userId);
+                return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
         }
 
-        [Authorize(Roles = "User, SuperUser, Admin")]
-        [HttpPost("setLastLogin")]
+        [HttpGet("setLastLogin")]
         public async Task<IActionResult> SetLastLogin()
         {
+            _logger.LogInformation("Endpoint: GET api/User/setLastLogin invoked.");
+
+            var userId = GetUserIdFromToken();
+            if (userId == null) return Unauthorized();
+
             try
             {
-                var userId = GetUserIdFromToken();
-                if (string.IsNullOrEmpty(userId))
-                    return Unauthorized("Brak Id użytkownika w tokenie.");
-
                 var result = await _userService.SetLastLogin(userId);
-                return result > 0 ? Ok(result) : BadRequest("Nie udało się zaktualizować daty ostatniego logowania.");
+
+                if (result > 0)
+                {
+                    _logger.LogInformation("Last login date updated successfully for user {UserId}.", userId);
+                    return Ok(new { Message = "Data ostatniego logowania zaktualizowana." });
+                }
+
+                _logger.LogWarning("Failed to update last login date for user {UserId}.", userId);
+                return NotFound("Nie udało się zaktualizować daty ostatniego logowania.");
             }
             catch (Exception e)
             {
-                return BadRequest("Błąd: " + e.Message);
+                _logger.LogError(e, "Error during setLastLogin for user {UserId}.", userId);
+                return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
         }
 
-        // --- ROLE MANAGEMENT ---
+        [HttpPut("makeAdmin/{targetUserId}")]
         [Authorize(Roles = "Admin")]
-        [HttpPut("makeAdmin")]
-        public async Task<IActionResult> ChangeRole([FromBody] string Id)
+        public async Task<IActionResult> MakeAdminAsync(string targetUserId)
         {
+            _logger.LogInformation("Endpoint: PUT api/User/makeAdmin invoked by Admin {AdminId} for user {TargetId}.", GetUserIdFromToken(), targetUserId);
+
             try
             {
-                var user = await _userService.GetUserById(Id);
-                if (user == null) return NotFound("Nie znaleziono użytkownika.");
+                var user = await _userService.GetUserById(targetUserId);
+                if (user == null)
+                {
+                    _logger.LogWarning("MakeAdmin failed: Target user {TargetId} not found.", targetUserId);
+                    return NotFound("Nie znaleziono użytkownika docelowego.");
+                }
 
-                if (!user.Roles.Contains(UserRole.Admin))
-                    user.Roles.Add(UserRole.Admin);
+                var result = await _userService.SetAdmin(user);
 
-                var result = await _userService.UpdateUser(user);
-                return result > 0 ? Ok(result) : BadRequest("Nie udało się ustawić roli Admin.");
+                if (result > 0)
+                {
+                    _logger.LogInformation("User {TargetId} successfully granted Admin role.", targetUserId);
+                    return Ok(new { Message = "Rola administratora pomyślnie nadana." });
+                }
+
+                _logger.LogWarning("MakeAdmin failed for user {TargetId}.", targetUserId);
+                return BadRequest("Nie udało się potwierdzić roli Admin.");
             }
             catch (Exception e)
             {
-                return Unauthorized("Błąd: " + e.Message);
+                _logger.LogError(e, "Error during makeAdmin for user {TargetId}.", targetUserId);
+                return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
         }
 
+        [HttpGet("checkAdmin/{targetUserId}")]
         [Authorize(Roles = "Admin")]
-        [HttpPut("setSuperUser")]
-        public async Task<IActionResult> SetSuperUser([FromBody] string Id)
+        public async Task<IActionResult> CheckAdminAsync(string targetUserId)
         {
+            _logger.LogInformation("Endpoint: GET api/User/checkAdmin invoked by Admin {AdminId} for user {TargetId}.", GetUserIdFromToken(), targetUserId);
+
             try
             {
-                var user = await _userService.GetUserById(Id);
+                var user = await _userService.GetUserById(targetUserId);
                 if (user == null) return NotFound("Nie znaleziono użytkownika.");
 
-                if (!user.Roles.Contains(UserRole.SuperUser))
-                    user.Roles.Add(UserRole.SuperUser);
+                var isAdmin = user.Roles.Contains(UserRole.Admin);
 
-                var result = await _userService.UpdateUser(user);
-                return result > 0 ? Ok(result) : BadRequest("Nie udało się ustawić roli SuperUser.");
+                if (isAdmin)
+                {
+                    _logger.LogInformation("User {TargetId} is an Admin.", targetUserId);
+                    return Ok(new { IsAdmin = true, Message = "Użytkownik ma rolę Admina." });
+                }
+
+                _logger.LogInformation("User {TargetId} is NOT an Admin.", targetUserId);
+                return Ok(new { IsAdmin = false, Message = "Użytkownik nie ma roli Admina." });
+
             }
             catch (Exception e)
             {
-                return Unauthorized("Błąd: " + e.Message);
+                _logger.LogError(e, "Error during checkAdmin for user {TargetId}.", targetUserId);
+                return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
-        }
-
-        // --- SIMPLE ROLE CHECKS ---
-        [Authorize(Roles = "Admin")]
-        [HttpGet("checkAdmin")]
-        public IActionResult CheckAdmin()
-        {
-            return Ok(true);
-        }
-
-        [Authorize(Roles = "SuperUser")]
-        [HttpGet("checkSuperUser")]
-        public IActionResult CheckSuperUser()
-        {
-            return Ok(true);
         }
     }
 }

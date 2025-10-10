@@ -1,3 +1,5 @@
+using DziennikPlecakowy.ViewModels;
+
 namespace DziennikPlecakowy.Views
 {
     public partial class LoginPage : ContentPage
@@ -5,7 +7,7 @@ namespace DziennikPlecakowy.Views
         public LoginPage()
         {
             InitializeComponent();
-            BindingContext = App.Current.Services.GetService<LoginViewModel>();
+            BindingContext = App.Services.GetService<LoginViewModel>();
         }
     }
 }

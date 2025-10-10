@@ -1,0 +1,14 @@
+﻿// DziennikPlecakowy.Interfaces/IUserRepository.cs
+using DziennikPlecakowy.Models;
+
+namespace DziennikPlecakowy.Interfaces
+{
+    public interface IUserRepository
+    {
+        Task AddAsync(User user);
+        Task<User?> GetByIdAsync(string id);
+        Task<User?> GetByEncryptedEmailAsync(string encryptedEmail);
+        Task<bool> UpdateAsync(User user);
+        Task<bool> DeleteAsync(string id);
+    }
+}

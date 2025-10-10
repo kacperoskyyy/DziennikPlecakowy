@@ -9,7 +9,7 @@ namespace DziennikPlecakowy.Views
         public ProfilePage()
         {
             InitializeComponent();
-            BindingContext = App.Current.Services.GetService<ProfileViewModel>();
+            BindingContext = App.Services.GetService<ProfileViewModel>();
         }
     }
 }

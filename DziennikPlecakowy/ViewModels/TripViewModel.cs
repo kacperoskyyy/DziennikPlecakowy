@@ -1,19 +1,21 @@
 ﻿using System.Windows.Input;
 using DziennikPlecakowy.Interfaces;
+using DziennikPlecakowy.Services;
 using Microsoft.Maui.Controls;
 
 namespace DziennikPlecakowy.ViewModels
 {
     public class TripViewModel : BaseViewModel
     {
-        private readonly ITripService _tripService;
+        private readonly TripServiceClient _tripService;
         private bool _isTracking;
         public string Status { get; set; } = "Nie śledzisz";
         public string StartButtonText => _isTracking ? "Zakończ" : "Start";
 
         public ICommand ToggleCommand { get; }
+        public TimeOnly Duration { get; set; } = TimeOnly.FromTimeSpan(TimeSpan.Zero);
 
-        public TripViewModel(ITripService tripService)
+        public TripViewModel(TripServiceClient tripService)
         {
             _tripService = tripService;
             ToggleCommand = new Command(async () => await ToggleAsync());
@@ -25,7 +27,7 @@ namespace DziennikPlecakowy.ViewModels
             {
                 _isTracking = false;
                 Status = "Zakończono";
-                await _tripService.StopAndSaveAsync("dummy");
+                await _tripService.StopAndSaveAsync(SecureStorage.Default.GetAsync("userId").Result);
             }
             else
             {

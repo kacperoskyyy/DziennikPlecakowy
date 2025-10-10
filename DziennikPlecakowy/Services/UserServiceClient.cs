@@ -4,7 +4,7 @@ using DziennikPlecakowy.DTO;
 
 namespace DziennikPlecakowy.Services
 {
-    public class UserServiceClient : IUserService
+    public class UserServiceClient
     {
         private readonly ApiServiceClient _api;
         public UserServiceClient(ApiServiceClient api) { _api = api; }

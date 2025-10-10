@@ -1,9 +1,11 @@
+using DziennikPlecakowy.Infrastructure;
 using DziennikPlecakowy.Interfaces;
+using DziennikPlecakowy.Models;
 using DziennikPlecakowy.Services;
-using DziennikPlecakowy.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -59,7 +61,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddSingleton<DziennikPlecakowyDbContext>();
+builder.Services.AddSingleton<IMongoDbContext,MongoDbContext>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -67,7 +69,34 @@ builder.Services.AddScoped<IHashService, HashService>();
 builder.Services.AddScoped<ICypherService, CypherService>();
 builder.Services.AddScoped<ITripService, TripService>();
 
+builder.Services.AddScoped<ITripRepository, TripRepository>();
+builder.Services.AddScoped<IUserStatRepository, UserStatRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 var app = builder.Build();
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<IMongoDbContext>();
+
+    // --- 1. Indeks dla U¿ytkowników (Kolekcja "Users") ---
+    // Indeks: Email (Unikalny i Rosn¹cy) - Kluczowy dla logowania i rejestracji
+    var userKeys = Builders<User>.IndexKeys.Ascending(u => u.Email);
+    var userIndexModel = new CreateIndexModel<User>(userKeys, new CreateIndexOptions { Unique = true, Name = "EmailUniqueIndex" });
+    dbContext.Users.Indexes.CreateOne(userIndexModel);
+
+    // --- 2. Indeks dla Wycieczek (Kolekcja "Trips") ---
+    // Indeks: UserId (Rosn¹cy) - Kluczowy dla szybkiego pobierania historii wycieczek
+    var tripUserKeys = Builders<Trip>.IndexKeys.Ascending(t => t.UserId);
+    var tripUserIndexModel = new CreateIndexModel<Trip>(tripUserKeys, new CreateIndexOptions { Name = "TripUserIdIndex" });
+    dbContext.Trips.Indexes.CreateOne(tripUserIndexModel);
+
+    // --- 3. Indeks dla Statystyk (Kolekcja "UserStats") ---
+    // Indeks: UserId (Unikalny) - Kluczowy dla szybkiej aktualizacji statystyk
+    var statsUserKeys = Builders<UserStat>.IndexKeys.Ascending(s => s.UserId);
+    var statsUserIndexModel = new CreateIndexModel<UserStat>(statsUserKeys, new CreateIndexOptions { Unique = true, Name = "StatsUserIdIndex" });
+    dbContext.UserStats.Indexes.CreateOne(statsUserIndexModel);
+});
 
 if (app.Environment.IsDevelopment())
 {

@@ -4,6 +4,7 @@
              Title="Nowa wycieczka">
     <StackLayout Padding="20" Spacing="15">
         <Label Text="{Binding Status}" />
+        <Label Text="Czas trwania: {Binding Duration}" />
         <Button Text="{Binding StartButtonText}" Command="{Binding ToggleCommand}" />
     </StackLayout>
 </ContentPage>

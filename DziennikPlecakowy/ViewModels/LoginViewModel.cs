@@ -1,41 +1,71 @@
 ﻿using System.Windows.Input;
 using DziennikPlecakowy.Interfaces;
 using DziennikPlecakowy.DTO;
+using DziennikPlecakowy.Views;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
+using DziennikPlecakowy.Services;
+using ReactiveUI;
+using System.Reactive;
 
 namespace DziennikPlecakowy.ViewModels
 {
     public class LoginViewModel : BaseViewModel
     {
-        private readonly IAuthService _auth;
-        public string Email { get; set; }
-        public string Password { get; set; }
+        private readonly  AuthServiceClient _auth;
+        private string _email;
+        private string _password;
+        public string Email 
+        {
+            get => _email; 
+            set => SetProperty(ref _email, value);
+        }
+        public string Password
+        { 
+            get => _password;
+            set => SetProperty(ref _password, value);
+        }
 
-        public ICommand LoginCommand { get; }
-        public ICommand GoRegisterCommand { get; }
+        public ReactiveCommand<Unit,Unit> LoginCommand { get; }
+        public ReactiveCommand<Unit, Unit> GoRegisterCommand { get; }
 
-        public LoginViewModel(IAuthService auth)
+        public LoginViewModel(AuthServiceClient auth)
         {
             _auth = auth;
-            LoginCommand = new Command(async () => await LoginAsync());
-            GoRegisterCommand = new Command(async () => await Application.Current.MainPage.Navigation.PushAsync(new Views.RegisterPage()));
+            LoginCommand = ReactiveCommand.CreateFromTask(LoginAsync);
+            GoRegisterCommand = ReactiveCommand.CreateFromTask(GoRegisterAsync);
         }
 
         private async Task LoginAsync()
         {
-            var req = new UserAuthRequest { Email = Email, Password = Password };
-            var res = await _auth.LoginAsync(req);
-            if (res != null)
+            if (string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(Password))
             {
-                // ustaw token i przejscie do shell
-                await SecureStorage.Default.SetAsync("auth_token", res.Token);
-                Application.Current.MainPage = new AppShell();
+                await Application.Current.MainPage.DisplayAlert("Błąd", "Aby się zalogować wprowadź email oraz hasło", "OK");
             }
             else
             {
-                await Application.Current.MainPage.DisplayAlert("Błąd", "Niepoprawne dane", "OK");
+                var req = new UserAuthRequest { Email = Email, Password = Password };
+                var res = await _auth.LoginAsync(req);
+                if (res != null)
+                {
+                    await SecureStorage.Default.SetAsync("auth_token", res);
+                    Application.Current.MainPage = new NavigationPage(new TripPage());
+                }
+                else
+                {
+                    await Application.Current.MainPage.DisplayAlert("Błąd", "Uzytkownik nie istnieje lub wprowadzono niepoprawne hasło", "OK");
+                }
             }
+        }
+        private async Task GoRegisterAsync()
+        {
+            if (Application.Current?.MainPage == null)
+            {
+                await Application.Current.MainPage.DisplayAlert("Błąd", "Nie można otworzyć strony rejestracji, brak głównej strony aplikacji.", "OK");
+                return;
+            }
+            Application.Current.MainPage = new RegisterPage();
+            await Task.CompletedTask;
         }
     }
 }

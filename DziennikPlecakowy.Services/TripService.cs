@@ -1,83 +1,112 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DziennikPlecakowy.Models;
-using DziennikPlecakowy.Shared;
 using DziennikPlecakowy.Interfaces;
-using DziennikPlecakowy.DTO;
-using MongoDB.Driver;
 
 namespace DziennikPlecakowy.Services
 {
+    public class UnauthorizedTripModificationException : Exception
+    {
+        public UnauthorizedTripModificationException(string message) : base(message) { }
+    }
+
     public class TripService : ITripService
     {
-        private readonly DziennikPlecakowyDbContext _context;
+        private readonly ITripRepository _tripRepository;
+        private readonly IUserStatRepository _userStatRepository;
 
-        // Konstruktor
-        public TripService(DziennikPlecakowyDbContext context)
+        public TripService(ITripRepository tripRepository, IUserStatRepository userStatRepository)
         {
-            _context = context;
+            _tripRepository = tripRepository;
+            _userStatRepository = userStatRepository;
         }
 
-        // Dodawanie wycieczki
-        public async Task<int> AddTrip(Trip trip)
+        public async Task<bool> AddTripAsync(Trip trip)
         {
-            try
+            if (trip == null) return false;
+
+            await _tripRepository.AddAsync(trip);
+
+            var stats = await _userStatRepository.GetByUserIdAsync(trip.UserId);
+
+            if (stats != null)
             {
-                await _context.Trips.InsertOneAsync(trip);
-                return 1; // Zwróć 1, aby wskazać sukces
+                stats.TripsCount++;
+                stats.TotalDistance += trip.Distance;
+                stats.TotalDuration += trip.Duration;
+                stats.TotalElevationGain += trip.ElevationGain;
+                stats.TotalSteps += trip.Steps;
+
+                await _userStatRepository.UpdateAsync(stats);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return -1;
-            }
+
+            return true;
         }
 
-        // Aktualizacja wycieczki
-        public async Task<int> UpdateTrip(Trip trip)
+        public async Task<bool> UpdateTripAsync(Trip trip, string userId)
         {
-            try
+            Trip? existingTrip = await _tripRepository.GetByIdAsync(trip.Id);
+
+            if (existingTrip == null)
             {
-                var result = await _context.Trips.ReplaceOneAsync(t => t.Id == trip.Id, trip);
-                return result.ModifiedCount > 0 ? 1 : -1;
+                return false;
             }
-            catch (Exception ex)
+
+            if (existingTrip.UserId != userId)
             {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return -1;
+                throw new UnauthorizedTripModificationException(
+                    $"Użytkownik {userId} próbował zaktualizować wycieczkę {trip.Id} należącą do innego użytkownika."
+                );
             }
+
+            trip.UserId = userId;
+
+            var result = await _tripRepository.UpdateAsync(trip);
+
+            return result;
         }
 
-        // Usuwanie wycieczki
-        public async Task<int> DeleteTrip(string tripId)
+        public async Task<bool> DeleteTripAsync(string tripId, string userId)
         {
-            try
+            Trip? existingTrip = await _tripRepository.GetByIdAsync(tripId);
+
+            if (existingTrip == null)
             {
-                var result = await _context.Trips.DeleteOneAsync(t => t.Id == tripId);
-                return result.DeletedCount > 0 ? 1 : -1;
+                return false;
             }
-            catch (Exception ex)
+
+            if (existingTrip.UserId != userId)
             {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return -1;
+                throw new UnauthorizedTripModificationException(
+                    $"Użytkownik {userId} próbował usunąć wycieczkę {tripId} należącą do innego użytkownika."
+                );
             }
+
+            var result = await _tripRepository.DeleteAsync(tripId);
+
+            if (result)
+            {
+                var stats = await _userStatRepository.GetByUserIdAsync(userId);
+                if (stats != null)
+                {
+                    stats.TripsCount--;
+                    stats.TotalDistance -= existingTrip.Distance;
+                    stats.TotalDuration -= existingTrip.Duration;
+                    stats.TotalElevationGain -= existingTrip.ElevationGain;
+                    stats.TotalSteps -= existingTrip.Steps;
+
+                    await _userStatRepository.UpdateAsync(stats);
+                }
+            }
+
+            return result;
         }
 
-        // Wycieczki użytkownika
-        public async Task<List<Trip>> GetUserTrips(AuthData auth)
+        public async Task<IEnumerable<Trip>> GetUserTripsAsync(string userId)
         {
-            try
-            {
-                return await _context.Trips.Find(t => t.UserId == auth.UserId).ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return null;
-            }
+            return await _tripRepository.GetByUserAsync(userId);
         }
     }
 }

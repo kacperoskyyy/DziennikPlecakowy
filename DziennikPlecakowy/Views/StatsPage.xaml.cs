@@ -9,7 +9,7 @@ namespace DziennikPlecakowy.Views
         public StatsPage()
         {
             InitializeComponent();
-            BindingContext = App.Current.Services.GetService<StatsViewModel>();
+            BindingContext = App.Services.GetService<StatsViewModel>();
         }
     }
 }

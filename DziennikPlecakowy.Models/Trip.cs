@@ -13,6 +13,9 @@ namespace DziennikPlecakowy.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string UserId { get; set; }
 
+        [BsonElement("tripName")]
+        public string Name { get; set; }
+
         [BsonElement("tripDate")]
         public DateTime TripDate { get; set; }
 
@@ -24,6 +27,12 @@ namespace DziennikPlecakowy.Models
 
         [BsonElement("geopointList")]
         public GeoPoint[] GeoPointList { get; set; }
+
+        [BsonElement("elevationGain")]
+        public double ElevationGain { get; set; }
+
+        [BsonElement("steps")]
+        public int Steps { get; set; } // DODAJ
 
     }
 }
