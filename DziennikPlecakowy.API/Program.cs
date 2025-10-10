@@ -10,13 +10,13 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 1. Konfiguracja i Usługi
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddSwaggerGen(c =>
 {
+    // ... Konfiguracja Swaggera (bez zmian)
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "DziennikPlecakowy API", Version = "v1" });
-
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "Wprowadź token JWT po zalogowaniu",
@@ -25,7 +25,6 @@ builder.Services.AddSwaggerGen(c =>
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
-
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -38,9 +37,20 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Rejestracja Usług (Repozytoria, Serwisy)
+builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITripRepository, TripRepository>();
+builder.Services.AddScoped<IUserStatRepository, UserStatRepository>();
 
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+// WAŻNE: Naprawiona rejestracja cyklu (CypherService używa IServiceProvider)
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IHashService, HashService>();
+builder.Services.AddScoped<ICypherService, CypherService>();
+builder.Services.AddScoped<ITripService, TripService>();
 
+// 2. Konfiguracja Uwierzytelniania JWT
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -48,57 +58,50 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
+    // Klucz musi być pobrany w postaci tablicy bajtów
+    var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
+
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
 
+        // Używamy silnie typowanych wartości
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+
+        ClockSkew = TimeSpan.Zero // Brak tolerancji czasu
     };
 });
 
-builder.Services.AddSingleton<IMongoDbContext,MongoDbContext>();
-
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IHashService, HashService>();
-builder.Services.AddScoped<ICypherService, CypherService>();
-builder.Services.AddScoped<ITripService, TripService>();
-
-builder.Services.AddScoped<ITripRepository, TripRepository>();
-builder.Services.AddScoped<IUserStatRepository, UserStatRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-
+// 3. Konfiguracja Pipeline
 var app = builder.Build();
+
+// Rejestracja Indeksów MongoDB (Sekcja startowa)
 app.Lifetime.ApplicationStarted.Register(() =>
 {
     var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<IMongoDbContext>();
 
-    // --- 1. Indeks dla Użytkowników (Kolekcja "Users") ---
-    // Indeks: Email (Unikalny i Rosnący) - Kluczowy dla logowania i rejestracji
+    // Indeks dla Użytkowników: Email (Unikalny)
     var userKeys = Builders<User>.IndexKeys.Ascending(u => u.Email);
     var userIndexModel = new CreateIndexModel<User>(userKeys, new CreateIndexOptions { Unique = true, Name = "EmailUniqueIndex" });
     dbContext.Users.Indexes.CreateOne(userIndexModel);
 
-    // --- 2. Indeks dla Wycieczek (Kolekcja "Trips") ---
-    // Indeks: UserId (Rosnący) - Kluczowy dla szybkiego pobierania historii wycieczek
+    // Indeks dla Wycieczek: UserId
     var tripUserKeys = Builders<Trip>.IndexKeys.Ascending(t => t.UserId);
     var tripUserIndexModel = new CreateIndexModel<Trip>(tripUserKeys, new CreateIndexOptions { Name = "TripUserIdIndex" });
     dbContext.Trips.Indexes.CreateOne(tripUserIndexModel);
 
-    // --- 3. Indeks dla Statystyk (Kolekcja "UserStats") ---
-    // Indeks: UserId (Unikalny) - Kluczowy dla szybkiej aktualizacji statystyk
+    // Indeks dla Statystyk: UserId (Unikalny)
     var statsUserKeys = Builders<UserStat>.IndexKeys.Ascending(s => s.UserId);
     var statsUserIndexModel = new CreateIndexModel<UserStat>(statsUserKeys, new CreateIndexOptions { Unique = true, Name = "StatsUserIdIndex" });
     dbContext.UserStats.Indexes.CreateOne(statsUserIndexModel);
 });
+
 
 if (app.Environment.IsDevelopment())
 {
@@ -106,14 +109,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "DziennikPlecakowy API v1");
-        c.OAuthClientId("swagger-ui");
-        c.OAuthAppName("DziennikPlecakowy API - Swagger");
     });
 }
 
 app.UseHttpsRedirection();
-
 app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
