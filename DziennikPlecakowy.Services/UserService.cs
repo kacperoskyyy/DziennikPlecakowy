@@ -30,16 +30,30 @@ namespace DziennikPlecakowy.Services
             user.Username = _cypherService.Decrypt(user.Username);
         }
 
+        private async Task<bool> EncryptAndSaveUserAsync(User user)
+        {
+            user.Email = _cypherService.Encrypt(user.Email.ToLower());
+            user.Username = _cypherService.Encrypt(user.Username);
+
+            var success = await _userRepository.UpdateAsync(user);
+
+            if (success)
+            {
+                DecryptUser(user);
+            }
+
+            return success;
+        }
+
+        // --- Zarządzanie Kontem ---
+
         public async Task<bool> ChangeUsernameAsync(string userId, string newUsername)
         {
             User? user = await _userRepository.GetByIdAsync(userId);
             if (user == null) return false;
 
-            user.Username = _cypherService.Encrypt(newUsername);
-            var success = await _userRepository.UpdateAsync(user);
-
-            if (success) DecryptUser(user);
-            return success;
+            user.Username = newUsername;
+            return await EncryptAndSaveUserAsync(user);
         }
 
         public async Task<bool> ChangeEmailAsync(string userId, string newEmail)
@@ -55,11 +69,8 @@ namespace DziennikPlecakowy.Services
                 return false;
             }
 
-            user.Email = encryptedNewEmail;
-            var success = await _userRepository.UpdateAsync(user);
-
-            if (success) DecryptUser(user);
-            return success;
+            user.Email = newEmail;
+            return await EncryptAndSaveUserAsync(user);
         }
 
         public async Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword)
@@ -73,7 +84,10 @@ namespace DziennikPlecakowy.Services
             }
 
             user.HashedPassword = _hash.Hash(newPassword);
-            return await _userRepository.UpdateAsync(user);
+
+            var success = await _userRepository.UpdateAsync(user);
+            if (success) DecryptUser(user);
+            return success;
         }
 
         public async Task<bool> DeleteUserAsync(string userId)
@@ -86,6 +100,7 @@ namespace DziennikPlecakowy.Services
 
             return await _userRepository.DeleteAsync(userId);
         }
+
 
         public async Task<int> UserRegister(UserRegisterRequest userRegister)
         {
@@ -144,6 +159,12 @@ namespace DziennikPlecakowy.Services
             return user;
         }
 
+        public bool CheckPassword(User user, string password)
+        {
+            return user.HashedPassword == _hash.Hash(password);
+        }
+
+
         public async Task<int> UpdateUser(User user)
         {
             var result = await _userRepository.UpdateAsync(user);
@@ -156,17 +177,13 @@ namespace DziennikPlecakowy.Services
             return result ? 1 : -1;
         }
 
-        public bool CheckPassword(User user, string password)
-        {
-            return user.HashedPassword == _hash.Hash(password);
-        }
-
         public async Task<int> SetLastLogin(string Id)
         {
             var user = await GetUserById(Id);
             if (user == null) return 0;
             user.LastLoginTime = DateTime.Now;
-            return await UpdateUser(user);
+
+            return await EncryptAndSaveUserAsync(user) ? 1 : 0;
         }
 
         public async Task<int> SetAdmin(User user)
@@ -174,7 +191,7 @@ namespace DziennikPlecakowy.Services
             if (!user.Roles.Contains(UserRole.Admin))
             {
                 user.Roles.Add(UserRole.Admin);
-                return await UpdateUser(user);
+                return await EncryptAndSaveUserAsync(user) ? 1 : 0;
             }
             return 0;
         }

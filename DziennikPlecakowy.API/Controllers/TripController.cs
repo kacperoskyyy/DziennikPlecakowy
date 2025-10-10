@@ -26,20 +26,16 @@ namespace DziennikPlecakowy.API.Controllers
         [HttpPost("addTrip")]
         public async Task<IActionResult> AddTrip([FromBody] TripAddRequest tripAddRequest)
         {
-            _logger.LogInformation("Endpoint: POST api/Trip/addTrip invoked.");
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                _logger.LogWarning("AddTrip: Unauthorized access attempt. JWT token missing User ID.");
-                return Unauthorized("Brak danych użytkownika w tokenie JWT.");
-            }
 
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("Brak Id użytkownika w tokenie.");
+            }
             try
             {
                 Trip trip = new Trip()
                 {
-                    Id = null,
                     UserId = userId,
                     TripDate = tripAddRequest.TripDate,
                     Distance = tripAddRequest.Distance,

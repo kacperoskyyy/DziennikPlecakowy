@@ -1,4 +1,4 @@
-using DziennikPlecakowy.Infrastructure;
+ï»¿using DziennikPlecakowy.Infrastructure;
 using DziennikPlecakowy.Interfaces;
 using DziennikPlecakowy.Models;
 using DziennikPlecakowy.Services;
@@ -19,7 +19,7 @@ builder.Services.AddSwaggerGen(c =>
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "WprowadŸ token JWT po zalogowaniu",
+        Description = "WprowadÅº token JWT po zalogowaniu",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
@@ -52,12 +52,14 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuer = true,
         ValidateAudience = true,
+
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
+
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
 });
 
@@ -79,14 +81,14 @@ app.Lifetime.ApplicationStarted.Register(() =>
     var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<IMongoDbContext>();
 
-    // --- 1. Indeks dla U¿ytkowników (Kolekcja "Users") ---
-    // Indeks: Email (Unikalny i Rosn¹cy) - Kluczowy dla logowania i rejestracji
+    // --- 1. Indeks dla UÅ¼ytkownikÃ³w (Kolekcja "Users") ---
+    // Indeks: Email (Unikalny i RosnÄ…cy) - Kluczowy dla logowania i rejestracji
     var userKeys = Builders<User>.IndexKeys.Ascending(u => u.Email);
     var userIndexModel = new CreateIndexModel<User>(userKeys, new CreateIndexOptions { Unique = true, Name = "EmailUniqueIndex" });
     dbContext.Users.Indexes.CreateOne(userIndexModel);
 
     // --- 2. Indeks dla Wycieczek (Kolekcja "Trips") ---
-    // Indeks: UserId (Rosn¹cy) - Kluczowy dla szybkiego pobierania historii wycieczek
+    // Indeks: UserId (RosnÄ…cy) - Kluczowy dla szybkiego pobierania historii wycieczek
     var tripUserKeys = Builders<Trip>.IndexKeys.Ascending(t => t.UserId);
     var tripUserIndexModel = new CreateIndexModel<Trip>(tripUserKeys, new CreateIndexOptions { Name = "TripUserIdIndex" });
     dbContext.Trips.Indexes.CreateOne(tripUserIndexModel);
@@ -111,6 +113,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 

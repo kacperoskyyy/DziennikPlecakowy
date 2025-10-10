@@ -19,11 +19,15 @@ namespace DziennikPlecakowy.Services
 
         public CypherService(IConfiguration config, IServiceProvider serviceProvider)
         {
+            _configuration = config;
             _key = config["Cypher:Key"];
             _iv = config["Cypher:IV"];
-            _configuration = config;
-
+            
             _serviceProvider = serviceProvider;
+            if (string.IsNullOrEmpty(_key) || string.IsNullOrEmpty(_iv))
+            {
+                throw new ArgumentNullException("Brak kluczy szyfrowania w konfiguracji!");
+            }
         }
         public string Encrypt(string text)
         {
