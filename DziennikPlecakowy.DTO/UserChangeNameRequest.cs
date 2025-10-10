@@ -8,7 +8,6 @@ namespace DziennikPlecakowy.DTO
 {
     public class UserChangeNameRequest
     {
-        public string UserId { get; set; }
         public string NewUsername { get; set; }
     }
 }

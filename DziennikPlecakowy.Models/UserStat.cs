@@ -16,5 +16,10 @@ namespace DziennikPlecakowy.Models
         public double TotalDistance { get; set; }
         [BsonElement("totalDuration")]
         public double TotalDuration { get; set; }
+        [BsonElement("totalElevationGain")]
+        public double TotalElevationGain { get; set; }
+        [BsonElement("TotalSteps")]
+        public long TotalSteps { get; set; }
+
     }
 }

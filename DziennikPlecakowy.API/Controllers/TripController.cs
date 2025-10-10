@@ -2,126 +2,171 @@
 using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Interfaces;
 using DziennikPlecakowy.Models;
-using DziennikPlecakowy.Services;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.Extensions.Logging;
+using DziennikPlecakowy.Services;
 
 namespace DziennikPlecakowy.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TripController : Controller
+    [Authorize(Roles = "User, Admin")]
+    public class TripController : ControllerBase
     {
         private readonly ITripService _tripService;
-        public TripController(ITripService tripService)
+        private readonly ILogger<TripController> _logger;
+
+        public TripController(ITripService tripService, ILogger<TripController> logger)
         {
             _tripService = tripService;
+            _logger = logger;
         }
-        [Authorize(Roles = "User, Admin")]
+
         [HttpPost("addTrip")]
         public async Task<IActionResult> AddTrip([FromBody] TripAddRequest tripAddRequest)
         {
-            Console.WriteLine("Trip/addTrip");
+            _logger.LogInformation("Endpoint: POST api/Trip/addTrip invoked.");
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                _logger.LogWarning("AddTrip: Unauthorized access attempt. JWT token missing User ID.");
+                return Unauthorized("Brak danych użytkownika w tokenie JWT.");
+            }
+
             try
             {
                 Trip trip = new Trip()
                 {
-                    UserId = tripAddRequest.UserId,
+                    Id = null,
+                    UserId = userId,
                     TripDate = tripAddRequest.TripDate,
                     Distance = tripAddRequest.Distance,
                     Duration = tripAddRequest.Duration,
-                    GeoPointList = tripAddRequest.GeoPointList
+                    GeoPointList = tripAddRequest.GeoPointList,
+                    Name = tripAddRequest.Name,
+                    ElevationGain = tripAddRequest.ElevationGain,
+                    Steps = tripAddRequest.Steps
                 };
-                var result = await _tripService.AddTrip(trip);
-                if (result > 0)
+
+                var result = await _tripService.AddTripAsync(trip);
+
+                if (result)
                 {
-                    Console.WriteLine("Trip added");
-                    return Ok(result);
+                    _logger.LogInformation("Trip added successfully by user {UserId}.", userId);
+                    return Ok(new { Message = "Wycieczka została pomyślnie dodana." });
                 }
                 else
                 {
-                    Console.WriteLine("Trip not added");
-                    return BadRequest("Nie udało się dodać wycieczki.");
+                    _logger.LogWarning("Trip not added for user {UserId}. Service returned false.", userId);
+                    return BadRequest("Nie udało się dodać wycieczki. Sprawdź dane wejściowe.");
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("Trip not added exception: " + e);
-                return BadRequest("Nie udało się dodać wycieczki. " + e);
+                _logger.LogError(e, "Unexpected error during AddTrip for user {UserId}.", userId);
+                return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera: {e.Message}");
             }
         }
-        [Authorize(Roles = "User, Admin")]
+
         [HttpPost("updateTrip")]
         public async Task<IActionResult> UpdateTrip([FromBody] Trip trip)
         {
-            Console.WriteLine("Trip/updateTrip");
+            _logger.LogInformation("Endpoint: POST api/Trip/updateTrip invoked for trip {TripId}.", trip.Id);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
             try
             {
-                var result = await _tripService.UpdateTrip(trip);
-                if (result > 0)
+                var result = await _tripService.UpdateTripAsync(trip, userId);
+
+                if (result)
                 {
-                    Console.WriteLine("Trip updated");
-                    return Ok(result);
+                    _logger.LogInformation("Trip {TripId} updated successfully by user {UserId}.", trip.Id, userId);
+                    return Ok(new { Message = "Wycieczka została pomyślnie zaktualizowana." });
                 }
                 else
                 {
-                    Console.WriteLine("Trip not updated");
-                    return BadRequest("Nie udało się zaktualizować wycieczki.");
+                    _logger.LogWarning("Trip update failed for trip {TripId}.", trip.Id);
+                    return NotFound("Wycieczka o podanym Id nie została znaleziona.");
                 }
+            }
+            catch (UnauthorizedTripModificationException e)
+            {
+                _logger.LogWarning(e, "Trip modification forbidden: {Message}", e.Message);
+                return Forbid("Nie masz uprawnień do edycji tej wycieczki.");
             }
             catch (Exception e)
             {
-                Console.WriteLine("Trip not updated exception: " + e);
-                return BadRequest("Nie udało się zaktualizować wycieczki. " + e);
+                _logger.LogError(e, "Unexpected error during UpdateTrip for trip {TripId}.", trip.Id);
+                return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera: {e.Message}");
             }
         }
-        [Authorize(Roles = "User, Admin")]
-        [HttpPost("deleteTrip")]
-        public async Task<IActionResult> DeleteTrip(string tripId)
+
+        [HttpDelete("deleteTrip")]
+        public async Task<IActionResult> DeleteTrip([FromQuery] string tripId)
         {
-            Console.WriteLine("Trip/DeleteTrip");
+            _logger.LogInformation("Endpoint: DELETE api/Trip/deleteTrip invoked for trip {TripId}.", tripId);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
             try
             {
-                var result = await _tripService.DeleteTrip(tripId);
-                if (result > 0)
+                var result = await _tripService.DeleteTripAsync(tripId, userId);
+
+                if (result)
                 {
-                    Console.WriteLine("Trip deleted");
-                    return Ok(result);
+                    _logger.LogInformation("Trip {TripId} deleted successfully by user {UserId}.", tripId, userId);
+                    return Ok(new { Message = "Wycieczka została pomyślnie usunięta." });
                 }
                 else
                 {
-                    Console.WriteLine("Trip not deleted");
-                    return BadRequest("Nie udało się usunąć wycieczki.");
+                    _logger.LogWarning("Trip deletion failed for trip {TripId}. Not found or already deleted.", tripId);
+                    return NotFound("Nie znaleziono wycieczki o podanym Id.");
                 }
+            }
+            catch (UnauthorizedTripModificationException e)
+            {
+                _logger.LogWarning(e, "Trip deletion forbidden: {Message}", e.Message);
+                return Forbid("Nie masz uprawnień do usunięcia tej wycieczki.");
             }
             catch (Exception e)
             {
-                Console.WriteLine("Trip not deleted exception: " + e);
-                return BadRequest("Nie udało się usunąć wycieczki. " + e);
+                _logger.LogError(e, "Unexpected error during DeleteTrip for trip {TripId}.", tripId);
+                return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera: {e.Message}");
             }
         }
-        [Authorize(Roles = "User, Admin")]
+
         [HttpGet("getUserTrips")]
-        public async Task<IActionResult> GetUserTrips([FromBody] string token)
+        public async Task<IActionResult> GetUserTrips()
         {
-            Console.WriteLine("Trip/getUserTrips");
+            _logger.LogInformation("Endpoint: GET api/Trip/getUserTrips invoked.");
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
             try
             {
-                var result = await _tripService.GetUserTrips(token);
+                var result = await _tripService.GetUserTripsAsync(userId);
+
                 if (result != null)
                 {
-                    Console.WriteLine("User trips retrieved");
+                    _logger.LogInformation("Successfully retrieved {Count} trips for user {UserId}.", result.Count(), userId);
                     return Ok(result);
                 }
                 else
                 {
-                    Console.WriteLine("User trips not retrieved");
-                    return BadRequest("Nie udało się pobrać wycieczek użytkownika.");
+                    _logger.LogInformation("No trips found for user {UserId}.", userId);
+                    return NotFound("Nie znaleziono wycieczek dla tego użytkownika.");
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("User trips not retrieved exception: " + e);
-                return BadRequest("Nie udało się pobrać wycieczek użytkownika. " + e);
+                _logger.LogError(e, "Unexpected error during GetUserTrips for user {UserId}.", userId);
+                return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera: {e.Message}");
             }
         }
     }

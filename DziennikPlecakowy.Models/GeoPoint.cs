@@ -17,5 +17,7 @@ namespace DziennikPlecakowy.Models
         public double Longitude { get; set; }
         [BsonElement("height")]
         public double Height { get; set; }
+        [BsonElement("timestamp")]
+        public DateTime Timestamp { get; set; }
     }
 }

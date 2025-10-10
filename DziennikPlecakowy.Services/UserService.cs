@@ -1,144 +1,159 @@
-﻿using MongoDB.Driver;
-using DziennikPlecakowy.DTO;
+﻿using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Interfaces;
 using DziennikPlecakowy.Models;
-using DziennikPlecakowy.Shared;
+using System;
+using System.Threading.Tasks;
 
 namespace DziennikPlecakowy.Services
 {
     public class UserService : IUserService
     {
-        private readonly DziennikPlecakowyDbContext _context;
+        private readonly IUserRepository _userRepository;
+        private readonly IUserStatRepository _userStatRepository;
+        private readonly ITripRepository _tripRepository;
         private readonly IHashService _hash;
+        private readonly ICypherService _cypherService;
 
-        public UserService(DziennikPlecakowyDbContext context, IHashService hash)
+        public UserService(IUserRepository userRepository, IUserStatRepository userStatRepository, ITripRepository tripRepository, IHashService hash, ICypherService cypherService)
         {
-            _context = context;
+            _userRepository = userRepository;
+            _userStatRepository = userStatRepository;
+            _tripRepository = tripRepository;
             _hash = hash;
+            _cypherService = cypherService;
+        }
+
+        private void DecryptUser(User user)
+        {
+            if (user == null) return;
+            user.Email = _cypherService.Decrypt(user.Email);
+            user.Username = _cypherService.Decrypt(user.Username);
+        }
+
+        public async Task<bool> ChangeUsernameAsync(string userId, string newUsername)
+        {
+            User? user = await _userRepository.GetByIdAsync(userId);
+            if (user == null) return false;
+
+            user.Username = _cypherService.Encrypt(newUsername);
+            var success = await _userRepository.UpdateAsync(user);
+
+            if (success) DecryptUser(user);
+            return success;
+        }
+
+        public async Task<bool> ChangeEmailAsync(string userId, string newEmail)
+        {
+            User? user = await _userRepository.GetByIdAsync(userId);
+            if (user == null) return false;
+
+            string encryptedNewEmail = _cypherService.Encrypt(newEmail.ToLower());
+            User? existingUser = await _userRepository.GetByEncryptedEmailAsync(encryptedNewEmail);
+
+            if (existingUser != null && existingUser.Id != userId)
+            {
+                return false;
+            }
+
+            user.Email = encryptedNewEmail;
+            var success = await _userRepository.UpdateAsync(user);
+
+            if (success) DecryptUser(user);
+            return success;
+        }
+
+        public async Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword)
+        {
+            User? user = await _userRepository.GetByIdAsync(userId);
+            if (user == null) return false;
+
+            if (!CheckPassword(user, currentPassword))
+            {
+                return false;
+            }
+
+            user.HashedPassword = _hash.Hash(newPassword);
+            return await _userRepository.UpdateAsync(user);
+        }
+
+        public async Task<bool> DeleteUserAsync(string userId)
+        {
+            User? user = await _userRepository.GetByIdAsync(userId);
+            if (user == null) return false;
+
+            await _userStatRepository.DeleteAsync(userId);
+            await _tripRepository.DeleteAllByUserIdAsync(userId);
+
+            return await _userRepository.DeleteAsync(userId);
         }
 
         public async Task<int> UserRegister(UserRegisterRequest userRegister)
         {
             try
             {
+                string encryptedEmail = _cypherService.Encrypt(userRegister.Email.ToLower());
+                User? existingUser = await _userRepository.GetByEncryptedEmailAsync(encryptedEmail);
+                if (existingUser != null) return -1;
+
                 User user = new User
                 {
-                    Email = userRegister.Email,
-                    Username = userRegister.Username,
+                    Email = encryptedEmail,
+                    Username = _cypherService.Encrypt(userRegister.Username),
                     HashedPassword = _hash.Hash(userRegister.Password),
                     CreatedTime = DateTime.Now,
-                    Roles =  { UserRole.User }
+                    Roles = { UserRole.User }
                 };
-                await _context.Users.InsertOneAsync(user);
+                await _userRepository.AddAsync(user);
+
+                UserStat userStat = new UserStat
+                {
+                    UserId = user.Id,
+                    TripsCount = 0,
+                    TotalDistance = 0,
+                    TotalDuration = 0,
+                    TotalElevationGain = 0,
+                    TotalSteps = 0
+                };
+                await _userStatRepository.AddAsync(userStat);
+
                 return 1;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine($"Error occurred: {ex.Message}");
                 return -1;
             }
         }
 
         public async Task<User?> GetUserByEmail(string email)
         {
-            try
-            {
-                var user = await _context.Users
-                    .Find(u => u.Email == email)
-                    .FirstOrDefaultAsync();
-                return user;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return null;
-            }
+            string encryptedEmail = _cypherService.Encrypt(email.ToLower());
+            var user = await _userRepository.GetByEncryptedEmailAsync(encryptedEmail);
+
+            if (user == null) return null;
+
+            DecryptUser(user);
+            return user;
         }
 
         public async Task<User?> GetUserById(string id)
         {
-            try
-            {
-                var user = await _context.Users
-                    .Find(u => u.Id == id)
-                    .FirstOrDefaultAsync();
-                return user;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return null;
-            }
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user == null) return null;
+
+            DecryptUser(user);
+            return user;
         }
 
         public async Task<int> UpdateUser(User user)
         {
-            try
-            {
-                var result = await _context.Users.ReplaceOneAsync(u => u.Id == user.Id, user);
-                return result.ModifiedCount > 0 ? 1 : -1;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return -1;
-            }
+            var result = await _userRepository.UpdateAsync(user);
+            return result ? 1 : -1;
         }
 
         public async Task<int> DeleteUser(User user)
         {
-            try
-            {
-                var result = await _context.Users.DeleteOneAsync(u => u.Id == user.Id);
-                return result.DeletedCount > 0 ? 1 : -1;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return -1;
-            }
-        }
-
-        public async Task<int> ChangePassword(User user, string newPassword)
-        {
-            try
-            {
-                user.HashedPassword = _hash.Hash(newPassword);
-                return await UpdateUser(user);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return -1;
-            }
-        }
-
-        public async Task<int> ChangeEmail(User user, string newEmail)
-        {
-            try
-            {
-                user.Email = newEmail;
-                return await UpdateUser(user);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return -1;
-            }
-        }
-
-        public async Task<int> ChangeName(User user, string newUsername)
-        {
-            try
-            {
-                user.Username = newUsername;
-                return await UpdateUser(user);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return -1;
-            }
+            var result = await _userRepository.DeleteAsync(user.Id);
+            return result ? 1 : -1;
         }
 
         public bool CheckPassword(User user, string password)
@@ -148,33 +163,20 @@ namespace DziennikPlecakowy.Services
 
         public async Task<int> SetLastLogin(string Id)
         {
-            try
+            var user = await GetUserById(Id);
+            if (user == null) return 0;
+            user.LastLoginTime = DateTime.Now;
+            return await UpdateUser(user);
+        }
+
+        public async Task<int> SetAdmin(User user)
+        {
+            if (!user.Roles.Contains(UserRole.Admin))
             {
-                var user = await GetUserById(Id);
-                user.LastLoginTime = DateTime.Now;
+                user.Roles.Add(UserRole.Admin);
                 return await UpdateUser(user);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return -1;
-            }
-        }
-        public async Task<int> SetAdmin(User user) { 
-            try
-            {
-                if (!user.Roles.Contains(UserRole.Admin))
-                {
-                    user.Roles.Add(UserRole.Admin);
-                    return await UpdateUser(user);
-                }
-                return 0;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return -1;
-            }
+            return 0;
         }
     }
 }

@@ -1,8 +1,8 @@
-﻿using DziennikPlecakowy.DTO;
+﻿using Microsoft.AspNetCore.Mvc;
+using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Interfaces;
-using DziennikPlecakowy.Services;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace DziennikPlecakowy.API.Controllers
 {
@@ -11,44 +11,37 @@ namespace DziennikPlecakowy.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly IUserService _userService;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthService authService, IUserService userService)
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
             _authService = authService;
-            _userService = userService;
+            _logger = logger;
         }
 
-        // --- AUTH ---
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] UserRegisterRequest userRegisterData)
+        public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
         {
-            Console.WriteLine("Auth/register");
+            _logger.LogInformation("Endpoint: POST api/Auth/register invoked for email {Email}.", request.Email);
+
             try
             {
-                var user = await _userService.GetUserByEmail(userRegisterData.Email);
-                if (user != null)
+                var success = await _authService.RegisterAsync(request);
+
+                if (success)
                 {
-                    Console.WriteLine("User not found");
-                    return BadRequest("Użytkownik o podanym adresie email już istnieje.");
+                    _logger.LogInformation("User registration successful for email {Email}.", request.Email);
+                    return Ok(new { Message = "Rejestracja zakończona pomyślnie." });
                 }
 
-                var result = await _userService.UserRegister(userRegisterData);
-                if (result > 0)
-                {
-                    Console.WriteLine("User registered with ID: " + result);
-                }
-                else
-                {
-                    Console.WriteLine("User registration failed");
-                }
-                return result > 0 ? Ok(result) : BadRequest("Nie udało się zarejestrować użytkownika."); 
+                _logger.LogWarning("User registration failed for email {Email}.", request.Email);
+                return BadRequest("Rejestracja nie powiodła się. Sprawdź, czy email nie jest już zajęty.");
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception: " + e.Message);
-                return BadRequest("Błąd podczas rejestracji: " + e.Message);
+                _logger.LogError(e, "Unexpected error during registration for email {Email}.", request.Email);
+                return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
         }
 
@@ -56,22 +49,25 @@ namespace DziennikPlecakowy.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserAuthRequest userAuthData)
         {
-            Console.WriteLine("Auth/login");
+            _logger.LogInformation("Endpoint: POST api/Auth/login invoked for email {Email}.", userAuthData.Email);
+
             try
             {
-                var authData = await _authService.Login(userAuthData);
-                if (authData != null) {
-                    Console.WriteLine("User logged in, token: " + authData);
-                } else
+                var token = await _authService.Login(userAuthData);
+
+                if (token != null)
                 {
-                    Console.WriteLine("Login failed");
+                    _logger.LogInformation("User logged in successfully with email {Email}.", userAuthData.Email);
+                    return Ok(new { Token = token, Message = "Pomyślnie zalogowano." });
                 }
-                return authData != null ? Ok(authData) : Unauthorized("Nieprawidłowe dane logowania.");
+
+                _logger.LogWarning("Login failed for email {Email}. Invalid credentials.", userAuthData.Email);
+                return Unauthorized("Nieprawidłowy login lub hasło.");
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception: " + e.Message);
-                return Unauthorized("Błąd logowania: " + e.Message);
+                _logger.LogError(e, "Unexpected error during login for email {Email}.", userAuthData.Email);
+                return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
         }
     }
