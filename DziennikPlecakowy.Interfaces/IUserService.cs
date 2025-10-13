@@ -4,6 +4,7 @@ using DziennikPlecakowy.Models;
 
 namespace DziennikPlecakowy.Interfaces
 {
+    // Interfejs serwisu zarządzania użytkownikami
     public interface IUserService
     {
         Task<int> UserRegister(UserRegisterRequest userRegister);

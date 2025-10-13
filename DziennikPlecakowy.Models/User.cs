@@ -3,6 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace DziennikPlecakowy.Models
 {
+    // Model reprezentujący użytkownika
     public class User
     {
         [BsonId]

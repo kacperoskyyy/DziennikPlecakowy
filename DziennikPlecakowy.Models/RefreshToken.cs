@@ -3,6 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace DziennikPlecakowy.Models
 {
+    // Model reprezentujący token odświeżania
     public class RefreshToken
     {
         [BsonId]

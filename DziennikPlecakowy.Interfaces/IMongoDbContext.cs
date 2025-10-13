@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace DziennikPlecakowy.Interfaces
 {
+    // Interfejs kontekstu bazy danych MongoDB
     public interface IMongoDbContext
     {
         IMongoCollection<User> Users { get; }

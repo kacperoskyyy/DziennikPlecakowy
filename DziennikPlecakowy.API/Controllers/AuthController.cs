@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace DziennikPlecakowy.API.Controllers
 {
+    //Kontroler logowania i rejestracji
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
@@ -14,12 +15,13 @@ namespace DziennikPlecakowy.API.Controllers
         private readonly IAuthService _authService;
         private readonly ILogger<AuthController> _logger;
 
+        // Konstruktor kontrolera ze wstrzykiwaniem zależności
         public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
             _authService = authService;
             _logger = logger;
         }
-
+        // Endpoint rejestracji nowego użytkownika
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
@@ -43,7 +45,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
         }
-
+        // Endpoint logowania użytkownika
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserAuthRequest userAuthData)
@@ -74,6 +76,7 @@ namespace DziennikPlecakowy.API.Controllers
             }
         }
 
+        // Endpoint odświeżania tokenu
         [AllowAnonymous]
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request)

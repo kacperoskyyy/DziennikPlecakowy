@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace DziennikPlecakowy.Models
 {
+    // Model reprezentujący punkt geograficzny z dodatkowymi informacjami
     public class GeoPoint
     {
         [BsonElement("latitude")]

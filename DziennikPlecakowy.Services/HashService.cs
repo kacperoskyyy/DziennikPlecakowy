@@ -7,9 +7,11 @@ using DziennikPlecakowy.Interfaces;
 
 namespace DziennikPlecakowy.Services
 {
+    // Serwis haszowania
     public class HashService : IHashService
     {
         public HashService() { }
+        // Haszowanie wejściowego tekstu
         public string Hash(string input)
         {
             var bytes = new UTF8Encoding().GetBytes(input);

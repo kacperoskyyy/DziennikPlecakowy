@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 
 namespace DziennikPlecakowy.Services
 {
+    // Serwis uwierzytelniania
     public class AuthService : IAuthService
     {
         private readonly IUserService _userService;
         private readonly ICypherService _cypherService;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
 
+        // Konstruktor serwisu uwierzytelniania
         public AuthService(
             IUserService userService,
             ICypherService cypherService,
@@ -22,13 +24,13 @@ namespace DziennikPlecakowy.Services
             _cypherService = cypherService;
             _refreshTokenRepository = refreshTokenRepository;
         }
-
+        // Rejestracja nowego użytkownika
         public async Task<bool> RegisterAsync(UserRegisterRequest request)
         {
             var result = await _userService.UserRegister(request);
             return result > 0;
         }
-
+        // Logowanie użytkownika
         public async Task<AuthResponse?> Login(UserAuthRequest userAuthData)
         {
             var user = await _userService.GetUserByEmail(userAuthData.Email);
@@ -49,7 +51,7 @@ namespace DziennikPlecakowy.Services
                 RefreshToken = refreshToken.Token
             };
         }
-
+        // Odświeżanie tokenu
         public async Task<AuthResponse?> RefreshTokenAsync(string token)
         {
             var storedToken = await _refreshTokenRepository.GetByTokenAsync(token);
@@ -76,7 +78,7 @@ namespace DziennikPlecakowy.Services
                 RefreshToken = newRefreshToken.Token
             };
         }
-
+        // Tworzenie i przechowywanie tokenu odświeżającego
         private async Task<RefreshToken> CreateAndStoreRefreshToken(string userId)
         {
             var refreshToken = new RefreshToken
@@ -89,7 +91,7 @@ namespace DziennikPlecakowy.Services
             await _refreshTokenRepository.AddAsync(refreshToken);
             return refreshToken;
         }
-
+        // Generowanie losowego tokenu odświeżającego
         private string GenerateRefreshTokenString()
         {
             var randomNumber = new byte[32];

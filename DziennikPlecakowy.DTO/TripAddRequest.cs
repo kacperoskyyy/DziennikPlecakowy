@@ -1,14 +1,8 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DziennikPlecakowy.Models;
+﻿using DziennikPlecakowy.Models;
 
 namespace DziennikPlecakowy.DTO
 {
+    // DTO dla dodawania nowej wycieczki
     public class TripAddRequest
     {
         public DateTime TripDate { get; set; }

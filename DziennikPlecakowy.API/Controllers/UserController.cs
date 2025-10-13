@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DziennikPlecakowy.API.Controllers
 {
+    //Kontroler zarządzania użytkownikami
     [ApiController]
     [Route("api/[controller]")]
     [Authorize(Roles = "User, Admin")]
@@ -15,18 +16,18 @@ namespace DziennikPlecakowy.API.Controllers
     {
         private readonly IUserService _userService;
         private readonly ILogger<UserController> _logger;
-
+        // Konstruktor kontrolera ze wstrzykiwaniem zależności
         public UserController(IUserService userService, ILogger<UserController> logger)
         {
             _userService = userService;
             _logger = logger;
         }
-
+        // Pobierz Id użytkownika z tokena JWT
         private string? GetUserIdFromToken()
         {
             return User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
-
+        // Endpoint zmiany nazwy użytkownika
         [HttpPut("changeName")]
         public async Task<IActionResult> ChangeName([FromBody] UserChangeNameRequest request)
         {
@@ -54,7 +55,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
         }
-
+        // Endpoint zmiany hasła użytkownika
         [HttpPut("changePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] UserChangePasswordRequest request)
         {
@@ -82,7 +83,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
         }
-
+        // Endpoint zmiany emaila użytkownika
         [HttpPut("changeEmail")]
         public async Task<IActionResult> ChangeEmail([FromBody] UserChangeEmailRequest request)
         {
@@ -110,7 +111,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
         }
-
+        // Endpoint usunięcia konta użytkownika
         [HttpDelete("delete")]
         public async Task<IActionResult> DeleteUser()
         {
@@ -138,7 +139,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
         }
-
+        // Endpoint ustawienia daty ostatniego logowania
         [HttpGet("setLastLogin")]
         public async Task<IActionResult> SetLastLogin()
         {
@@ -166,7 +167,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
         }
-
+        // Endpoint nadania roli Admin innemu użytkownikowi (tylko dla Adminów)
         [HttpPut("makeAdmin/{targetUserId}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> MakeAdminAsync(string targetUserId)
@@ -199,7 +200,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
             }
         }
-
+        // Endpoint sprawdzenia, czy dany użytkownik ma rolę Admin (tylko dla Adminów)
         [HttpGet("checkAdmin/{targetUserId}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CheckAdminAsync(string targetUserId)

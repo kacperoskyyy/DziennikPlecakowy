@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DziennikPlecakowy.DTO
+﻿namespace DziennikPlecakowy.DTO
 {
+    // DTO dla żądania zmiany hasła użytkownika
     public class UserChangePasswordRequest
     {
         public string Password { get; set; }

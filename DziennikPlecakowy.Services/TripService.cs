@@ -7,22 +7,24 @@ using DziennikPlecakowy.Interfaces;
 
 namespace DziennikPlecakowy.Services
 {
+    // Klasa wyjątku dla nieautoryzowanych modyfikacji wycieczek
     public class UnauthorizedTripModificationException : Exception
     {
         public UnauthorizedTripModificationException(string message) : base(message) { }
     }
 
+    // Serwis zarządzania wycieczkami
     public class TripService : ITripService
     {
         private readonly ITripRepository _tripRepository;
         private readonly IUserStatRepository _userStatRepository;
-
+        // Konstruktor serwisu wycieczek
         public TripService(ITripRepository tripRepository, IUserStatRepository userStatRepository)
         {
             _tripRepository = tripRepository;
             _userStatRepository = userStatRepository;
         }
-
+        // Dodawanie nowej wycieczki
         public async Task<bool> AddTripAsync(Trip trip)
         {
             if (trip == null) return false;
@@ -44,7 +46,7 @@ namespace DziennikPlecakowy.Services
 
             return true;
         }
-
+        // Aktualizowanie istniejącej wycieczki
         public async Task<bool> UpdateTripAsync(Trip trip, string userId)
         {
             Trip? existingTrip = await _tripRepository.GetByIdAsync(trip.Id);
@@ -67,7 +69,7 @@ namespace DziennikPlecakowy.Services
 
             return result;
         }
-
+        // Usuwanie wycieczki
         public async Task<bool> DeleteTripAsync(string tripId, string userId)
         {
             Trip? existingTrip = await _tripRepository.GetByIdAsync(tripId);
@@ -103,7 +105,7 @@ namespace DziennikPlecakowy.Services
 
             return result;
         }
-
+        // Pobieranie wycieczek użytkownika
         public async Task<IEnumerable<Trip>> GetUserTripsAsync(string userId)
         {
             return await _tripRepository.GetByUserAsync(userId);

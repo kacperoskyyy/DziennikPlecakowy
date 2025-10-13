@@ -9,6 +9,7 @@ using DziennikPlecakowy.Services;
 
 namespace DziennikPlecakowy.API.Controllers
 {
+    //Kontroler zarządzania wycieczkami
     [ApiController]
     [Route("api/[controller]")]
     [Authorize(Roles = "User, Admin")]
@@ -16,13 +17,13 @@ namespace DziennikPlecakowy.API.Controllers
     {
         private readonly ITripService _tripService;
         private readonly ILogger<TripController> _logger;
-
+        //Konstruktor kontrolera ze wstrzykiwaniem zależności
         public TripController(ITripService tripService, ILogger<TripController> logger)
         {
             _tripService = tripService;
             _logger = logger;
         }
-
+        //Endpoint dodawania nowej wycieczki
         [HttpPost("addTrip")]
         public async Task<IActionResult> AddTrip([FromBody] TripAddRequest tripAddRequest)
         {
@@ -65,7 +66,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera: {e.Message}");
             }
         }
-
+        //Endpoint aktualizacji istniejącej wycieczki
         [HttpPost("updateTrip")]
         public async Task<IActionResult> UpdateTrip([FromBody] Trip trip)
         {
@@ -100,7 +101,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera: {e.Message}");
             }
         }
-
+        //Endpoint usuwania wycieczki
         [HttpDelete("deleteTrip")]
         public async Task<IActionResult> DeleteTrip([FromQuery] string tripId)
         {
@@ -135,7 +136,7 @@ namespace DziennikPlecakowy.API.Controllers
                 return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera: {e.Message}");
             }
         }
-
+        //Endpoint pobierania wycieczek użytkownika
         [HttpGet("getUserTrips")]
         public async Task<IActionResult> GetUserTrips()
         {

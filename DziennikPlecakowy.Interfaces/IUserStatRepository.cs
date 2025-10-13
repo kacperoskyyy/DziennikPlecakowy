@@ -3,6 +3,7 @@ using DziennikPlecakowy.Models;
 
 namespace DziennikPlecakowy.Interfaces
 {
+    // Interfejs repozytorium statystyk użytkownika
     public interface IUserStatRepository
     {
         Task<UserStat?> GetByUserIdAsync(string userId);
