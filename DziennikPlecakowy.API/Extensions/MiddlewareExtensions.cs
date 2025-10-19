@@ -67,18 +67,7 @@ public static class MiddlewareExtensions
         {
             ResponseWriter = async (context, report) =>
             {
-                var loggerFactory = context.RequestServices.GetRequiredService<ILoggerFactory>();
-                var logger = loggerFactory.CreateLogger("HealthCheck"); // Tworzymy logger
-
-                var mongoEntry = report.Entries.FirstOrDefault(e => e.Key == "mongodb_ready").Value;
-                var mongoStatus = mongoEntry.Status.ToString();
-
-                logger.LogInformation("Healthcheck result (MongoDB): Status={Status}, Duration={Duration}s",
-                                      mongoStatus,
-                                      mongoEntry.Duration.TotalSeconds);
-
                 context.Response.ContentType = "application/json";
-
                 var result = JsonSerializer.Serialize(new
                 {
                     status = report.Status.ToString(),
