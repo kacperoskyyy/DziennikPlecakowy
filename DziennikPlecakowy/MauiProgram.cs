@@ -1,11 +1,4 @@
-﻿using DziennikPlecakowy.Interfaces;
-using DziennikPlecakowy.Services;
-using DziennikPlecakowy.ViewModels;
-using DziennikPlecakowy.Views;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Maui;
-using Microsoft.Maui.Controls.Hosting;
-using Microsoft.Maui.Hosting;
+﻿using Microsoft.Extensions.Logging;
 
 namespace DziennikPlecakowy
 {
@@ -16,29 +9,15 @@ namespace DziennikPlecakowy
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
-                .ConfigureFonts(fonts => { });
+                .ConfigureFonts(fonts =>
+                {
+                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                });
 
-            // rejestracja serwisów mobilnych - implementacje interfejsów
-            builder.Services.AddSingleton<ApiServiceClient>();
-            builder.Services.AddSingleton<AuthServiceClient>();
-            builder.Services.AddSingleton<TripServiceClient>();
-            builder.Services.AddSingleton<UserServiceClient>();
-
-            // viewmodels
-            builder.Services.AddTransient<LoginViewModel>();
-            builder.Services.AddTransient<RegisterViewModel>();
-            builder.Services.AddTransient<ProfileViewModel>();
-            builder.Services.AddTransient<TripsListViewModel>();
-            builder.Services.AddTransient<TripViewModel>();
-            builder.Services.AddTransient<StatsViewModel>();
-
-            // pages
-            builder.Services.AddTransient<LoginPage>();
-            builder.Services.AddTransient<RegisterPage>();
-            builder.Services.AddTransient<ProfilePage>();
-            builder.Services.AddTransient<TripsListPage>();
-            builder.Services.AddTransient<TripPage>();
-            builder.Services.AddTransient<StatsPage>();
+#if DEBUG
+    		builder.Logging.AddDebug();
+#endif
 
             return builder.Build();
         }
