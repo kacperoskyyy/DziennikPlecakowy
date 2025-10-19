@@ -18,4 +18,5 @@ public interface IUserService
     Task<bool> ChangeUsernameAsync(string userId, string newUsername);
     Task<int> UpdateUser(User user);
     Task<int> DeleteUser(User user);
+    Task<UserStat> GetUserStats(string userId);
 }

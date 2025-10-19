@@ -194,4 +194,23 @@ public class UserService : IUserService
         }
         return 0;
     }
+    
+    public async Task<UserStat> GetUserStats(string userId)
+    {
+        var stats = await _userStatRepository.GetByUserIdAsync(userId);
+        if(stats == null)
+        {
+            stats = new UserStat
+            {
+                UserId = userId,
+                TripsCount = 0,
+                TotalDistance = 0,
+                TotalDuration = 0,
+                TotalElevationGain = 0,
+                TotalSteps = 0
+            };
+            await _userStatRepository.AddAsync(stats);
+        }
+        return stats;
+    }
 }

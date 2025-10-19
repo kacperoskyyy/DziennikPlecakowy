@@ -46,9 +46,9 @@ public class TripController : ControllerBase
                 Steps = tripAddRequest.Steps
             };
 
-            var result = await _tripService.AddTripAsync(trip);
+            var newTrip = await _tripService.AddTripAsync(trip);
 
-            if (result)
+            if (newTrip!=null)
             {
                 _logger.LogInformation("Trip added successfully by user {UserId}.", userId);
                 return Ok(new { Message = "Wycieczka została pomyślnie dodana." });

@@ -21,9 +21,9 @@ public class TripService : ITripService
         _userStatRepository = userStatRepository;
     }
     // Dodawanie nowej wycieczki
-    public async Task<bool> AddTripAsync(Trip trip)
+    public async Task<Trip> AddTripAsync(Trip trip)
     {
-        if (trip == null) return false;
+        if (trip == null) return null;
 
         await _tripRepository.AddAsync(trip);
 
@@ -40,7 +40,7 @@ public class TripService : ITripService
             await _userStatRepository.UpdateAsync(stats);
         }
 
-        return true;
+        return trip;
     }
     // Aktualizowanie istniejącej wycieczki
     public async Task<bool> UpdateTripAsync(Trip trip, string userId)

@@ -229,4 +229,38 @@ public class UserController : ControllerBase
             return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
         }
     }
+    [HttpGet("getUserStats")]
+    [Authorize(Roles = "User, Admin")]
+    public async Task<IActionResult> GetUserStats()
+    {
+        _logger.LogInformation("Endpoint: GET api/User/getUserStats invoked.");
+        var userId = GetUserIdFromToken();
+        if (userId == null) return Unauthorized();
+        try
+        {
+            var user = await _userService.GetUserById(userId);
+            if (user == null)
+            {
+                _logger.LogWarning("User {UserId} not found for stats retrieval.", userId);
+                return NotFound("Nie znaleziono użytkownika.");
+            }
+            var userStatss = await _userService.GetUserStats(userId);
+            var userStats = new
+            {
+                user.Id,
+                user.Email,
+                user.Username,
+                user.CreatedTime,
+                user.LastLoginTime,
+                Roles = user.Roles.Select(role => role.ToString()).ToList()
+            };
+            _logger.LogInformation("User stats retrieved successfully for user {UserId}.", userId);
+            return Ok(userStats);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error during getUserStats for user {UserId}.", userId);
+            return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
+        }
+    }
 }
