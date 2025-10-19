@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DziennikPlecakowy.DTO;
-using DziennikPlecakowy.Models;
+﻿using DziennikPlecakowy.DTO;
 
-namespace DziennikPlecakowy.Interfaces
+namespace DziennikPlecakowy.Interfaces;
+
+// Interfejs serwisu uwierzytelniania
+public interface IAuthService
 {
-    // Interfejs serwisu uwierzytelniania
-    public interface IAuthService
-    {
-        Task<bool> RegisterAsync(UserRegisterRequest request);
-        Task<AuthResponse?> Login(UserAuthRequest userAuthData);
-        Task<AuthResponse?> RefreshTokenAsync(string refreshToken);
-    }
+    Task<bool> RegisterAsync(UserRegisterRequestDTO request);
+    Task<AuthResponseDTO?> Login(UserAuthRequestDTO userAuthData);
+    Task<AuthResponseDTO?> RefreshTokenAsync(string refreshToken);
 }

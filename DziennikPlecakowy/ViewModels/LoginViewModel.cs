@@ -44,7 +44,7 @@ namespace DziennikPlecakowy.ViewModels
             }
             else
             {
-                var req = new UserAuthRequest { Email = Email, Password = Password };
+                var req = new UserAuthRequestDTO { Email = Email, Password = Password };
                 var res = await _auth.LoginAsync(req);
                 if (res != null)
                 {

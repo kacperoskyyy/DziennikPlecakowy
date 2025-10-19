@@ -1,103 +1,100 @@
 ﻿using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Interfaces;
 using DziennikPlecakowy.Models;
-using System;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 
-namespace DziennikPlecakowy.Services
+namespace DziennikPlecakowy.Services;
+
+// Serwis uwierzytelniania
+public class AuthService : IAuthService
 {
-    // Serwis uwierzytelniania
-    public class AuthService : IAuthService
+    private readonly IUserService _userService;
+    private readonly ICypherService _cypherService;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
+
+    // Konstruktor serwisu uwierzytelniania
+    public AuthService(
+        IUserService userService,
+        ICypherService cypherService,
+        IRefreshTokenRepository refreshTokenRepository)
     {
-        private readonly IUserService _userService;
-        private readonly ICypherService _cypherService;
-        private readonly IRefreshTokenRepository _refreshTokenRepository;
+        _userService = userService;
+        _cypherService = cypherService;
+        _refreshTokenRepository = refreshTokenRepository;
+    }
+    // Rejestracja nowego użytkownika
+    public async Task<bool> RegisterAsync(UserRegisterRequestDTO request)
+    {
+        var result = await _userService.UserRegister(request);
+        return result > 0;
+    }
+    // Logowanie użytkownika
+    public async Task<AuthResponseDTO?> Login(UserAuthRequestDTO userAuthData)
+    {
+        var user = await _userService.GetUserByEmail(userAuthData.Email);
 
-        // Konstruktor serwisu uwierzytelniania
-        public AuthService(
-            IUserService userService,
-            ICypherService cypherService,
-            IRefreshTokenRepository refreshTokenRepository)
+        if (user == null || !_userService.CheckPassword(user, userAuthData.Password))
         {
-            _userService = userService;
-            _cypherService = cypherService;
-            _refreshTokenRepository = refreshTokenRepository;
+            return null;
         }
-        // Rejestracja nowego użytkownika
-        public async Task<bool> RegisterAsync(UserRegisterRequest request)
+
+        var jwtToken = _cypherService.GenerateJwtToken(user);
+        var refreshToken = await CreateAndStoreRefreshToken(user.Id);
+
+        await _userService.SetLastLogin(user.Id);
+
+        return new AuthResponseDTO
         {
-            var result = await _userService.UserRegister(request);
-            return result > 0;
-        }
-        // Logowanie użytkownika
-        public async Task<AuthResponse?> Login(UserAuthRequest userAuthData)
+            Token = jwtToken,
+            RefreshToken = refreshToken.Token
+        };
+    }
+    // Odświeżanie tokenu
+    public async Task<AuthResponseDTO?> RefreshTokenAsync(string token)
+    {
+        var storedToken = await _refreshTokenRepository.GetByTokenAsync(token);
+
+        if (storedToken == null || storedToken.ExpiryDate <= DateTime.UtcNow)
         {
-            var user = await _userService.GetUserByEmail(userAuthData.Email);
-
-            if (user == null || !_userService.CheckPassword(user, userAuthData.Password))
-            {
-                return null;
-            }
-
-            var jwtToken = _cypherService.GenerateJwtToken(user);
-            var refreshToken = await CreateAndStoreRefreshToken(user.Id);
-
-            await _userService.SetLastLogin(user.Id);
-
-            return new AuthResponse
-            {
-                Token = jwtToken,
-                RefreshToken = refreshToken.Token
-            };
+            return null;
         }
-        // Odświeżanie tokenu
-        public async Task<AuthResponse?> RefreshTokenAsync(string token)
+
+        var user = await _userService.GetUserById(storedToken.UserId);
+        if (user == null)
         {
-            var storedToken = await _refreshTokenRepository.GetByTokenAsync(token);
-
-            if (storedToken == null || storedToken.ExpiryDate <= DateTime.UtcNow)
-            {
-                return null;
-            }
-
-            var user = await _userService.GetUserById(storedToken.UserId);
-            if (user == null)
-            {
-                return null;
-            }
-
-            var newJwtToken = _cypherService.GenerateJwtToken(user);
-            var newRefreshToken = await CreateAndStoreRefreshToken(user.Id);
-
-            await _refreshTokenRepository.DeleteAsync(storedToken.Id);
-
-            return new AuthResponse
-            {
-                Token = newJwtToken,
-                RefreshToken = newRefreshToken.Token
-            };
+            return null;
         }
-        // Tworzenie i przechowywanie tokenu odświeżającego
-        private async Task<RefreshToken> CreateAndStoreRefreshToken(string userId)
+
+        var newJwtToken = _cypherService.GenerateJwtToken(user);
+        var newRefreshToken = await CreateAndStoreRefreshToken(user.Id);
+
+        await _refreshTokenRepository.DeleteAsync(storedToken.Id);
+
+        return new AuthResponseDTO
         {
-            var refreshToken = new RefreshToken
-            {
-                UserId = userId,
-                Token = GenerateRefreshTokenString(),
-                ExpiryDate = DateTime.UtcNow.AddMonths(1)
-            };
-
-            await _refreshTokenRepository.AddAsync(refreshToken);
-            return refreshToken;
-        }
-        // Generowanie losowego tokenu odświeżającego
-        private string GenerateRefreshTokenString()
+            Token = newJwtToken,
+            RefreshToken = newRefreshToken.Token
+        };
+    }
+    // Tworzenie i przechowywanie tokenu odświeżającego
+    private async Task<RefreshToken> CreateAndStoreRefreshToken(string userId)
+    {
+        var refreshToken = new RefreshToken
         {
-            var randomNumber = new byte[32];
-            using var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
-        }
+            UserId = userId,
+            Token = GenerateRefreshTokenString(),
+            ExpiryDate = DateTime.UtcNow.AddMonths(1)
+        };
+
+        await _refreshTokenRepository.AddAsync(refreshToken);
+        return refreshToken;
+    }
+    // Generowanie losowego tokenu odświeżającego
+    private string GenerateRefreshTokenString()
+    {
+        var randomNumber = new byte[32];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
     }
 }

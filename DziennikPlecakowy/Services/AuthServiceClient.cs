@@ -14,9 +14,9 @@ namespace DziennikPlecakowy.Services
             _api = api;
         }
 
-        public async Task<string> LoginAsync(UserAuthRequest request)
+        public async Task<string> LoginAsync(UserAuthRequestDTO request)
         {
-            var result = await _api.PostAsync<UserAuthRequest, string>("api/auth/login", request);
+            var result = await _api.PostAsync<UserAuthRequestDTO, string>("api/auth/login", request);
             if (result != null)
             {
                 // zapisz token w SecureStorage
@@ -26,7 +26,7 @@ namespace DziennikPlecakowy.Services
             return result;
         }
 
-        public async Task<bool> RegisterAsync(UserRegisterRequest request)
+        public async Task<bool> RegisterAsync(UserRegisterRequestDTO request)
         {
             return await _api.PostAsync("auth/register", request);
         }

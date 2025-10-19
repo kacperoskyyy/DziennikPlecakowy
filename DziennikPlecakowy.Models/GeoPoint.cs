@@ -1,24 +1,17 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DziennikPlecakowy.Models
+namespace DziennikPlecakowy.Models;
+
+// Model reprezentujący punkt geograficzny z dodatkowymi informacjami
+public class GeoPoint
 {
-    // Model reprezentujący punkt geograficzny z dodatkowymi informacjami
-    public class GeoPoint
-    {
-        [BsonElement("latitude")]
-        public double Latitude { get; set; }
+    [BsonElement("latitude")]
+    public double Latitude { get; set; }
 
-        [BsonElement("longitude")]
-        public double Longitude { get; set; }
-        [BsonElement("height")]
-        public double Height { get; set; }
-        [BsonElement("timestamp")]
-        public DateTime Timestamp { get; set; }
-    }
+    [BsonElement("longitude")]
+    public double Longitude { get; set; }
+    [BsonElement("height")]
+    public double Height { get; set; }
+    [BsonElement("timestamp")]
+    public DateTime Timestamp { get; set; }
 }

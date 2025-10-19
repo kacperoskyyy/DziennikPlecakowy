@@ -1,22 +1,21 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace DziennikPlecakowy.Models
+namespace DziennikPlecakowy.Models;
+
+// Model reprezentujący token odświeżania
+public class RefreshToken
 {
-    // Model reprezentujący token odświeżania
-    public class RefreshToken
-    {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string Id { get; set; }
 
-        [BsonElement("userId")]
-        public string UserId { get; set; }
+    [BsonElement("userId")]
+    public string UserId { get; set; }
 
-        [BsonElement("token")]
-        public string Token { get; set; }
+    [BsonElement("token")]
+    public string Token { get; set; }
 
-        [BsonElement("expiryDate")]
-        public DateTime ExpiryDate { get; set; }
-    }
+    [BsonElement("expiryDate")]
+    public DateTime ExpiryDate { get; set; }
 }

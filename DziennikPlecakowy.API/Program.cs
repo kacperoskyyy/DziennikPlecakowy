@@ -1,5 +1,4 @@
 ﻿using DziennikPlecakowy.Infrastructure;
-using DziennikPlecakowy.Infrastructure;
 using DziennikPlecakowy.Interfaces;
 using DziennikPlecakowy.Models;
 using DziennikPlecakowy.Services;
@@ -11,7 +10,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Konfiguracja i Usługi
+// Konfiguracja i Usługi
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -50,7 +49,7 @@ builder.Services.AddScoped<IHashService, HashService>();
 builder.Services.AddScoped<ICypherService, CypherService>();
 builder.Services.AddScoped<ITripService, TripService>();
 
-// 2. Konfiguracja Uwierzytelniania JWT
+// Konfiguracja Uwierzytelniania JWT
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -77,7 +76,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// 3. Konfiguracja Pipeline
+// Konfiguracja Pipeline
 var app = builder.Build();
 
 // Rejestracja Indeksów MongoDB (Sekcja startowa)

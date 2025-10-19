@@ -23,7 +23,7 @@ namespace DziennikPlecakowy.ViewModels
 
         private async Task SaveAsync()
         {
-            var req = new UserChangeNameRequest { UserId = _UserId, NewUsername=_Username };
+            var req = new UserChangeNameRequestDTO { UserId = _UserId, NewUsername=_Username };
             var ok = await _userService.ChangeNameAsync(req);
             if (ok) await Application.Current.MainPage.DisplayAlert("OK", "Zapisano", "OK");
             else await Application.Current.MainPage.DisplayAlert("Błąd", "Nie udało się", "OK");
