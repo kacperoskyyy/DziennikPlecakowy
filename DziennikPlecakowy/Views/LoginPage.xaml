@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
+             x:DataType="vm:LoginViewModel"
+             x:Class="DziennikPlecakowy.Views.LoginPage"
+             Title="LoginPage">
+    <VerticalStackLayout Padding="20" Spacing="10" VerticalOptions="Center">
+
+        <Entry Placeholder="Email" 
+               Text="{Binding Email}" 
+               Keyboard="Email" />
+
+        <Entry Placeholder="Hasło" 
+               Text="{Binding Password}" 
+               IsPassword="True" />
+
+        <Label Text="{Binding ErrorMessage}" 
+               TextColor="Red"
+               IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+
+        <Button Text="Zaloguj" 
+                Command="{Binding LoginCommand}" 
+                IsEnabled="{Binding IsNotBusy}" />
+
+        <ActivityIndicator IsRunning="{Binding IsBusy}" />
+
+        <Button Text="Nie masz konta? Zarejestruj się"
+                Command="{Binding GoToRegisterCommand}" />
+
+    </VerticalStackLayout>
+</ContentPage>

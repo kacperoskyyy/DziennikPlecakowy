@@ -1,6 +1,7 @@
 ﻿using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Models.Local;
 using DziennikPlecakowy.Repositories;
+using System.Net;
 using System.Net.Http.Json;
 
 namespace DziennikPlecakowy.Services.Local;
@@ -22,58 +23,57 @@ public class AuthService
 
     public string GetCurrentUserId() => Preferences.Get(UserIdKey, null);
 
-    public async Task<bool> CheckAndRefreshTokenOnStartupAsync()
+    public async Task<AuthResult> CheckAndRefreshTokenOnStartupAsync()
     {
         var localToken = await _tokenRepository.GetTokenAsync();
         if (localToken == null || string.IsNullOrEmpty(localToken.Token))
         {
-            return false;
+            return AuthResult.Fail("Brak tokena.");
         }
 
         var request = new RefreshTokenRequestDTO { RefreshToken = localToken.Token };
-
         var response = await _apiClient.PostRawAsync("/api/Auth/refresh", request);
 
         if (!response.IsSuccessStatusCode)
         {
-
             await LogoutAsync();
-            return false;
+            return AuthResult.Fail("Sesja wygasła.");
         }
 
         var authResponse = await response.Content.ReadFromJsonAsync<AuthResponseDTO>();
-
         _apiClient.SetAccessToken(authResponse.Token);
 
         localToken.Token = authResponse.RefreshToken;
         await _tokenRepository.SaveTokenAsync(localToken);
 
         var userDto = await FetchAndSaveUserDataAsync();
-        return (userDto != null);
+        if (userDto == null)
+        {
+            return AuthResult.Fail("Nie udało się pobrać danych użytkownika.");
+        }
+
+        return AuthResult.Success(authResponse.MustChangePassword);
     }
 
 
-    public async Task<bool> LoginAsync(string email, string password)
+    public async Task<AuthResult> LoginAsync(string email, string password)
     {
         var request = new UserAuthRequestDTO { Email = email, Password = password };
-
         var response = await _apiClient.PostRawAsync("/api/Auth/login", request);
 
         if (!response.IsSuccessStatusCode)
         {
-            return false;
+            return await ParseErrorResponse(response);
         }
 
         var authResponse = await response.Content.ReadFromJsonAsync<AuthResponseDTO>();
-
         _apiClient.SetAccessToken(authResponse.Token);
-
 
         var userDto = await FetchAndSaveUserDataAsync();
         if (userDto == null)
         {
             _apiClient.ClearAccessToken();
-            return false;
+            return AuthResult.Fail("Błąd pobierania profilu po zalogowaniu.");
         }
 
         var localToken = new LocalRefreshToken
@@ -84,10 +84,10 @@ public class AuthService
         };
         await _tokenRepository.SaveTokenAsync(localToken);
 
-        return true;
+        return AuthResult.Success(authResponse.MustChangePassword);
     }
 
-    public async Task<bool> RegisterAsync(string username, string email, string password)
+    public async Task<AuthResult> RegisterAsync(string username, string email, string password)
     {
         var request = new UserRegisterRequestDTO
         {
@@ -100,7 +100,7 @@ public class AuthService
 
         if (!response.IsSuccessStatusCode)
         {
-            return false;
+            return await ParseErrorResponse(response);
         }
 
         return await LoginAsync(email, password);
@@ -134,5 +134,34 @@ public class AuthService
         Preferences.Set(UserNameKey, userDto.Username);
 
         return userDto;
+    }
+
+
+
+
+    private async Task<AuthResult> ParseErrorResponse(HttpResponseMessage response)
+    {
+        string defaultError = "Nieznany błąd serwera.";
+
+        try
+        {
+            var errorDto = await response.Content.ReadFromJsonAsync<ErrorResponseDTO>();
+            if (errorDto != null && !string.IsNullOrEmpty(errorDto.Message))
+            {
+                return AuthResult.Fail(errorDto.Message);
+            }
+        }
+        catch { }
+
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            return AuthResult.Fail("Nieprawidłowy login lub hasło.");
+        }
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            return AuthResult.Fail("Konto zablokowane lub brak uprawnień.");
+        }
+
+        return AuthResult.Fail(defaultError);
     }
 }

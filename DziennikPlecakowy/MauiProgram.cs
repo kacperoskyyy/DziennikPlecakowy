@@ -1,9 +1,10 @@
-﻿using DziennikPlecakowy.Interfaces.Local;
-#if ANDROID
+﻿#if ANDROID
+using DziennikPlecakowy.Interfaces.Local;
 using DziennikPlecakowy.Platforms.Android.Services;
 #endif
 using DziennikPlecakowy.Repositories;
 using DziennikPlecakowy.Services.Local;
+using DziennikPlecakowy.ViewModels;
 namespace DziennikPlecakowy;
 
 public static class MauiProgram
@@ -34,6 +35,10 @@ public static class MauiProgram
         builder.Services.AddSingleton<IPedometerService, AndroidPedometerService>();
         builder.Services.AddSingleton<IPlatformNotificationService, PlatformNotificationService>();
 #endif
+
+        builder.Services.AddTransient<LoginViewModel>();
+        //builder.Services.AddTransient<DashboardViewModel>();
+
 
         var app = builder.Build();
         var dbService = app.Services.GetService<DatabaseService>();
