@@ -52,4 +52,8 @@ public class UserRepository : IUserRepository
         var filter = Builders<User>.Filter.Eq(u => u.Email, encryptedEmail);
         return _users.Find(filter).FirstOrDefaultAsync();
     }
+    public async Task<List<User>> GetAllAsync()
+    {
+        return await _users.Find(_ => true).ToListAsync();
+    }
 }

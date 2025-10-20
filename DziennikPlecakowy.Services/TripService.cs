@@ -1,5 +1,6 @@
-﻿using DziennikPlecakowy.Models;
+﻿using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Interfaces;
+using DziennikPlecakowy.Models;
 
 namespace DziennikPlecakowy.Services;
 
@@ -104,6 +105,26 @@ public class TripService : ITripService
     // Pobieranie wycieczek użytkownika
     public async Task<IEnumerable<Trip>> GetUserTripsAsync(string userId)
     {
-        return await _tripRepository.GetByUserAsync(userId);
+        return await _tripRepository.GetByUserAsync(userId); 
+    }
+    public async Task<IEnumerable<TripSummaryDTO>> GetUserTripSummariesAsync(string userId)
+    {
+        var fullTrips = await _tripRepository.GetByUserAsync(userId);
+        if (fullTrips == null)
+        {
+            return new List<TripSummaryDTO>();
+        }
+
+        return fullTrips.Select(trip => new TripSummaryDTO
+        {
+            Id = trip.Id,
+            UserId = trip.UserId,
+            Name = trip.Name,
+            TripDate = trip.TripDate,
+            Distance = trip.Distance,
+            Duration = trip.Duration,
+            ElevationGain = trip.ElevationGain,
+            Steps = trip.Steps
+        });
     }
 }

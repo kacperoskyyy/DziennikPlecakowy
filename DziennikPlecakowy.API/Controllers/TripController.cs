@@ -27,7 +27,6 @@ public class TripController : ControllerBase
     public async Task<IActionResult> AddTrip([FromBody] TripAddRequestDTO tripAddRequest)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
         if (string.IsNullOrEmpty(userId))
         {
             return Unauthorized("Brak Id użytkownika w tokenie.");
@@ -48,10 +47,15 @@ public class TripController : ControllerBase
 
             var newTrip = await _tripService.AddTripAsync(trip);
 
-            if (newTrip!=null)
+            if (newTrip != null)
             {
                 _logger.LogInformation("Trip added successfully by user {UserId}.", userId);
-                return Ok(new { Message = "Wycieczka została pomyślnie dodana." });
+
+                return Ok(new
+                {
+                    Message = "Wycieczka została pomyślnie dodana.",
+                    TripId = newTrip.Id 
+                });
             }
             else
             {
@@ -162,6 +166,35 @@ public class TripController : ControllerBase
         catch (Exception e)
         {
             _logger.LogError(e, "Unexpected error during GetUserTrips for user {UserId}.", userId);
+            return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera: {e.Message}");
+        }
+    }
+    [HttpGet("getUserTripSummaries")]
+    public async Task<IActionResult> GetUserTripSummaries()
+    {
+        _logger.LogInformation("Endpoint: GET api/Trip/getUserTripSummaries invoked.");
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null) return Unauthorized();
+
+        try
+        {
+            var result = await _tripService.GetUserTripSummariesAsync(userId);
+
+            if (result != null)
+            {
+                _logger.LogInformation("Successfully retrieved {Count} trip summaries for user {UserId}.", result.Count(), userId);
+                return Ok(result);
+            }
+            else
+            {
+                _logger.LogInformation("No trip summaries found for user {UserId}.", userId);
+                return NotFound("Nie znaleziono wycieczek dla tego użytkownika.");
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Unexpected error during GetUserTripSummaries for user {UserId}.", userId);
             return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera: {e.Message}");
         }
     }

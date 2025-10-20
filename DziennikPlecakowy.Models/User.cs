@@ -24,9 +24,14 @@ public class User
 
     [BsonElement("lastLoginTime")]
     public DateTime? LastLoginTime { get; set; }
-
+    [BsonElement("isBlocked")]
+    public bool IsBlocked { get; set; } = false;
+    [BsonElement("mustChangePassword")]
+    public bool MustChangePassword { get; set; } = false;
     [BsonElement("Roles")]
     public ICollection<UserRole> Roles { get; set; } = new List<UserRole>();
+    [BsonElement("passwordHashesHistory")]
+    public IList<string> PasswordHashesHistory { get; set; } = new List<string>();
 
 }
 public enum UserRole

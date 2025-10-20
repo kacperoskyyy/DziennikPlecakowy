@@ -56,11 +56,30 @@ public class AuthController : ControllerBase
 
             if (authResponse != null)
             {
+                if(authResponse.MustChangePassword)
+                {
+                    _logger.LogInformation("User with email {Email} must change password.", userAuthData.Email);
+                    return Ok(new
+                    {
+                        Token = authResponse.Token,
+                        RefreshToken = authResponse.RefreshToken,
+                        MustChangePassword = true,
+                        Message = "Wymagana jest zmiana hasła."
+                    });
+                }
+
+                if(authResponse.Token == "LOCKED" && authResponse.RefreshToken == "LOCKED")
+                {
+                    _logger.LogWarning("Login attempt for email {Email}, but user blocked", userAuthData.Email);
+                    return Unauthorized("Uzytkownik zablokowany.");
+                }
+
                 _logger.LogInformation("User logged in successfully with email {Email}.", userAuthData.Email);
                 return Ok(new
                 {
                     Token = authResponse.Token,
                     RefreshToken = authResponse.RefreshToken,
+                    MustChangePassword = false,
                     Message = "Pomyślnie zalogowano."
                 });
             }

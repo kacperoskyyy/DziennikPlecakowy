@@ -1,4 +1,5 @@
-﻿using DziennikPlecakowy.Models;
+﻿using DziennikPlecakowy.DTO;
+using DziennikPlecakowy.Models;
 
 namespace DziennikPlecakowy.Interfaces;
 
@@ -9,4 +10,5 @@ public interface ITripService
     Task<bool> UpdateTripAsync(Trip trip, string userId);
     Task<bool> DeleteTripAsync(string tripId, string userId);
     Task<IEnumerable<Trip>> GetUserTripsAsync(string userId);
+    Task<IEnumerable<TripSummaryDTO>> GetUserTripSummariesAsync(string userId);
 }

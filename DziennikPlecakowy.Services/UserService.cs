@@ -1,6 +1,7 @@
 ﻿using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Interfaces;
 using DziennikPlecakowy.Models;
+using System.Linq;
 
 namespace DziennikPlecakowy.Services;
 
@@ -82,7 +83,22 @@ public class UserService : IUserService
             return false;
         }
 
-        user.HashedPassword = _hash.Hash(newPassword);
+        string newPasswordHash = _hash.Hash(newPassword);
+
+
+        if (user.PasswordHashesHistory.Contains(newPasswordHash))
+        {
+            return false;
+        }
+
+        user.HashedPassword = newPasswordHash;
+        user.PasswordHashesHistory.Add(newPasswordHash);
+        user.MustChangePassword = false;
+
+        if (user.PasswordHashesHistory.Count > 10)
+        {
+            user.PasswordHashesHistory.Remove(user.PasswordHashesHistory.First());
+        }
 
         var success = await _userRepository.UpdateAsync(user);
         if (success) DecryptUser(user);
@@ -212,5 +228,45 @@ public class UserService : IUserService
             await _userStatRepository.AddAsync(stats);
         }
         return stats;
+    }
+
+    public async Task<IEnumerable<User>> GetAllUsersAsync()
+    {
+        return await _userRepository.GetAllAsync();
+    }
+
+    public async Task<bool> SetUserLockStatusAsync(string userId, bool isLocked)
+    {
+        User? user = await _userRepository.GetByIdAsync(userId);
+        if (user == null) return false;
+
+        user.IsBlocked = isLocked;
+        return await _userRepository.UpdateAsync(user);
+    }
+
+    public async Task<bool> SetPasswordChangeStatusAsync(string userId, bool mustChange)
+    {
+        User? user = await _userRepository.GetByIdAsync(userId);
+        if (user == null) return false;
+
+        user.MustChangePassword = mustChange;
+        return await _userRepository.UpdateAsync(user);
+    }
+
+    public async Task<bool> SetUserRoleAsync(string userId, UserRole newRole)
+    {
+        User? user = await _userRepository.GetByIdAsync(userId);
+        if (user == null) return false;
+
+        if (newRole == UserRole.Admin && !user.Roles.Contains(UserRole.Admin))
+        {
+            user.Roles.Add(UserRole.Admin);
+        }
+        else if (newRole == UserRole.User && user.Roles.Contains(UserRole.Admin))
+        {
+            user.Roles.Remove(UserRole.Admin);
+        }
+
+        return await _userRepository.UpdateAsync(user);
     }
 }

@@ -166,69 +166,7 @@ public class UserController : ControllerBase
             return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
         }
     }
-    // Endpoint nadania roli Admin innemu użytkownikowi (tylko dla Adminów)
-    [HttpPut("makeAdmin/{targetUserId}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> MakeAdminAsync(string targetUserId)
-    {
-        _logger.LogInformation("Endpoint: PUT api/User/makeAdmin invoked by Admin {AdminId} for user {TargetId}.", GetUserIdFromToken(), targetUserId);
-
-        try
-        {
-            var user = await _userService.GetUserById(targetUserId);
-            if (user == null)
-            {
-                _logger.LogWarning("MakeAdmin failed: Target user {TargetId} not found.", targetUserId);
-                return NotFound("Nie znaleziono użytkownika docelowego.");
-            }
-
-            var result = await _userService.SetAdmin(user);
-
-            if (result > 0)
-            {
-                _logger.LogInformation("User {TargetId} successfully granted Admin role.", targetUserId);
-                return Ok(new { Message = "Rola administratora pomyślnie nadana." });
-            }
-
-            _logger.LogWarning("MakeAdmin failed for user {TargetId}.", targetUserId);
-            return BadRequest("Nie udało się potwierdzić roli Admin.");
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error during makeAdmin for user {TargetId}.", targetUserId);
-            return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
-        }
-    }
-    // Endpoint sprawdzenia, czy dany użytkownik ma rolę Admin (tylko dla Adminów)
-    [HttpGet("checkAdmin/{targetUserId}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CheckAdminAsync(string targetUserId)
-    {
-        _logger.LogInformation("Endpoint: GET api/User/checkAdmin invoked by Admin {AdminId} for user {TargetId}.", GetUserIdFromToken(), targetUserId);
-
-        try
-        {
-            var user = await _userService.GetUserById(targetUserId);
-            if (user == null) return NotFound("Nie znaleziono użytkownika.");
-
-            var isAdmin = user.Roles.Contains(UserRole.Admin);
-
-            if (isAdmin)
-            {
-                _logger.LogInformation("User {TargetId} is an Admin.", targetUserId);
-                return Ok(new { IsAdmin = true, Message = "Użytkownik ma rolę Admina." });
-            }
-
-            _logger.LogInformation("User {TargetId} is NOT an Admin.", targetUserId);
-            return Ok(new { IsAdmin = false, Message = "Użytkownik nie ma roli Admina." });
-
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error during checkAdmin for user {TargetId}.", targetUserId);
-            return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
-        }
-    }
+    
     [HttpGet("getUserStats")]
     [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> GetUserStats()
@@ -241,21 +179,25 @@ public class UserController : ControllerBase
             var user = await _userService.GetUserById(userId);
             if (user == null)
             {
-                _logger.LogWarning("User {UserId} not found for stats retrieval.", userId);
                 return NotFound("Nie znaleziono użytkownika.");
             }
-            var userStatss = await _userService.GetUserStats(userId);
-            var userStats = new
+
+            var userStatsObject = await _userService.GetUserStats(userId); 
+
+            var userProfileData = new
             {
-                user.Id,
-                user.Email,
-                user.Username,
-                user.CreatedTime,
-                user.LastLoginTime,
-                Roles = user.Roles.Select(role => role.ToString()).ToList()
+                Id = user.Id,
+                Email = user.Email,
+                Username = user.Username,
+                CreatedTime = user.CreatedTime,
+                LastLoginTime = user.LastLoginTime,
+                Roles = user.Roles.Select(role => role.ToString()).ToList(),
+
+                Stats = userStatsObject
             };
+
             _logger.LogInformation("User stats retrieved successfully for user {UserId}.", userId);
-            return Ok(userStats);
+            return Ok(userProfileData); 
         }
         catch (Exception e)
         {

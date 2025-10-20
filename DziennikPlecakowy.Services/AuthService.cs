@@ -38,6 +38,16 @@ public class AuthService : IAuthService
             return null;
         }
 
+        if(user.IsBlocked)
+        {
+            return new AuthResponseDTO
+            {
+                Token = "LOCKED",
+                RefreshToken = "LOCKED",
+                MustChangePassword = false
+            };
+        }
+
         var jwtToken = _cypherService.GenerateJwtToken(user);
         var refreshToken = await CreateAndStoreRefreshToken(user.Id);
 
@@ -63,6 +73,15 @@ public class AuthService : IAuthService
         if (user == null)
         {
             return null;
+        }
+        if (user.IsBlocked)
+        {
+            return new AuthResponseDTO
+            {
+                Token = "LOCKED",
+                RefreshToken = "LOCKED",
+                MustChangePassword = false
+            };
         }
 
         var newJwtToken = _cypherService.GenerateJwtToken(user);

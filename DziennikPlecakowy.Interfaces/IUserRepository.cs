@@ -10,4 +10,5 @@ public interface IUserRepository
     Task<User?> GetByEncryptedEmailAsync(string encryptedEmail);
     Task<bool> UpdateAsync(User user);
     Task<bool> DeleteAsync(string id);
+    Task<List<User>> GetAllAsync();
 }
