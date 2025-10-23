@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DziennikPlecakowy.Services.Local;
+using DziennikPlecakowy.Views;
 
 namespace DziennikPlecakowy.ViewModels;
 
@@ -53,7 +54,7 @@ public partial class LoginViewModel : BaseViewModel
                 {
                     await _syncService.SynchronizePendingTripsAsync();
 
-                    //await Shell.Current.GoToAsync($"//{nameof(DashboardPage)}");
+                    await Shell.Current.GoToAsync($"//{nameof(DashboardPage)}");
                 }
             }
             else
@@ -74,6 +75,6 @@ public partial class LoginViewModel : BaseViewModel
     [RelayCommand]
     private async Task GoToRegisterAsync()
     {
-        // await Shell.Current.GoToAsync(nameof(RegisterPage));
+        await Shell.Current.GoToAsync(nameof(RegisterPage));
     }
 }

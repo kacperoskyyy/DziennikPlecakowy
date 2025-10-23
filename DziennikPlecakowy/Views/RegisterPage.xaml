@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
+             x:DataType="vm:RegisterViewModel"
+             x:Class="DziennikPlecakowy.Views.RegisterPage"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10" VerticalOptions="Center">
+
+            <Entry Placeholder="Nazwa użytkownika" 
+                   Text="{Binding Username}" />
+
+            <Entry Placeholder="Email" 
+                   Text="{Binding Email}" 
+                   Keyboard="Email" />
+
+            <Entry Placeholder="Hasło" 
+                   Text="{Binding Password}" 
+                   IsPassword="True" />
+
+            <Entry Placeholder="Potwierdź hasło" 
+                   Text="{Binding ConfirmPassword}" 
+                   IsPassword="True" />
+
+            <Label Text="{Binding ErrorMessage}" 
+                   TextColor="Red"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+
+            <Button Text="Zarejestruj się" 
+                    Command="{Binding RegisterCommand}" 
+                    IsEnabled="{Binding IsNotBusy}" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" />
+
+            <Button Text="Masz już konto? Zaloguj się"
+                    Command="{Binding GoToLoginCommand}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

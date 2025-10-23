@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
+             x:DataType="vm:EditAccountViewModel"
+             x:Class="DziennikPlecakowy.Views.EditAccountPage"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15" IsEnabled="{Binding IsNotBusy}">
+
+            <Frame Padding="10" CornerRadius="10">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Zmień nazwę użytkownika" FontAttributes="Bold" />
+                    <Entry Placeholder="Nowa nazwa" 
+                           Text="{Binding NewUsername}" />
+                    <Label Text="{Binding UsernameMessage}" TextColor="Red" 
+                           IsVisible="{Binding UsernameMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+                    <Button Text="Zapisz nazwę" 
+                            Command="{Binding ChangeUsernameCommand}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Padding="10" CornerRadius="10">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Zmień adres e-mail" FontAttributes="Bold" />
+                    <Entry Placeholder="Nowy e-mail" 
+                           Text="{Binding NewEmail}" 
+                           Keyboard="Email" />
+                    <Label Text="{Binding EmailMessage}" TextColor="Red" 
+                           IsVisible="{Binding EmailMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+                    <Button Text="Zapisz e-mail" 
+                            Command="{Binding ChangeEmailCommand}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Padding="10" CornerRadius="10">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Zmień hasło" FontAttributes="Bold" />
+                    <Entry Placeholder="Bieżące hasło" 
+                           Text="{Binding CurrentPassword}" 
+                           IsPassword="True" />
+                    <Entry Placeholder="Nowe hasło" 
+                           Text="{Binding NewPassword}" 
+                           IsPassword="True" />
+                    <Entry Placeholder="Potwierdź nowe hasło" 
+                           Text="{Binding ConfirmNewPassword}" 
+                           IsPassword="True" />
+                    <Label Text="{Binding PasswordMessage}" TextColor="Red" 
+                           IsVisible="{Binding PasswordMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+                    <Button Text="Zapisz hasło" 
+                            Command="{Binding ChangePasswordCommand}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" />
+
+            <Button Text="Wróć" 
+                    Command="{Binding GoBackCommand}" 
+                    Margin="0,20,0,0" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

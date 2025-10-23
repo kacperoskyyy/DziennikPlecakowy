@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
+             xmlns:dto="clr-namespace:DziennikPlecakowy.DTO"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:DataType="vm:AccountViewModel"
+             x:Class="DziennikPlecakowy.Views.AccountPage"
+             Title="{Binding Title}">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            EventName="Appearing"
+            Command="{Binding LoadProfileCommand}" />
+    </ContentPage.Behaviors>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" HorizontalOptions="Center" />
+
+            <Label Text="Profil Użytkownika" FontSize="Large" FontAttributes="Bold" />
+
+            <Frame Padding="10" CornerRadius="10" x:DataType="dto:UserProfileDTO">
+                <VerticalStackLayout Spacing="5">
+                    <Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Nazwa: " />
+                                <Span Text="{Binding Username}" FontAttributes="Bold" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Email: " />
+                                <Span Text="{Binding Email}" FontAttributes="Bold" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Label Text="Globalne Statystyki" FontSize="Large" FontAttributes="Bold" Margin="0,15,0,0" />
+
+            <Frame Padding="10" CornerRadius="10" x:DataType="dto:UserProfileDTO">
+                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Padding="5">
+                    <Label Grid.Row="0" Grid.Column="0" Text="Wszystkie Wycieczki:" />
+                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding Stats.TripsCount}" FontAttributes="Bold" />
+
+                    <Label Grid.Row="1" Grid.Column="0" Text="Total Dystans:" />
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding Stats.TotalDistance, StringFormat='{0:F2} km'}" FontAttributes="Bold" />
+
+                    <Label Grid.Row="2" Grid.Column="0" Text="Total Czas:" />
+                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding Stats.TotalDuration, Converter={StaticResource SecondsToHoursConverter}}" FontAttributes="Bold" />
+
+                    <Label Grid.Row="3" Grid.Column="0" Text="Total Przewyższenia:" />
+                    <Label Grid.Row="3" Grid.Column="1" Text="{Binding Stats.TotalElevationGain, StringFormat='{0:F0} m'}" FontAttributes="Bold" />
+
+                    <Label Grid.Row="4" Grid.Column="0" Text="Total Kroki:" />
+                    <Label Grid.Row="4" Grid.Column="1" Text="{Binding Stats.TotalSteps}" FontAttributes="Bold" />
+                </Grid>
+            </Frame>
+
+            <Button Text="Edytuj Konto" 
+                    Command="{Binding GoToEditAccountCommand}" 
+                    Margin="0,20,0,0" />
+
+            <Button Text="Panel Administratora" 
+                    Command="{Binding GoToAdminPanelCommand}"
+                    IsVisible="{Binding IsAdmin}"
+                    BackgroundColor="Orange" />
+
+            <Button Text="Wyloguj" 
+                    Command="{Binding LogoutCommand}" 
+                    BackgroundColor="Red"
+                    Margin="0,5,0,0" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
