@@ -12,7 +12,7 @@ public class ApiClientService
     private readonly HttpClient _httpClient;
     private readonly TokenRepository _tokenRepository;
 
-    private const string BaseApiUrl = "https://twoja-domena-api.com";
+    private const string BaseApiUrl = "https://localhost:7046";
 
     private string _currentAccessToken;
     private bool _isRefreshingToken = false;
