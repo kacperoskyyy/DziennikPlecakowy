@@ -122,4 +122,19 @@ public class ApiClientService
     {
         return _httpClient.PostAsJsonAsync(requestUri, value);
     }
+    public async Task<HttpResponseMessage> PutAsync(string requestUri, HttpContent content = null)
+    {
+        var response = await _httpClient.PutAsync(requestUri, content);
+
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            bool refreshed = await HandleUnauthorizedResponseAsync();
+            if (refreshed)
+            {
+                // Ponów żądanie z nowym tokenem
+                response = await _httpClient.PutAsync(requestUri, content);
+            }
+        }
+        return response;
+    }
 }

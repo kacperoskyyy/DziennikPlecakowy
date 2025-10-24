@@ -48,6 +48,9 @@ public static class MauiProgram
         builder.Services.AddTransient<TripDetailViewModel>();
         builder.Services.AddTransient<TripDetailPage>();
 
+        builder.Services.AddTransient<AdminViewModel>();
+        builder.Services.AddTransient<AdminPage>();
+
 
 
 

@@ -1,4 +1,6 @@
-﻿namespace DziennikPlecakowy.DTO;
+﻿using DziennikPlecakowy.Models;
+
+namespace DziennikPlecakowy.DTO;
 
 public class AdminUserDetailDTO
 {
@@ -7,5 +9,5 @@ public class AdminUserDetailDTO
     public string Username { get; set; }
     public bool IsLocked { get; set; }
     public bool MustChangePassword { get; set; }
-    public List<string> Roles { get; set; }
+    public List<UserRole> Roles { get; set; }
 }

@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DziennikPlecakowy.DTO;
+using DziennikPlecakowy.Models;
 using DziennikPlecakowy.Services.Local;
 using DziennikPlecakowy.Views;
 using System.Net.Http.Json;
@@ -16,7 +17,7 @@ public partial class AccountViewModel : BaseViewModel
     [NotifyPropertyChangedFor(nameof(IsAdmin))]
     UserProfileDTO userProfile;
 
-    public bool IsAdmin => UserProfile?.Roles?.Contains("Admin") ?? false;
+    public bool IsAdmin => UserProfile?.Roles?.Contains(UserRole.Admin) ?? false;
     public AccountViewModel(AuthService authService, ApiClientService apiClientService)
     {
         _authService = authService;
@@ -65,6 +66,6 @@ public partial class AccountViewModel : BaseViewModel
     [RelayCommand]
     private async Task GoToAdminPanelAsync()
     {
-        // await Shell.Current.GoToAsync(nameof(AdminPage));
+         await Shell.Current.GoToAsync(nameof(AdminPage));
     }
 }

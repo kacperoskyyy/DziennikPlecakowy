@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
+             xmlns:dto="clr-namespace:DziennikPlecakowy.DTO.Local"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:DataType="vm:AdminViewModel"
+             x:Class="DziennikPlecakowy.Views.AdminPage"
+             Title="{Binding Title}">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            EventName="Appearing"
+            Command="{Binding LoadUsersCommand}" />
+    </ContentPage.Behaviors>
+
+    <Grid RowDefinitions="Auto, *">
+
+        <ActivityIndicator Grid.Row="0" IsRunning="{Binding IsBusy}" HorizontalOptions="Center" Margin="10" />
+
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding Users}"
+                        SelectedItem="{Binding SelectedUser, Mode=TwoWay}"
+                        SelectionMode="Single">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="dto:AdminUserDetailDTO">
+                    <Frame Padding="10" Margin="10,5" CornerRadius="5">
+                        <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto">
+                            <VerticalStackLayout Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" VerticalOptions="Center">
+                                <Label Text="{Binding Username}" FontAttributes="Bold" />
+                                <Label Text="{Binding Email}" FontSize="Small" />
+                            </VerticalStackLayout>
+
+                            <Label Grid.Column="1" Grid.Row="0" 
+                                   Text="ADMIN" FontAttributes="Bold" TextColor="Orange"
+                                   IsVisible="{Binding Roles.Count, Converter={StaticResource GreaterThanZeroConverter}}" />
+                            <Label Grid.Column="1" Grid.Row="1" 
+                                   Text="ZABLOKOWANY" FontAttributes="Bold" TextColor="Red"
+                                   IsVisible="{Binding IsLocked}" />
+
+                            <Label Grid.Column="1" Grid.Row="2" 
+                                   Text="ZMIEŃ HASŁO" FontAttributes="Bold" TextColor="Blue"
+                                   IsVisible="{Binding MustChangePassword}" />
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+</ContentPage>

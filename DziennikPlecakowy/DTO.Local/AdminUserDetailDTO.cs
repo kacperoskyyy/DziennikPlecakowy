@@ -1,9 +1,10 @@
 ﻿using DziennikPlecakowy.Models;
 using System.Text.Json.Serialization;
 
-namespace DziennikPlecakowy.DTO
+namespace DziennikPlecakowy.DTO.Local
 {
-    public class UserProfileDTO
+    // DTO do odbioru listy userów
+    public class AdminUserDetailDTO
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }
@@ -14,10 +15,13 @@ namespace DziennikPlecakowy.DTO
         [JsonPropertyName("username")]
         public string Username { get; set; }
 
+        [JsonPropertyName("isLocked")]
+        public bool IsLocked { get; set; }
+
+        [JsonPropertyName("mustChangePassword")]
+        public bool MustChangePassword { get; set; }
+
         [JsonPropertyName("roles")]
         public List<UserRole> Roles { get; set; }
-
-        [JsonPropertyName("stats")]
-        public UserStatDTO Stats { get; set; }
     }
 }
