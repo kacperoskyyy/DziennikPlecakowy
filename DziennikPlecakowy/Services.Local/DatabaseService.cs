@@ -8,15 +8,17 @@ public class DatabaseService
 {
     private SQLiteAsyncConnection _database;
 
+    private readonly Lazy<SQLiteAsyncConnection> _lazyInitializer = new Lazy<SQLiteAsyncConnection>(() =>
+    {
+        return new SQLiteAsyncConnection(DatabaseConstants.DatabasePath, DatabaseConstants.Flags);
+    });
+
+    private SQLiteAsyncConnection Database => _lazyInitializer.Value;
+
     public SQLiteAsyncConnection GetConnection()
     {
-        if (_database == null)
-        {
-            _database = new SQLiteAsyncConnection(DatabaseConstants.DatabasePath, DatabaseConstants.Flags);
-        }
-        return _database;
+        return Database;
     }
-
 
     public async Task InitializeDatabaseAsync()
     {

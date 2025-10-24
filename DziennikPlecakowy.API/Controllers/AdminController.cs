@@ -35,7 +35,7 @@ public class AdminController : ControllerBase
                 Username = user.Username,
                 IsLocked = user.IsBlocked, 
                 MustChangePassword = user.MustChangePassword,
-                Roles = user.Roles.Select(r => r.ToString()).ToList()
+                Roles = user.Roles.Select(r => r).ToList()
             });
 
             return Ok(userDtos);
