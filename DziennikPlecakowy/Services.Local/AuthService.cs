@@ -10,21 +10,24 @@ public class AuthService
 {
     private readonly ApiClientService _apiClient;
     private readonly TokenRepository _tokenRepository;
+    private readonly DatabaseService _dbService;
 
     private const string UserIdKey = "auth_user_id";
     private const string UserEmailKey = "auth_user_email";
     private const string UserNameKey = "auth_user_name";
 
-    public AuthService(ApiClientService apiClient, TokenRepository tokenRepository)
+    public AuthService(ApiClientService apiClient, TokenRepository tokenRepository, DatabaseService dbService)
     {
         _apiClient = apiClient;
         _tokenRepository = tokenRepository;
+        _dbService = dbService;
     }
 
     public string GetCurrentUserId() => Preferences.Get(UserIdKey, null);
 
     public async Task<AuthResult> CheckAndRefreshTokenOnStartupAsync()
     {
+        await _dbService.InitializeDatabaseAsync(); 
         var localToken = await _tokenRepository.GetTokenAsync();
         if (localToken == null || string.IsNullOrEmpty(localToken.Token))
         {
@@ -58,6 +61,7 @@ public class AuthService
 
     public async Task<AuthResult> LoginAsync(string email, string password)
     {
+        await _dbService.InitializeDatabaseAsync();
         var request = new UserAuthRequestDTO { Email = email, Password = password };
         var response = await _apiClient.PostRawAsync("/api/Auth/login", request);
 

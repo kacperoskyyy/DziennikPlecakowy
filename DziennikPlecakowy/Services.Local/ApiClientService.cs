@@ -12,7 +12,7 @@ public class ApiClientService
     private readonly HttpClient _httpClient;
     private readonly TokenRepository _tokenRepository;
 
-    private const string BaseApiUrl = "https://localhost:7046";
+    private const string BaseApiUrl = "http://10.0.2.2:5101";
 
     private string _currentAccessToken;
     private bool _isRefreshingToken = false;

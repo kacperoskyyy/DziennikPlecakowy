@@ -54,3 +54,5 @@ TestResult.xml
 nunit-*.xml
 DziennikPlecakowy.API/appsettings.json
 /.vs/
+/DziennikPlecakowy/secrets.json
+/DziennikPlecakowy/secrets.props

@@ -3,6 +3,7 @@ using DziennikPlecakowy.Interfaces.Local;
 using DziennikPlecakowy.Platforms.Android.Services;
 #endif
 using DziennikPlecakowy.Repositories;
+using Microsoft.Extensions.Configuration;
 using DziennikPlecakowy.Services.Local;
 using DziennikPlecakowy.ViewModels;
 using DziennikPlecakowy.Views;
@@ -14,6 +15,16 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
+
+        var assembly = typeof(MauiProgram).Assembly;
+
+        var config = new ConfigurationBuilder()
+                    .AddUserSecrets<App>() 
+                    .Build();
+
+
+        builder.Configuration.AddConfiguration(config);
+
         builder.UseMauiApp<App>().ConfigureFonts(fonts =>
         {
             fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -52,11 +63,13 @@ public static class MauiProgram
         builder.Services.AddTransient<AdminPage>();
 
 
+        builder.Services.AddSingleton<IConfiguration>(config);
 
 
-        var app = builder.Build();
-        var dbService = app.Services.GetService<DatabaseService>();
-        dbService.InitializeDatabaseAsync().Wait();
-        return app;
+
+        //var app = builder.Build();
+        //var dbService = app.Services.GetService<DatabaseService>();
+        //dbService.InitializeDatabaseAsync().Wait();
+        return builder.Build();
     }
 }

@@ -6,53 +6,63 @@ namespace DziennikPlecakowy.Repositories;
 public class LocalTripRepository
 {
     private readonly SQLiteAsyncConnection _db;
+    private readonly DatabaseService _dbService;
 
     public LocalTripRepository(DatabaseService dbService)
     {
+        _dbService = dbService;
         _db = dbService.GetConnection();
     }
 
-    public Task<List<LocalTrip>> GetLast50TripsAsync()
+    public async Task<List<LocalTrip>> GetLast50TripsAsync()
     {
-        return _db.Table<LocalTrip>()
-                  .OrderByDescending(t => t.TripDate)
-                  .Take(50)
-                  .ToListAsync();
+        await _dbService.InitializeDatabaseAsync();
+        return await _db.Table<LocalTrip>()
+                      .OrderByDescending(t => t.TripDate)
+                      .Take(50)
+                      .ToListAsync();
     }
 
     public async Task<List<TripWithGeoPoints>> GetUnsynchronizedTripsAsync()
     {
+        await _dbService.InitializeDatabaseAsync();
         var unsyncedTrips = await _db.Table<LocalTrip>()
-                                     .Where(t => !t.IsSynchronized)
-                                     .ToListAsync();
+                                         .Where(t => !t.IsSynchronized)
+                                         .ToListAsync();
 
         var result = new List<TripWithGeoPoints>();
         foreach (var trip in unsyncedTrips)
         {
-            result.Add(await GetTripWithGeoPointsAsync(trip.LocalId));
+            var tripWithPoints = await GetTripWithGeoPointsAsync(trip.LocalId);
+            if (tripWithPoints != null)
+            {
+                result.Add(tripWithPoints);
+            }
         }
         return result;
     }
 
     public async Task<TripWithGeoPoints> GetTripWithGeoPointsAsync(long localTripId)
     {
+        await _dbService.InitializeDatabaseAsync();
         var trip = await _db.Table<LocalTrip>().FirstOrDefaultAsync(t => t.LocalId == localTripId);
         if (trip == null)
             return null;
 
         var points = await _db.Table<LocalGeoPoint>()
-                              .Where(p => p.LocalTripId == localTripId)
-                              .ToListAsync();
+                                  .Where(p => p.LocalTripId == localTripId)
+                                  .ToListAsync();
 
         return new TripWithGeoPoints
         {
             Trip = trip,
-            GeoPoints = points
+            GeoPoints = points ?? new List<LocalGeoPoint>()
         };
     }
 
     public async Task<long> SaveTripAsync(LocalTrip trip, IEnumerable<LocalGeoPoint> points)
     {
+        await _dbService.InitializeDatabaseAsync();
         if (trip.LocalId != 0)
         {
             await _db.UpdateAsync(trip);
@@ -62,26 +72,33 @@ public class LocalTripRepository
             await _db.InsertAsync(trip);
         }
 
-        foreach (var point in points)
+        var pointsList = points?.ToList() ?? new List<LocalGeoPoint>();
+
+        foreach (var point in pointsList)
         {
             point.LocalTripId = trip.LocalId;
         }
 
-        await _db.InsertAllAsync(points);
+        if (pointsList.Any())
+        {
+            await _db.InsertAllAsync(pointsList);
+        }
 
         return trip.LocalId;
     }
 
 
-    public Task AddGeoPointAsync(LocalGeoPoint point)
+    public async Task AddGeoPointAsync(LocalGeoPoint point)
     {
-        return _db.InsertAsync(point);
+        await _dbService.InitializeDatabaseAsync();
+        await _db.InsertAsync(point);
     }
 
 
-    public Task MarkTripAsSynchronizedAsync(long localTripId, string serverId)
+    public async Task MarkTripAsSynchronizedAsync(long localTripId, string serverId)
     {
-        return _db.ExecuteAsync(
+        await _dbService.InitializeDatabaseAsync();
+        await _db.ExecuteAsync(
             "UPDATE trips SET IsSynchronized = ?, ServerId = ? WHERE LocalId = ?",
             true,
             serverId,
@@ -91,8 +108,11 @@ public class LocalTripRepository
 
     public async Task DeleteTripAsync(long localTripId)
     {
-        await _db.Table<LocalGeoPoint>().DeleteAsync(p => p.LocalTripId == localTripId);
+        await _dbService.InitializeDatabaseAsync();
 
-        await _db.Table<LocalTrip>().DeleteAsync(t => t.LocalId == localTripId);
+        await _db.RunInTransactionAsync(conn => { 
+            conn.Execute("DELETE FROM geo_points WHERE LocalTripId = ?", localTripId);
+            conn.Execute("DELETE FROM trips WHERE LocalId = ?", localTripId);
+        });
     }
 }

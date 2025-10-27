@@ -2,30 +2,34 @@
 using DziennikPlecakowy.Services.Local;
 using SQLite;
 
-namespace DziennikPlecakowy.Repositories
+namespace DziennikPlecakowy.Repositories;
+
+public class TokenRepository
 {
-    public class TokenRepository
+    private readonly SQLiteAsyncConnection _db;
+    private readonly DatabaseService _dbService;
+
+    public TokenRepository(DatabaseService dbService)
     {
-        private readonly SQLiteAsyncConnection _db;
+        _db = dbService.GetConnection();
+        _dbService = dbService;
+    }
 
-        public TokenRepository(DatabaseService dbService)
-        {
-            _db = dbService.GetConnection();
-        }
+    public async Task SaveTokenAsync(LocalRefreshToken token)
+    {
+        await _dbService.InitializeDatabaseAsync();
+        await _db.InsertOrReplaceAsync(token);
+    }
 
-        public Task SaveTokenAsync(LocalRefreshToken token)
-        {
-            return _db.InsertOrReplaceAsync(token);
-        }
+    public async Task<LocalRefreshToken> GetTokenAsync()
+    {
+        await _dbService.InitializeDatabaseAsync();
+        return await _db.Table<LocalRefreshToken>().FirstOrDefaultAsync(t => t.Id == 1);
+    }
 
-        public Task<LocalRefreshToken> GetTokenAsync()
-        {
-            return _db.Table<LocalRefreshToken>().FirstOrDefaultAsync(t => t.Id == 1);
-        }
-
-        public Task DeleteTokenAsync()
-        {
-            return _db.Table<LocalRefreshToken>().DeleteAsync(t => t.Id == 1);
-        }
+    public async Task DeleteTokenAsync()
+    {
+        await _dbService.InitializeDatabaseAsync();
+        await _db.Table<LocalRefreshToken>().DeleteAsync(t => t.Id == 1);
     }
 }
