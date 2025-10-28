@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace DziennikPlecakowy.Services;
 
-// Serwis zarządzania użytkownikami
+
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
@@ -13,7 +13,7 @@ public class UserService : IUserService
     private readonly ITripRepository _tripRepository;
     private readonly IHashService _hash;
     private readonly ICypherService _cypherService;
-    // Konstruktor serwisu użytkowników
+    
     public UserService(IUserRepository userRepository, IUserStatRepository userStatRepository, ITripRepository tripRepository, IHashService hash, ICypherService cypherService)
     {
         _userRepository = userRepository;
@@ -22,14 +22,14 @@ public class UserService : IUserService
         _hash = hash;
         _cypherService = cypherService;
     }
-    // Odszyfrowywanie danych użytkownika
+    
     private void DecryptUser(User user)
     {
         if (user == null) return;
         user.Email = _cypherService.Decrypt(user.Email);
         user.Username = _cypherService.Decrypt(user.Username);
     }
-    // Szyfrowanie i zapisywanie danych użytkownika
+    
     private async Task<bool> EncryptAndSaveUserAsync(User user)
     {
         user.Email = _cypherService.Encrypt(user.Email.ToLower());
@@ -45,8 +45,7 @@ public class UserService : IUserService
         return success;
     }
 
-    // --- Zarządzanie Kontem ---
-    // Zmiana nazwy użytkownika
+    
     public async Task<bool> ChangeUsernameAsync(string userId, string newUsername)
     {
         User? user = await _userRepository.GetByIdAsync(userId);
@@ -55,7 +54,7 @@ public class UserService : IUserService
         user.Username = newUsername;
         return await EncryptAndSaveUserAsync(user);
     }
-    // Zmiana adresu email
+    
     public async Task<bool> ChangeEmailAsync(string userId, string newEmail)
     {
         User? user = await _userRepository.GetByIdAsync(userId);
@@ -72,7 +71,7 @@ public class UserService : IUserService
         user.Email = newEmail;
         return await EncryptAndSaveUserAsync(user);
     }
-    // Zmiana hasła
+    
     public async Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword)
     {
         User? user = await _userRepository.GetByIdAsync(userId);
@@ -104,7 +103,7 @@ public class UserService : IUserService
         if (success) DecryptUser(user);
         return success;
     }
-    // Usuwanie konta użytkownika
+    
     public async Task<bool> DeleteUserAsync(string userId)
     {
         User? user = await _userRepository.GetByIdAsync(userId);
@@ -116,7 +115,7 @@ public class UserService : IUserService
         return await _userRepository.DeleteAsync(userId);
     }
 
-    // Rejestracja nowego użytkownika
+    
     public async Task<int> UserRegister(UserRegisterRequestDTO userRegister)
     {
         try
@@ -153,7 +152,7 @@ public class UserService : IUserService
             return -1;
         }
     }
-    // Pobieranie użytkownika po adresie email
+    
     public async Task<User?> GetUserByEmail(string email)
     {
         string encryptedEmail = _cypherService.Encrypt(email.ToLower());
@@ -164,7 +163,7 @@ public class UserService : IUserService
         DecryptUser(user);
         return user;
     }
-    // Pobieranie użytkownika po identyfikatorze
+    
     public async Task<User?> GetUserById(string id)
     {
         var user = await _userRepository.GetByIdAsync(id);
@@ -173,25 +172,25 @@ public class UserService : IUserService
         DecryptUser(user);
         return user;
     }
-    // Sprawdzanie poprawności hasła
+    
     public bool CheckPassword(User user, string password)
     {
         return user.HashedPassword == _hash.Hash(password);
     }
 
-    // Aktualizowanie danych użytkownika
+    
     public async Task<int> UpdateUser(User user)
     {
         var result = await _userRepository.UpdateAsync(user);
         return result ? 1 : -1;
     }
-    // Usuwanie użytkownika
+    
     public async Task<int> DeleteUser(User user)
     {
         var result = await _userRepository.DeleteAsync(user.Id);
         return result ? 1 : -1;
     }
-    // Ustawianie czasu ostatniego logowania
+    
     public async Task<int> SetLastLogin(string Id)
     {
         var user = await GetUserById(Id);
@@ -200,7 +199,7 @@ public class UserService : IUserService
 
         return await EncryptAndSaveUserAsync(user) ? 1 : 0;
     }
-    // Nadawanie uprawnień administratora
+    
     public async Task<int> SetAdmin(User user)
     {
         if (!user.Roles.Contains(UserRole.Admin))

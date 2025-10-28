@@ -3,7 +3,6 @@ using DziennikPlecakowy.Models;
 
 namespace DziennikPlecakowy.Interfaces;
 
-// Interfejs serwisu zarządzania wycieczkami
 public interface ITripService
 {
     Task<Trip> AddTripAsync(Trip trip);

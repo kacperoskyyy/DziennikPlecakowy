@@ -8,7 +8,6 @@ namespace DziennikPlecakowy.API.Extensions;
 
 public static class MiddlewareExtensions
 {
-    // Metoda do rejestracji middleware i pipeline
     public static WebApplication AddApplicationMiddleware(this WebApplication app)
     {
         if (app.Environment.IsDevelopment())
@@ -20,12 +19,11 @@ public static class MiddlewareExtensions
             });
         }
 
-        app.UseHttpsRedirection();                  //POTENCJALNIE PROBLEMATYCZNA LINIA
+        app.UseHttpsRedirection();                  //POTENCJALNIE PROBLEMATYCZNA LINIA DLA POLACZENIA APLIKACJI Z API
         app.UseRouting();
 
         app.UseHealthCheckEndpoint();
 
-        // Uwierzytelnianie i Autoryzacja
         app.UseAuthentication();
         app.UseAuthorization();
 
@@ -34,7 +32,6 @@ public static class MiddlewareExtensions
         return app;
     }
 
-    // Metoda do inicjalizacji i tworzenia indeksów MongoDB
     public static WebApplication InitializeDatabaseIndexes(this WebApplication app)
     {
         app.Lifetime.ApplicationStarted.Register(() =>
@@ -42,17 +39,14 @@ public static class MiddlewareExtensions
             var scope = app.Services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<IMongoDbContext>();
 
-            // 1. Indeks dla Użytkowników: Email (Unikalny)
             var userKeys = Builders<User>.IndexKeys.Ascending(u => u.Email);
             var userIndexModel = new CreateIndexModel<User>(userKeys, new CreateIndexOptions { Unique = true, Name = "EmailUniqueIndex" });
             dbContext.Users.Indexes.CreateOne(userIndexModel);
 
-            // 2. Indeks dla Wycieczek: UserId
             var tripUserKeys = Builders<Trip>.IndexKeys.Ascending(t => t.UserId);
             var tripUserIndexModel = new CreateIndexModel<Trip>(tripUserKeys, new CreateIndexOptions { Name = "TripUserIdIndex" });
             dbContext.Trips.Indexes.CreateOne(tripUserIndexModel);
 
-            // 3. Indeks dla Statystyk: UserId (Unikalny)
             var statsUserKeys = Builders<UserStat>.IndexKeys.Ascending(s => s.UserId);
             var statsUserIndexModel = new CreateIndexModel<UserStat>(statsUserKeys, new CreateIndexOptions { Unique = true, Name = "StatsUserIdIndex" });
             dbContext.UserStats.Indexes.CreateOne(statsUserIndexModel);
@@ -60,7 +54,6 @@ public static class MiddlewareExtensions
         return app;
     }
 
-    // Metoda do konfiguracji endpointu Health Check
     public static WebApplication UseHealthCheckEndpoint(this WebApplication app)
     {
         app.UseHealthChecks("/health", new HealthCheckOptions

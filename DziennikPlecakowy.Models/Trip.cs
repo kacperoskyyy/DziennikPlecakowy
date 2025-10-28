@@ -3,7 +3,7 @@ using MongoDB.Bson;
 
 namespace DziennikPlecakowy.Models;
 
-// Model reprezentujący wycieczkę użytkownika
+
 public class Trip
 {
     [BsonId]

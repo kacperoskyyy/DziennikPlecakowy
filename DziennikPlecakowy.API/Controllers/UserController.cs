@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Interfaces;
-using DziennikPlecakowy.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
 namespace DziennikPlecakowy.API.Controllers;
 
-//Kontroler zarządzania użytkownikami
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "User, Admin")]
@@ -15,18 +13,15 @@ public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly ILogger<UserController> _logger;
-    // Konstruktor kontrolera ze wstrzykiwaniem zależności
     public UserController(IUserService userService, ILogger<UserController> logger)
     {
         _userService = userService;
         _logger = logger;
     }
-    // Pobierz Id użytkownika z tokena JWT
     private string? GetUserIdFromToken()
     {
         return User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
-    // Endpoint zmiany nazwy użytkownika
     [HttpPut("changeName")]
     public async Task<IActionResult> ChangeName([FromBody] UserChangeNameRequestDTO request)
     {
@@ -54,7 +49,6 @@ public class UserController : ControllerBase
             return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
         }
     }
-    // Endpoint zmiany hasła użytkownika
     [HttpPut("changePassword")]
     public async Task<IActionResult> ChangePassword([FromBody] UserChangePasswordRequestDTO request)
     {
@@ -82,7 +76,6 @@ public class UserController : ControllerBase
             return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
         }
     }
-    // Endpoint zmiany emaila użytkownika
     [HttpPut("changeEmail")]
     public async Task<IActionResult> ChangeEmail([FromBody] UserChangeEmailRequestDTO request)
     {
@@ -110,7 +103,6 @@ public class UserController : ControllerBase
             return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
         }
     }
-    // Endpoint usunięcia konta użytkownika
     [HttpDelete("delete")]
     public async Task<IActionResult> DeleteUser()
     {
@@ -138,7 +130,6 @@ public class UserController : ControllerBase
             return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
         }
     }
-    // Endpoint ustawienia daty ostatniego logowania
     [HttpGet("setLastLogin")]
     public async Task<IActionResult> SetLastLogin()
     {

@@ -2,7 +2,6 @@
 
 namespace DziennikPlecakowy.Interfaces;
 
-// Interfejs repozytorium wycieczek
 public interface ITripRepository
 {
     Task AddAsync(Trip trip);

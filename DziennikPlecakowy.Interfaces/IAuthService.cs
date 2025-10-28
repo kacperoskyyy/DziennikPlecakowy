@@ -2,7 +2,6 @@
 
 namespace DziennikPlecakowy.Interfaces;
 
-// Interfejs serwisu uwierzytelniania
 public interface IAuthService
 {
     Task<bool> RegisterAsync(UserRegisterRequestDTO request);

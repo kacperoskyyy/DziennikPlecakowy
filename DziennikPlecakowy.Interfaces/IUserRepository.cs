@@ -2,7 +2,6 @@
 
 namespace DziennikPlecakowy.Interfaces;
 
-// Interfejs repozytorium użytkowników
 public interface IUserRepository
 {
     Task AddAsync(User user);

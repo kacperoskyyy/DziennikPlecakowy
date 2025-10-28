@@ -5,14 +5,12 @@ using System.Security.Cryptography;
 
 namespace DziennikPlecakowy.Services;
 
-// Serwis uwierzytelniania
 public class AuthService : IAuthService
 {
     private readonly IUserService _userService;
     private readonly ICypherService _cypherService;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
 
-    // Konstruktor serwisu uwierzytelniania
     public AuthService(
         IUserService userService,
         ICypherService cypherService,
@@ -22,13 +20,11 @@ public class AuthService : IAuthService
         _cypherService = cypherService;
         _refreshTokenRepository = refreshTokenRepository;
     }
-    // Rejestracja nowego użytkownika
     public async Task<bool> RegisterAsync(UserRegisterRequestDTO request)
     {
         var result = await _userService.UserRegister(request);
         return result > 0;
     }
-    // Logowanie użytkownika
     public async Task<AuthResponseDTO?> Login(UserAuthRequestDTO userAuthData)
     {
         var user = await _userService.GetUserByEmail(userAuthData.Email);
@@ -59,7 +55,6 @@ public class AuthService : IAuthService
             RefreshToken = refreshToken.Token
         };
     }
-    // Odświeżanie tokenu
     public async Task<AuthResponseDTO?> RefreshTokenAsync(string token)
     {
         var storedToken = await _refreshTokenRepository.GetByTokenAsync(token);
@@ -95,7 +90,6 @@ public class AuthService : IAuthService
             RefreshToken = newRefreshToken.Token
         };
     }
-    // Tworzenie i przechowywanie tokenu odświeżającego
     private async Task<RefreshToken> CreateAndStoreRefreshToken(string userId)
     {
         var refreshToken = new RefreshToken
@@ -108,7 +102,6 @@ public class AuthService : IAuthService
         await _refreshTokenRepository.AddAsync(refreshToken);
         return refreshToken;
     }
-    // Generowanie losowego tokenu odświeżającego
     private string GenerateRefreshTokenString()
     {
         var randomNumber = new byte[32];

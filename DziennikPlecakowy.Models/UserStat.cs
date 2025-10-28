@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace DziennikPlecakowy.Models;
 
-// Model reprezentujący statystyki użytkownika
+
 public class UserStat
 {
     [BsonId]

@@ -1,6 +1,5 @@
 ﻿namespace DziennikPlecakowy.DTO;
 
-// DTO dla żądania rejestracji użytkownika
 public class UserRegisterRequestDTO
 {
     public string Email { get; set; }

@@ -12,20 +12,16 @@ namespace DziennikPlecakowy.API.Extensions;
 
 public static class ServiceExtensions
 {
-    // Metoda do rejestracji wszystkich serwisów DI
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        //Health Check bazy danych
         services.AddHealthChecks();
 
-        // Rejestracja MongoDB Context i Repozytoriów
         services.AddSingleton<IMongoDbContext, MongoDbContext>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITripRepository, TripRepository>();
         services.AddScoped<IUserStatRepository, UserStatRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
-        // Rejestracja Serwisów Logiki Biznesowej
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IHashService, HashService>();
@@ -35,7 +31,6 @@ public static class ServiceExtensions
         return services;
     }
 
-    // Metoda do konfiguracji JWT
     public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         var key = Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!);
@@ -66,7 +61,6 @@ public static class ServiceExtensions
         return services;
     }
 
-    // Metoda do konfiguracji Swaggera
     public static IServiceCollection AddSwaggerDocumentation(this IServiceCollection services)
     {
         services.AddSwaggerGen(c =>
@@ -99,7 +93,6 @@ public static class ServiceExtensions
     public static IServiceCollection AddHealthCheckConfiguration(this IServiceCollection services)
     {
         services.AddHealthChecks()
-                // Rejestracja naszego Health Checka dla MongoDB
                 .AddCheck<MongoDBHealthCheck>("mongodb_ready", HealthStatus.Unhealthy, new string[] { "db", "ready" });
 
         return services;

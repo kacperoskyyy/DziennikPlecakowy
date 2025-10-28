@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace DziennikPlecakowy.API.Controllers;
 
-//Kontroler logowania i rejestracji
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
@@ -13,13 +12,11 @@ public class AuthController : ControllerBase
     private readonly IAuthService _authService;
     private readonly ILogger<AuthController> _logger;
 
-    // Konstruktor kontrolera ze wstrzykiwaniem zależności
     public AuthController(IAuthService authService, ILogger<AuthController> logger)
     {
         _authService = authService;
         _logger = logger;
     }
-    // Endpoint rejestracji nowego użytkownika
     [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] UserRegisterRequestDTO request)
@@ -43,7 +40,6 @@ public class AuthController : ControllerBase
             return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
         }
     }
-    // Endpoint logowania użytkownika
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserAuthRequestDTO userAuthData)
@@ -93,7 +89,6 @@ public class AuthController : ControllerBase
         }
     }
 
-    // Endpoint odświeżania tokenu
     [AllowAnonymous]
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDTO request)
