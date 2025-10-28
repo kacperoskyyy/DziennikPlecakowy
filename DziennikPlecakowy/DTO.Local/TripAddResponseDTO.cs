@@ -1,6 +1,5 @@
 ﻿namespace DziennikPlecakowy.DTO.Local;
-
-
+// DTO dla odpowiedzi po dodaniu wycieczki
 public class TripAddResponseDTO
 {
     [System.Text.Json.Serialization.JsonPropertyName("tripId")]

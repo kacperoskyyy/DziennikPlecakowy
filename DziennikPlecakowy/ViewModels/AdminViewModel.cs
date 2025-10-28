@@ -8,6 +8,7 @@ using System.Net.Http.Json;
 
 namespace DziennikPlecakowy.ViewModels;
 
+// ViewModel zarządzający panelem administratora
 public partial class AdminViewModel : BaseViewModel
 {
     private readonly ApiClientService _apiClient;
@@ -15,7 +16,6 @@ public partial class AdminViewModel : BaseViewModel
     [ObservableProperty]
     ObservableCollection<AdminUserDetailDTO> users;
 
-    // Bindowanie do SelectedItem w CollectionView
     [ObservableProperty]
     AdminUserDetailDTO selectedUser;
 
@@ -26,7 +26,6 @@ public partial class AdminViewModel : BaseViewModel
         users = new ObservableCollection<AdminUserDetailDTO>();
     }
 
-    // Komenda odpalana, gdy strona się pojawia
     [RelayCommand]
     private async Task LoadUsersAsync()
     {
@@ -52,15 +51,13 @@ public partial class AdminViewModel : BaseViewModel
         }
     }
 
-    // Ta metoda odpali się, gdy użytkownik kliknie na kogoś z listy
     partial void OnSelectedUserChanged(AdminUserDetailDTO value)
     {
         if (value == null)
             return;
 
-        // Odpalamy logikę akcji i natychmiast czyścimy zaznaczenie
         ShowUserActionsCommand.Execute(value);
-        SelectedUser = null; // Resetuj zaznaczenie
+        SelectedUser = null;
     }
 
     [RelayCommand]
@@ -68,7 +65,6 @@ public partial class AdminViewModel : BaseViewModel
     {
         if (user == null || IsBusy) return;
 
-        // Definiujemy akcje na podstawie stanu usera
         string blockAction = user.IsLocked ? "Odblokuj użytkownika" : "Zablokuj użytkownika";
         string roleAction = user.Roles.Contains(UserRole.Admin) ? "Odbierz Admina" : "Nadaj Admina";
 
@@ -123,7 +119,6 @@ public partial class AdminViewModel : BaseViewModel
         finally
         {
             IsBusy = false;
-            // Odśwież listę po akcji
             await LoadUsersAsync();
         }
     }

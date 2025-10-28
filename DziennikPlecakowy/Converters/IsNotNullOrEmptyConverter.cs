@@ -2,6 +2,8 @@
 
 namespace DziennikPlecakowy.Converters;
 
+// Converter sprawdzający, czy string NIE jest pusty
+
 public class IsNotNullOrEmptyConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

@@ -8,6 +8,8 @@ using System.Net.Http.Json;
 
 namespace DziennikPlecakowy.ViewModels;
 
+// ViewModel zarządzający ekranem konta użytkownika
+
 public partial class AccountViewModel : BaseViewModel
 {
     private readonly AuthService _authService;

@@ -1,6 +1,7 @@
 ﻿using SQLite;
 
 namespace DziennikPlecakowy.Models.Local;
+// lokalny model wycieczki
 
 [Table("trips")]
 public class LocalTrip

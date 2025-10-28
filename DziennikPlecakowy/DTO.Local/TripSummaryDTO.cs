@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace DziennikPlecakowy.DTO.Local;
-
+//DTO podsumowania wycieczki
 public class TripSummaryDTO
 {
     [JsonPropertyName("id")]

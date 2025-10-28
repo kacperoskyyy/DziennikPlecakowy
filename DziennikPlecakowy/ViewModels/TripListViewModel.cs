@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Net.Http.Json;
 
 namespace DziennikPlecakowy.ViewModels;
+//View Model dla listy wycieczek
 
 public partial class TripListViewModel : BaseViewModel
 {

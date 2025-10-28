@@ -3,10 +3,11 @@ using Android.Content;
 using Android.OS;
 using AndroidX.Core.App;
 using DziennikPlecakowy.Interfaces.Local;
-using DziennikPlecakowy.Services.Local;
 using MApplication = Android.App.Application;
 
 namespace DziennikPlecakowy.Platforms.Android.Services;
+
+// Implementacja serwisu powiadomień dla Androida
 
 [Service]
 internal class PlatformNotificationService : Service, IPlatformNotificationService
@@ -21,7 +22,6 @@ internal class PlatformNotificationService : Service, IPlatformNotificationServi
         CreateNotificationChannel();
         var notification = BuildNotification(title, text);
 
-        // Używamy StartForeground z ID i powiadomieniem
         StartForeground(NotificationId, notification);
     }
 
@@ -34,19 +34,17 @@ internal class PlatformNotificationService : Service, IPlatformNotificationServi
 
     public void StopForegroundService()
     {
-        StopForeground(true); // Usuwa powiadomienie
-        StopSelf(); // Zatrzymuje serwis
+        StopForeground(true);
+        StopSelf();
     }
 
     public override StartCommandResult OnStartCommand(Intent intent, StartCommandFlags flags, int startId)
     {
-        // Mówimy systemowi, żeby serwis działał dalej
         return StartCommandResult.Sticky;
     }
 
     private Notification BuildNotification(string title, string text)
     {
-        // Intent, który odpali apkę po kliknięciu powiadomienia
         var context = MApplication.Context;
         var intent = context.PackageManager.GetLaunchIntentForPackage(context.PackageName);
         var pendingIntent = PendingIntent.GetActivity(context, 0, intent, PendingIntentFlags.Immutable);

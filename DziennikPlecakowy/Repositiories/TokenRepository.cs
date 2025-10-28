@@ -3,7 +3,7 @@ using DziennikPlecakowy.Services.Local;
 using SQLite;
 
 namespace DziennikPlecakowy.Repositories;
-
+// Repozytorium do zarządzania lokalnym tokenem odświeżania
 public class TokenRepository
 {
     private readonly SQLiteAsyncConnection _db;

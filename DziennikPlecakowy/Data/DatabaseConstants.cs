@@ -1,5 +1,7 @@
 ﻿namespace DziennikPlecakowy.Data;
 
+// Baza danych lokalna - stałe
+
 public static class DatabaseConstants
 {
     public const string DatabaseFilename = "DziennikPlecakowy.db3";

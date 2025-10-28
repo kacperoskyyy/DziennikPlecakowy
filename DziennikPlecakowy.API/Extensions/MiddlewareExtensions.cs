@@ -20,7 +20,7 @@ public static class MiddlewareExtensions
             });
         }
 
-        app.UseHttpsRedirection();
+        app.UseHttpsRedirection();                  //POTENCJALNIE PROBLEMATYCZNA LINIA
         app.UseRouting();
 
         app.UseHealthCheckEndpoint();

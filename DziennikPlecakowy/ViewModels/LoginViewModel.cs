@@ -4,6 +4,7 @@ using DziennikPlecakowy.Services.Local;
 using DziennikPlecakowy.Views;
 
 namespace DziennikPlecakowy.ViewModels;
+// View Model do logowania użytkownika
 
 public partial class LoginViewModel : BaseViewModel
 {
@@ -48,7 +49,7 @@ public partial class LoginViewModel : BaseViewModel
             {
                 if (result.MustChangePassword)
                 {
-                    // await Shell.Current.GoToAsync(nameof(ChangePasswordPage));
+                    await Shell.Current.GoToAsync(nameof(ChangePasswordPage));
                 }
                 else
                 {

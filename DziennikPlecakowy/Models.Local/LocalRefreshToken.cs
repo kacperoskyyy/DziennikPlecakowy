@@ -1,6 +1,7 @@
 ﻿using SQLite;
 
 namespace DziennikPlecakowy.Models.Local;
+// lokalny model odświeżającego tokena
 
 [Table("refresh_token")]
 public class LocalRefreshToken

@@ -5,7 +5,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace DziennikPlecakowy.Services.Local;
-
+// Serwis do obsługi komunikacji z API z obsługą odświeżania tokenów
 
 public class ApiClientService
 {

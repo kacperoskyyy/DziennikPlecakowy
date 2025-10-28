@@ -1,10 +1,10 @@
 ﻿using DziennikPlecakowy.Data;
 using DziennikPlecakowy.Models.Local;
 using SQLite;
-using System;
-using System.Threading.Tasks;
 
 namespace DziennikPlecakowy.Services.Local;
+
+//Serwis zarządzający bazą danych SQLite
 
 public class DatabaseService
 {
@@ -80,7 +80,7 @@ public class DatabaseService
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"[DatabaseService] CRITICAL ERROR during InitializeDatabaseAsync: {ex}");
-            _initializationTask = null; // Wyczyść task przy błędzie
+            _initializationTask = null;
             _isInitialized = false;
             throw new Exception($"Failed to initialize database tables: {ex.Message}", ex);
         }

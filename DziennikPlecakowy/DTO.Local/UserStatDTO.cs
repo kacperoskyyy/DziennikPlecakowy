@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace DziennikPlecakowy.DTO;
-
+// DTO statystyk użytkownika
 public class UserStatDTO
 {
     [JsonPropertyName("tripsCount")]

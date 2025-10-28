@@ -1,5 +1,5 @@
 ﻿namespace DziennikPlecakowy.PermissionsApp;
-
+// uprawnienia do rozpoznawania aktywności na Androidzie
 public class ActivityRecognitionPermission : Microsoft.Maui.ApplicationModel.Permissions.BasePlatformPermission
 {
 #if ANDROID

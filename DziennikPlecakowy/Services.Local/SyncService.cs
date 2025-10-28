@@ -1,116 +1,110 @@
-﻿// Plik: Services/Local/SyncService.cs
-using DziennikPlecakowy.DTO;
+﻿using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.DTO.Local;
 using DziennikPlecakowy.Models;
 using DziennikPlecakowy.Models.Local;
 using DziennikPlecakowy.Repositories;
 using System.Net.Http.Json;
-using Microsoft.Maui.Networking;
 
-namespace DziennikPlecakowy.Services.Local
+namespace DziennikPlecakowy.Services.Local;
+//Serwis synchronizacji danych z serwerem
+public class SyncService
 {
-    public class SyncService
-    {
-        private readonly LocalTripRepository _tripRepository;
-        private readonly ApiClientService _apiClient;
-        private readonly AuthService _authService;
-        private static bool _isSyncing = false;
+    private readonly LocalTripRepository _tripRepository;
+    private readonly ApiClientService _apiClient;
+    private readonly AuthService _authService;
+    private static bool _isSyncing = false;
 
-        public SyncService(
-            LocalTripRepository tripRepository,
-            ApiClientService apiClient,
-            AuthService authService)
+    public SyncService(
+        LocalTripRepository tripRepository,
+        ApiClientService apiClient,
+        AuthService authService)
+    {
+        _tripRepository = tripRepository;
+        _apiClient = apiClient;
+        _authService = authService;
+    }
+
+    public async Task SynchronizePendingTripsAsync()
+    {
+        if (_isSyncing) return;
+
+        if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
         {
-            _tripRepository = tripRepository;
-            _apiClient = apiClient;
-            _authService = authService;
+            return; 
         }
 
-        public async Task SynchronizePendingTripsAsync()
+        var userId = _authService.GetCurrentUserId();
+        if (string.IsNullOrEmpty(userId))
         {
-            if (_isSyncing) return;
+            return;
+        }
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                return; 
-            }
+        _isSyncing = true;
 
-            var userId = _authService.GetCurrentUserId();
-            if (string.IsNullOrEmpty(userId))
+        try
+        {
+            var unsyncedTrips = await _tripRepository.GetUnsynchronizedTripsAsync();
+
+            if (unsyncedTrips == null || !unsyncedTrips.Any())
             {
+                _isSyncing = false;
                 return;
             }
 
-            _isSyncing = true;
-
-            try
+            foreach (var tripWithPoints in unsyncedTrips)
             {
-                var unsyncedTrips = await _tripRepository.GetUnsynchronizedTripsAsync();
+                var requestDto = MapToRequestDTO(tripWithPoints);
 
-                if (unsyncedTrips == null || !unsyncedTrips.Any())
+                var response = await _apiClient.PostAsJsonAsync("/api/trip/addTrip", requestDto);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    _isSyncing = false;
-                    return;
-                }
+                    var responseDto = await response.Content.ReadFromJsonAsync<TripAddResponseDTO>();
 
-                foreach (var tripWithPoints in unsyncedTrips)
-                {
-                    var requestDto = MapToRequestDTO(tripWithPoints);
-
-                    // Używamy ApiClientService, który sam ogarnie refresh tokena (401)
-                    var response = await _apiClient.PostAsJsonAsync("/api/trip/addTrip", requestDto);
-
-                    if (response.IsSuccessStatusCode)
+                    if (responseDto != null && !string.IsNullOrEmpty(responseDto.TripId))
                     {
-                        var responseDto = await response.Content.ReadFromJsonAsync<TripAddResponseDTO>();
-
-                        if (responseDto != null && !string.IsNullOrEmpty(responseDto.TripId))
-                        {
-                            await _tripRepository.MarkTripAsSynchronizedAsync(
-                                tripWithPoints.Trip.LocalId,
-                                responseDto.TripId);
-                        }
-                        else
-                        {
-                            // zwrotka 200 , ale bez TripId - coś poszło nie tak
-                            break;
-                        }
+                        await _tripRepository.MarkTripAsSynchronizedAsync(
+                            tripWithPoints.Trip.LocalId,
+                            responseDto.TripId);
                     }
                     else
                     {
-                        //blad, probujemy nastepnym razem
                         break;
                     }
                 }
-            }
-            finally
-            {
-                _isSyncing = false;
+                else
+                {
+                    break;
+                }
             }
         }
-
-        private TripAddRequestDTO MapToRequestDTO(TripWithGeoPoints localData)
+        finally
         {
-            var trip = localData.Trip;
-
-            var geoPointList = localData.GeoPoints.Select(p => new GeoPoint
-            {
-                Latitude = p.Latitude,
-                Longitude = p.Longitude,
-                Height = p.Height,
-                Timestamp = p.Timestamp
-            }).ToArray();
-
-            return new TripAddRequestDTO
-            {
-                Name = trip.Name,
-                TripDate = trip.TripDate,
-                Distance = trip.Distance,
-                Duration = trip.Duration,
-                ElevationGain = trip.ElevationGain,
-                Steps = (int)trip.Steps,
-                GeoPointList = geoPointList
-            };
+            _isSyncing = false;
         }
+    }
+
+    private TripAddRequestDTO MapToRequestDTO(TripWithGeoPoints localData)
+    {
+        var trip = localData.Trip;
+
+        var geoPointList = localData.GeoPoints.Select(p => new GeoPoint
+        {
+            Latitude = p.Latitude,
+            Longitude = p.Longitude,
+            Height = p.Height,
+            Timestamp = p.Timestamp
+        }).ToArray();
+
+        return new TripAddRequestDTO
+        {
+            Name = trip.Name,
+            TripDate = trip.TripDate,
+            Distance = trip.Distance,
+            Duration = trip.Duration,
+            ElevationGain = trip.ElevationGain,
+            Steps = (int)trip.Steps,
+            GeoPointList = geoPointList
+        };
     }
 }

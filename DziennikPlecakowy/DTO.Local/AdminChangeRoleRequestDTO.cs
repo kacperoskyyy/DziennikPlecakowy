@@ -1,14 +1,15 @@
 ﻿using DziennikPlecakowy.Models;
 using System.Text.Json.Serialization;
 
-namespace DziennikPlecakowy.DTO
-{
-    public class AdminChangeRoleRequestDTO
-    {
-        [JsonPropertyName("userId")]
-        public string UserId { get; set; }
+// DTO dla żądania zmiany roli użytkownika przez administratora
 
-        [JsonPropertyName("newRole")]
-        public UserRole NewRole { get; set; }
-    }
+namespace DziennikPlecakowy.DTO;
+
+public class AdminChangeRoleRequestDTO
+{
+    [JsonPropertyName("userId")]
+    public string UserId { get; set; }
+
+    [JsonPropertyName("newRole")]
+    public UserRole NewRole { get; set; }
 }

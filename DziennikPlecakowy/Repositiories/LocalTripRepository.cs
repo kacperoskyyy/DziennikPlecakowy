@@ -3,6 +3,8 @@ using DziennikPlecakowy.Services.Local;
 using SQLite;
 
 namespace DziennikPlecakowy.Repositories;
+
+//Repozytorium do zarządzania lokalnymi danymi podróży
 public class LocalTripRepository
 {
     private readonly SQLiteAsyncConnection _db;

@@ -2,6 +2,8 @@
 
 namespace DziennikPlecakowy.Converters;
 
+//Converter sprawdzający, czy wartość liczbowa jest większa niż zero
+
 public class GreaterThanZeroConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

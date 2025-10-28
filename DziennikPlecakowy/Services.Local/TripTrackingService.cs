@@ -4,6 +4,7 @@ using DziennikPlecakowy.PermissionsApp;
 using DziennikPlecakowy.Interfaces.Local;
 
 namespace DziennikPlecakowy.Services.Local;
+// Serwis śledzenia wycieczek
 
 public class TripTrackingService
 {
@@ -13,7 +14,6 @@ public class TripTrackingService
     private readonly SyncService _syncService;
     private readonly IPedometerService _pedometerService;
 
-    // Stan
     private bool _isRunning = false;
     private LocalTrip _currentTrip;
     private Location _lastSavedLocation;

@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Http.Json;
 
 namespace DziennikPlecakowy.Services.Local;
-
+// Serwis uwierzytelniania uzytkownika
 public class AuthService
 {
     private readonly ApiClientService _apiClient;

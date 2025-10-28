@@ -1,19 +1,19 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace DziennikPlecakowy.DTO.Local
+namespace DziennikPlecakowy.DTO.Local;
+// DTO punktu geograficznego
+
+public class GeoPointDTO
 {
-    public class GeoPointDTO
-    {
-        [JsonPropertyName("latitude")]
-        public double Latitude { get; set; }
+    [JsonPropertyName("latitude")]
+    public double Latitude { get; set; }
 
-        [JsonPropertyName("longitude")]
-        public double Longitude { get; set; }
+    [JsonPropertyName("longitude")]
+    public double Longitude { get; set; }
 
-        [JsonPropertyName("height")]
-        public double Height { get; set; }
+    [JsonPropertyName("height")]
+    public double Height { get; set; }
 
-        [JsonPropertyName("timestamp")]
-        public DateTime Timestamp { get; set; }
-    }
+    [JsonPropertyName("timestamp")]
+    public DateTime Timestamp { get; set; }
 }

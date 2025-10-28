@@ -2,6 +2,8 @@
 
 namespace DziennikPlecakowy.Models.Local;
 
+// Punkt geograficzny zapisany lokalnie.
+
 [Table("geo_points")]
 public class LocalGeoPoint
 {
