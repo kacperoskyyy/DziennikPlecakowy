@@ -27,7 +27,7 @@ public class AuthService
 
     public async Task<AuthResult> CheckAndRefreshTokenOnStartupAsync()
     {
-        await _dbService.InitializeDatabaseAsync(); 
+        await _dbService.InitializeDatabaseAsync();
         var localToken = await _tokenRepository.GetTokenAsync();
         if (localToken == null || string.IsNullOrEmpty(localToken.Token))
         {
@@ -35,7 +35,9 @@ public class AuthService
         }
 
         var request = new RefreshTokenRequestDTO { RefreshToken = localToken.Token };
-        var response = await _apiClient.PostRawAsync("/api/Auth/refresh", request);
+
+        // POPRAWKA: Używamy PostAsJsonAsync z flagą false
+        var response = await _apiClient.PostAsJsonAsync("/api/Auth/refresh", request, handleUnauthorized: false);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -63,7 +65,9 @@ public class AuthService
     {
         await _dbService.InitializeDatabaseAsync();
         var request = new UserAuthRequestDTO { Email = email, Password = password };
-        var response = await _apiClient.PostRawAsync("/api/Auth/login", request);
+
+        // POPRAWKA: Używamy PostAsJsonAsync z flagą false
+        var response = await _apiClient.PostAsJsonAsync("/api/Auth/login", request, handleUnauthorized: false);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -100,13 +104,15 @@ public class AuthService
             Password = password
         };
 
-        var response = await _apiClient.PostRawAsync("/api/Auth/register", request);
+        // POPRAWKA: Używamy PostAsJsonAsync z flagą false
+        var response = await _apiClient.PostAsJsonAsync("/api/Auth/register", request, handleUnauthorized: false);
 
         if (!response.IsSuccessStatusCode)
         {
             return await ParseErrorResponse(response);
         }
 
+        // Oryginalna logika logowania po rejestracji jest OK
         return await LoginAsync(email, password);
     }
 
@@ -120,6 +126,7 @@ public class AuthService
 
     private async Task<UserDetailDTO> FetchAndSaveUserDataAsync()
     {
+        // Ta metoda jest OK - domyślnie użyje 'handleUnauthorized: true'
         var userResponse = await _apiClient.GetAsync("/api/User/getUserStats");
         if (!userResponse.IsSuccessStatusCode)
         {

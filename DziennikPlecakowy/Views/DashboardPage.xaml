@@ -20,7 +20,10 @@
             <Label Text="Moje Statystyki" FontSize="Large" FontAttributes="Bold" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" />
 
-            <Grid x:DataType="dto:UserProfileDTO" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" Padding="10">
+            <Grid x:DataType="dto:UserProfileDTO" 
+                BindingContext="{Binding UserProfile}"  ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" 
+                 Padding="10">
+
                 <Label Grid.Row="0" Grid.Column="0" Text="Wszystkie Wycieczki:" />
                 <Label Grid.Row="0" Grid.Column="1" Text="{Binding Stats.TripsCount}" FontAttributes="Bold" />
 
@@ -28,7 +31,7 @@
                 <Label Grid.Row="1" Grid.Column="1" Text="{Binding Stats.TotalDistance, StringFormat='{0:F2} km'}" FontAttributes="Bold" />
 
                 <Label Grid.Row="2" Grid.Column="0" Text="Total Kroki:" />
-                <Label Grid.Row="2" Grid.Column="1" Text="{Binding Stats.TotalSteps}" FontAttributes="Bold" />
+                <Label Grid.Row="2" Grid.Column="1" Text="{Binding Stats.TotalSteps}" FontAttributes="Bold" /> 
             </Grid>
 
             <BoxView HeightRequest="1" Color="Gray" />

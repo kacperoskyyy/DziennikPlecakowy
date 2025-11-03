@@ -115,44 +115,34 @@ public class UserService : IUserService
         return await _userRepository.DeleteAsync(userId);
     }
 
-    
-    public async Task<int> UserRegister(UserRegisterRequestDTO userRegister)
+
+    public async Task UserRegister(UserRegisterRequestDTO userRegister)
     {
-        try
+
+
+        User user = new User
         {
-            string encryptedEmail = _cypherService.Encrypt(userRegister.Email.ToLower());
-            User? existingUser = await _userRepository.GetByEncryptedEmailAsync(encryptedEmail);
-            if (existingUser != null) return -1;
+            Email = _cypherService.Encrypt(userRegister.Email.ToLower()),
+            Username = _cypherService.Encrypt(userRegister.Username),
+            HashedPassword = _hash.Hash(userRegister.Password),
+            CreatedTime = DateTime.Now,
+            Roles = { UserRole.User }
+        };
 
-            User user = new User
-            {
-                Email = encryptedEmail,
-                Username = _cypherService.Encrypt(userRegister.Username),
-                HashedPassword = _hash.Hash(userRegister.Password),
-                CreatedTime = DateTime.Now,
-                Roles = { UserRole.User }
-            };
-            await _userRepository.AddAsync(user);
+        await _userRepository.AddAsync(user);
 
-            UserStat userStat = new UserStat
-            {
-                UserId = user.Id,
-                TripsCount = 0,
-                TotalDistance = 0,
-                TotalDuration = 0,
-                TotalElevationGain = 0,
-                TotalSteps = 0
-            };
-            await _userStatRepository.AddAsync(userStat);
-
-            return 1;
-        }
-        catch (Exception)
+        UserStat userStat = new UserStat
         {
-            return -1;
-        }
+            UserId = user.Id,
+            TripsCount = 0,
+            TotalDistance = 0,
+            TotalDuration = 0,
+            TotalElevationGain = 0,
+            TotalSteps = 0
+        };
+        await _userStatRepository.AddAsync(userStat);
     }
-    
+
     public async Task<User?> GetUserByEmail(string email)
     {
         string encryptedEmail = _cypherService.Encrypt(email.ToLower());

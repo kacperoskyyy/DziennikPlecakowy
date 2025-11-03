@@ -55,12 +55,8 @@ public partial class LoginViewModel : BaseViewModel
                 {
                     await _syncService.SynchronizePendingTripsAsync();
 
-                    await Shell.Current.GoToAsync($"//{nameof(DashboardPage)}");
+                    await Shell.Current.GoToAsync("..");
                 }
-            }
-            else
-            {
-                ErrorMessage = result.ErrorMessage;
             }
         }
         catch (Exception ex)

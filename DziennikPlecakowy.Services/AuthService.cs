@@ -20,10 +20,10 @@ public class AuthService : IAuthService
         _cypherService = cypherService;
         _refreshTokenRepository = refreshTokenRepository;
     }
-    public async Task<bool> RegisterAsync(UserRegisterRequestDTO request)
+    public async Task RegisterAsync(UserRegisterRequestDTO request)
     {
-        var result = await _userService.UserRegister(request);
-        return result > 0;
+
+        await _userService.UserRegister(request);
     }
     public async Task<AuthResponseDTO?> Login(UserAuthRequestDTO userAuthData)
     {

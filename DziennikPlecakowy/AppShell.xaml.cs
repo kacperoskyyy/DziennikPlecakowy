@@ -17,4 +17,16 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(TripDetailPage), typeof(TripDetailPage));
         Routing.RegisterRoute(nameof(AdminPage), typeof(AdminPage));
     }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        var token = await SecureStorage.GetAsync("auth_token");
+
+        if (string.IsNullOrEmpty(token))
+        {
+            await Shell.Current.GoToAsync(nameof(LoginPage), false);
+        }
+    }
 }

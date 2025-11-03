@@ -41,9 +41,9 @@ public partial class EditAccountViewModel : BaseViewModel
         IsBusy = true;
 
         var request = new UserChangeNameRequestDTO { NewUsername = NewUsername };
-        var response = await _apiClient.PostAsJsonAsync("/api/User.changeName", request);
+        var response = await _apiClient.PutAsync("/api/User/changeName", JsonContent.Create(request));
 
-        if(response.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
             UsernameMessage = "Nazwa użytkownika została zmieniona.";
         }

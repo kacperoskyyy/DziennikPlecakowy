@@ -24,7 +24,7 @@ namespace DziennikPlecakowy
 
                 if (authResult.IsSuccess)
                 {
-                    await Shell.Current.GoToAsync($"//{nameof(DashboardPage)}");
+                    await Shell.Current.GoToAsync(nameof(DashboardPage));
                 }
             }
             catch (Exception ex)

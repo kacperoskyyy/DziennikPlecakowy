@@ -5,7 +5,6 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace DziennikPlecakowy.Services.Local;
-// Serwis do obsługi komunikacji z API z obsługą odświeżania tokenów
 
 public class ApiClientService
 {
@@ -16,7 +15,6 @@ public class ApiClientService
 
     private string _currentAccessToken;
     private bool _isRefreshingToken = false;
-
     private static readonly SemaphoreSlim _tokenRefreshLock = new SemaphoreSlim(1, 1);
 
     public ApiClientService(TokenRepository tokenRepository)
@@ -42,48 +40,65 @@ public class ApiClientService
         _httpClient.DefaultRequestHeaders.Authorization = null;
     }
 
-    public async Task<HttpResponseMessage> GetAsync(string requestUri)
+    // Dodaliśmy 'handleUnauthorized = true'
+    public async Task<HttpResponseMessage> GetAsync(string requestUri, bool handleUnauthorized = true)
     {
         var response = await _httpClient.GetAsync(requestUri);
 
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        // Obsługuj 401 tylko jeśli flaga jest ustawiona
+        if (handleUnauthorized && response.StatusCode == HttpStatusCode.Unauthorized)
         {
-            // Jeśli 401, spróbuj odświeżyć token i ponowić żądanie
             bool refreshed = await HandleUnauthorizedResponseAsync();
             if (refreshed)
             {
-                // Ponów żądanie z nowym tokenem
-                response = await _httpClient.GetAsync(requestUri);
+                response = await _httpClient.GetAsync(requestUri); // Ponów z nowym tokenem
             }
         }
         return response;
     }
 
-    public async Task<HttpResponseMessage> PostAsJsonAsync<T>(string requestUri, T value)
+    // Dodaliśmy 'handleUnauthorized = true'
+    public async Task<HttpResponseMessage> PostAsJsonAsync<T>(string requestUri, T value, bool handleUnauthorized = true)
     {
         var response = await _httpClient.PostAsJsonAsync(requestUri, value);
 
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        if (handleUnauthorized && response.StatusCode == HttpStatusCode.Unauthorized)
         {
             bool refreshed = await HandleUnauthorizedResponseAsync();
             if (refreshed)
             {
-                // Ponów żądanie
-                response = await _httpClient.PostAsJsonAsync(requestUri, value);
+                response = await _httpClient.PostAsJsonAsync(requestUri, value); // Ponów
             }
         }
         return response;
     }
 
+    // Dodaliśmy 'handleUnauthorized = true'
+    public async Task<HttpResponseMessage> PutAsync(string requestUri, HttpContent content = null, bool handleUnauthorized = true)
+    {
+        var response = await _httpClient.PutAsync(requestUri, content);
+
+        if (handleUnauthorized && response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            bool refreshed = await HandleUnauthorizedResponseAsync();
+            if (refreshed)
+            {
+                response = await _httpClient.PutAsync(requestUri, content); // Ponów
+            }
+        }
+        return response;
+    }
+
+    // Usunęliśmy PostRawAsync - nie jest już potrzebna
 
     private async Task<bool> HandleUnauthorizedResponseAsync()
     {
         await _tokenRefreshLock.WaitAsync();
         try
         {
-
             if (_isRefreshingToken)
             {
+                // Inny wątek już odświeża token, zakładamy sukces
                 return true;
             }
 
@@ -92,11 +107,14 @@ public class ApiClientService
             var localToken = await _tokenRepository.GetTokenAsync();
             if (localToken == null || string.IsNullOrEmpty(localToken.Token))
             {
-                return false;
+                return false; // Brak refresh tokena, nie można odświeżyć
             }
 
             var refreshRequest = new RefreshTokenRequestDTO { RefreshToken = localToken.Token };
-            var response = await _httpClient.PostAsJsonAsync("/api/Auth/refresh", refreshRequest);
+
+            // POPRAWKA: Wywołaj PostAsJsonAsync z handleUnauthorized: false
+            // aby zapobiec nieskończonej pętli, jeśli refresh token wygaśnie
+            var response = await PostAsJsonAsync("/api/Auth/refresh", refreshRequest, handleUnauthorized: false);
 
             if (response.IsSuccessStatusCode)
             {
@@ -110,31 +128,12 @@ public class ApiClientService
                 return true;
             }
 
-            return false;
+            return false; // Odświeżanie się nie powiodło
         }
         finally
         {
             _isRefreshingToken = false;
             _tokenRefreshLock.Release();
         }
-    }
-    public Task<HttpResponseMessage> PostRawAsync<T>(string requestUri, T value)
-    {
-        return _httpClient.PostAsJsonAsync(requestUri, value);
-    }
-    public async Task<HttpResponseMessage> PutAsync(string requestUri, HttpContent content = null)
-    {
-        var response = await _httpClient.PutAsync(requestUri, content);
-
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            bool refreshed = await HandleUnauthorizedResponseAsync();
-            if (refreshed)
-            {
-                // Ponów żądanie z nowym tokenem
-                response = await _httpClient.PutAsync(requestUri, content);
-            }
-        }
-        return response;
     }
 }

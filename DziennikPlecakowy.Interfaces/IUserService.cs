@@ -5,7 +5,7 @@ namespace DziennikPlecakowy.Interfaces;
 
 public interface IUserService
 {
-    Task<int> UserRegister(UserRegisterRequestDTO userRegister);
+    Task UserRegister(UserRegisterRequestDTO userRegister);
     Task<User?> GetUserByEmail(string email);
     Task<User?> GetUserById(string id);
     bool CheckPassword(User user, string password);

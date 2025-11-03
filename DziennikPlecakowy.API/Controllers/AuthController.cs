@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using DziennikPlecakowy.DTO;
+﻿using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 
 namespace DziennikPlecakowy.API.Controllers;
 
@@ -25,14 +26,14 @@ public class AuthController : ControllerBase
 
         try
         {
-            var success = await _authService.RegisterAsync(request);
+            await _authService.RegisterAsync(request); 
 
-            if (success)
-            {
-                return Ok(new { Message = "Rejestracja zakończona pomyślnie." });
-            }
-
-            return BadRequest("Rejestracja nie powiodła się. Sprawdź, czy email nie jest już zajęty.");
+            return Ok(new { Message = "Rejestracja zakończona pomyślnie." });
+        }
+        catch (MongoWriteException ex) when (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
+        {
+            _logger.LogWarning(ex, "Duplicate key error during registration for {Email}.", request.Email);
+            return Conflict("Użytkownik o tym adresie e-mail już istnieje.");
         }
         catch (System.Exception e)
         {

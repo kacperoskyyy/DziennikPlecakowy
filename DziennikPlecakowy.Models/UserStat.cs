@@ -8,6 +8,7 @@ namespace DziennikPlecakowy.Models;
 public class UserStat
 {
     [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; }
     [BsonElement("userId")]
     [BsonRepresentation(BsonType.ObjectId)]

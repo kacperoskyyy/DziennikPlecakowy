@@ -83,7 +83,8 @@ public partial class DashboardViewModel : BaseViewModel
                 Console.WriteLine("Failed to load user stats"); 
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) 
+        { 
         
             Console.WriteLine($"Error loading user stats: {ex.Message}");
         }

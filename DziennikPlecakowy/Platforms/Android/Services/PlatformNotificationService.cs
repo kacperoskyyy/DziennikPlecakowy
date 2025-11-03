@@ -45,7 +45,7 @@ internal class PlatformNotificationService : Service, IPlatformNotificationServi
 
     private Notification BuildNotification(string title, string text)
     {
-        var context = MApplication.Context;
+        var context = this;
         var intent = context.PackageManager.GetLaunchIntentForPackage(context.PackageName);
         var pendingIntent = PendingIntent.GetActivity(context, 0, intent, PendingIntentFlags.Immutable);
 

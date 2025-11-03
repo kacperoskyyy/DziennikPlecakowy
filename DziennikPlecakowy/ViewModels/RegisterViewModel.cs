@@ -61,10 +61,8 @@ public partial class RegisterViewModel : BaseViewModel
 
             if (result.IsSuccess)
             {
-
-                await _syncService.SynchronizePendingTripsAsync();
-
-                await Shell.Current.GoToAsync($"//{nameof(DashboardPage)}");
+                await Shell.Current.DisplayAlert("Sukces", "Konto utworzone. Możesz się teraz zalogować.", "OK");
+                await Shell.Current.GoToAsync("..");
             }
             else
             {
