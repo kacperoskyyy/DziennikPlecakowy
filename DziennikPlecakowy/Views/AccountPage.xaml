@@ -21,7 +21,7 @@
 
             <Label Text="Profil Użytkownika" FontSize="Large" FontAttributes="Bold" />
 
-            <Frame Padding="10" CornerRadius="10" x:DataType="dto:UserProfileDTO">
+            <Frame Padding="10" CornerRadius="10" x:DataType="dto:UserProfileDTO" BindingContext="{Binding UserProfile}">
                 <VerticalStackLayout Spacing="5">
                     <Label>
                         <Label.FormattedText>
@@ -44,7 +44,7 @@
 
             <Label Text="Globalne Statystyki" FontSize="Large" FontAttributes="Bold" Margin="0,15,0,0" />
 
-            <Frame Padding="10" CornerRadius="10" x:DataType="dto:UserProfileDTO">
+            <Frame Padding="10" CornerRadius="10" x:DataType="dto:UserProfileDTO" BindingContext="{Binding UserProfile}">
                 <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Padding="5">
                     <Label Grid.Row="0" Grid.Column="0" Text="Wszystkie Wycieczki:" />
                     <Label Grid.Row="0" Grid.Column="1" Text="{Binding Stats.TripsCount}" FontAttributes="Bold" />

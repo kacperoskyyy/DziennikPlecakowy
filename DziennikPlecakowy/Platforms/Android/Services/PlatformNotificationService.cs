@@ -7,53 +7,52 @@ using MApplication = Android.App.Application;
 
 namespace DziennikPlecakowy.Platforms.Android.Services;
 
-// Implementacja serwisu powiadomień dla Androida
-
-[Service]
-internal class PlatformNotificationService : Service, IPlatformNotificationService
+internal class PlatformNotificationService : IPlatformNotificationService
 {
     public const string ChannelId = "DziennikPlecakowyChannel";
     public const int NotificationId = 101;
 
-    public override IBinder OnBind(Intent intent) => null;
+    private readonly Context _context;
+    private readonly NotificationManager _notificationManager;
+
+    public PlatformNotificationService()
+    {
+
+        _context = MApplication.Context;
+        _notificationManager = (NotificationManager)_context.GetSystemService(Context.NotificationService);
+    }
+
 
     public void StartForegroundService(string title, string text)
     {
         CreateNotificationChannel();
         var notification = BuildNotification(title, text);
 
-        StartForeground(NotificationId, notification);
+        _notificationManager.Notify(NotificationId, notification);
     }
 
     public void UpdateNotification(string title, string text)
     {
         var notification = BuildNotification(title, text);
-        var notificationManager = (NotificationManager)GetSystemService(NotificationService);
-        notificationManager.Notify(NotificationId, notification);
+        _notificationManager.Notify(NotificationId, notification);
     }
 
     public void StopForegroundService()
     {
-        StopForeground(true);
-        StopSelf();
+        _notificationManager.Cancel(NotificationId);
     }
 
-    public override StartCommandResult OnStartCommand(Intent intent, StartCommandFlags flags, int startId)
-    {
-        return StartCommandResult.Sticky;
-    }
 
     private Notification BuildNotification(string title, string text)
     {
-        var context = this;
-        var intent = context.PackageManager.GetLaunchIntentForPackage(context.PackageName);
-        var pendingIntent = PendingIntent.GetActivity(context, 0, intent, PendingIntentFlags.Immutable);
+        var intent = _context.PackageManager.GetLaunchIntentForPackage(_context.PackageName);
+        var pendingIntent = PendingIntent.GetActivity(_context, 0, intent, PendingIntentFlags.Immutable);
 
-        var notification = new NotificationCompat.Builder(this, ChannelId)
+        var notification = new NotificationCompat.Builder(_context, ChannelId)
             .SetContentTitle(title)
             .SetContentText(text)
-            .SetSmallIcon(Resource.Mipmap.appicon_foreground)
-            .SetOngoing(true) 
+            .SetSmallIcon(Resource.Mipmap.appicon_foreground) 
+            .SetOngoing(true)
             .SetContentIntent(pendingIntent)
             .Build();
 
@@ -74,7 +73,6 @@ internal class PlatformNotificationService : Service, IPlatformNotificationServi
             Description = channelDescription
         };
 
-        var notificationManager = (NotificationManager)GetSystemService(NotificationService);
-        notificationManager.CreateNotificationChannel(channel);
+        _notificationManager.CreateNotificationChannel(channel);
     }
 }

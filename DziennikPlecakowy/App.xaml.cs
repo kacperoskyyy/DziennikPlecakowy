@@ -18,23 +18,22 @@ namespace DziennikPlecakowy
         {
             base.OnStart();
 
-            try
-            {
-                var authResult = await _authService.CheckAndRefreshTokenOnStartupAsync();
+            //MainPage = new AppShell();
 
-                if (authResult.IsSuccess)
+            var authService = IPlatformApplication.Current.Services.GetService<AuthService>();
+
+            var authResult = await authService.CheckAndRefreshTokenOnStartupAsync();
+
+            if (authResult.IsSuccess)
+            {
+                if (authResult.MustChangePassword)
                 {
-                    await Shell.Current.GoToAsync(nameof(DashboardPage));
+                    await Shell.Current.GoToAsync(nameof(ChangePasswordPage));
                 }
             }
-            catch (Exception ex)
+            else
             {
-                System.Diagnostics.Debug.WriteLine($"Error during OnStart: {ex}");
-
-                if (MainPage != null)
-                {
-                    await MainPage.DisplayAlert("Błąd startowy", $"Nie można uruchomić aplikacji: {ex.Message}", "OK");
-                }
+                await Shell.Current.GoToAsync(nameof(LoginPage), false);
             }
         }
     }

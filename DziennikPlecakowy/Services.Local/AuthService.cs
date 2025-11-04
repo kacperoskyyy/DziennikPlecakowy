@@ -123,17 +123,15 @@ public class AuthService
         Preferences.Clear();
     }
 
-
-    private async Task<UserDetailDTO> FetchAndSaveUserDataAsync()
+    private async Task<UserProfileDTO> FetchAndSaveUserDataAsync()
     {
-        // Ta metoda jest OK - domyślnie użyje 'handleUnauthorized: true'
         var userResponse = await _apiClient.GetAsync("/api/User/getUserStats");
         if (!userResponse.IsSuccessStatusCode)
         {
             return null;
         }
 
-        var userDto = await userResponse.Content.ReadFromJsonAsync<UserDetailDTO>();
+        var userDto = await userResponse.Content.ReadFromJsonAsync<UserProfileDTO>();
 
         if (userDto == null || string.IsNullOrEmpty(userDto.Id))
         {

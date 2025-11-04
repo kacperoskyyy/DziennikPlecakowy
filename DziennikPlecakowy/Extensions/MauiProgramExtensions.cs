@@ -15,16 +15,16 @@ public static class MauiProgramExtensions
     public static MauiAppBuilder RegisterDatabaseAndRepositories(this MauiAppBuilder builder)
     {
         builder.Services.AddSingleton<DatabaseService>();
-        builder.Services.AddTransient<LocalTripRepository>();
-        builder.Services.AddTransient<TokenRepository>();
+        builder.Services.AddSingleton<LocalTripRepository>();
+        builder.Services.AddSingleton<TokenRepository>();
         return builder;
     }
 
     public static MauiAppBuilder RegisterAppServices(this MauiAppBuilder builder)
     {
         builder.Services.AddSingleton<ApiClientService>();
-        builder.Services.AddTransient<AuthService>();
-        builder.Services.AddTransient<SyncService>();
+        builder.Services.AddSingleton<AuthService>();
+        builder.Services.AddSingleton<SyncService>();
         builder.Services.AddSingleton<TripTrackingService>();
 
 #if ANDROID

@@ -108,9 +108,9 @@ public partial class TripListViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task GoToTripDetailAsync()
+    private async Task GoToTripDetailAsync(object selectedItem)
     {
-        if (SelectedTrip == null)
+        if (selectedItem == null)
             return;
 
         try
@@ -118,12 +118,43 @@ public partial class TripListViewModel : BaseViewModel
             string localTripId = null;
             string serverTripId = null;
 
-            if (SelectedTrip is LocalTrip localTrip)
+            if (selectedItem is LocalTrip localTrip)
             {
                 localTripId = localTrip.LocalId.ToString();
                 serverTripId = localTrip.ServerId;
             }
-            else if (SelectedTrip is TripSummaryDTO serverTrip)
+            else if (selectedItem is TripSummaryDTO serverTrip)
+            {
+                serverTripId = serverTrip.Id;
+            }
+
+            if (localTripId != null || serverTripId != null)
+            {
+                await Shell.Current.GoToAsync(
+                    $"{nameof(TripDetailPage)}?LocalTripId={localTripId}&ServerTripId={serverTripId}");
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Błąd nawigacji", ex.Message, "OK");
+        }
+    }
+    async partial void OnSelectedTripChanged(object value)
+    {
+        if (value == null)
+            return;
+
+        try
+        {
+            string localTripId = null;
+            string serverTripId = null;
+
+            if (value is LocalTrip localTrip)
+            {
+                localTripId = localTrip.LocalId.ToString();
+                serverTripId = localTrip.ServerId;
+            }
+            else if (value is TripSummaryDTO serverTrip)
             {
                 serverTripId = serverTrip.Id;
             }

@@ -105,6 +105,13 @@ public partial class DashboardViewModel : BaseViewModel
             {
                 IsTracking = true;
                 TripName = string.Empty;
+
+                CurrentTripData = new TripTrackingService.TrackingData
+                {
+                    DistanceKm = 0,
+                    Steps = 0,
+                    Duration = TimeSpan.Zero
+                };
             }
             else
             {
@@ -122,12 +129,19 @@ public partial class DashboardViewModel : BaseViewModel
     private async Task StopTrackingAsync()
     {
         if (!IsTracking) return;
-
-        await _tripTrackingService.StopTrackingAsync();
-        IsTracking = false;
-        CurrentTripData = null;
-
-
-        await LoadStatsAsync();
+        try
+        {
+            await _tripTrackingService.StopTrackingAsync();
+            await LoadStatsAsync();
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Błąd", $"Nie udało się zatrzymać śledzenia: {ex.Message}", "OK");
+        }
+        finally
+        {
+            IsTracking = false;
+            CurrentTripData = null;
+        }
     }
 }

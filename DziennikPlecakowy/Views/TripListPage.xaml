@@ -22,12 +22,16 @@
         <CollectionView Grid.Row="1"
                         ItemsSource="{Binding LocalTrips}"
                         IsVisible="{Binding ShowLocalList}"
-                        SelectedItem="{Binding SelectedTrip}"
-                        SelectionMode="Single"
-                        SelectionChangedCommand="{Binding GoToTripDetailCommand}">
+                        SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="localModels:LocalTrip">
                     <Frame Padding="10" Margin="10,5" CornerRadius="5">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TripListViewModel}}, Path=GoToTripDetailCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
+
                         <Grid ColumnDefinitions="*, Auto">
                             <VerticalStackLayout Grid.Column="0">
                                 <Label Text="{Binding Name}" FontAttributes="Bold" />
@@ -43,12 +47,16 @@
         <CollectionView Grid.Row="1"
                         ItemsSource="{Binding ServerTrips}"
                         IsVisible="{Binding ShowServerList}"
-                        SelectedItem="{Binding SelectedTrip}"
-                        SelectionMode="Single"
-                        SelectionChangedCommand="{Binding GoToTripDetailCommand}">
+                        SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="dto:TripSummaryDTO">
                     <Frame Padding="10" Margin="10,5" CornerRadius="5">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TripListViewModel}}, Path=GoToTripDetailCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
+
                         <Grid ColumnDefinitions="*, Auto">
                             <VerticalStackLayout Grid.Column="0">
                                 <Label Text="{Binding Name}" FontAttributes="Bold" />

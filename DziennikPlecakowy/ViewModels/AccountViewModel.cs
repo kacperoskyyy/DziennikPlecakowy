@@ -63,7 +63,7 @@ public partial class AccountViewModel : BaseViewModel
     private async Task LogoutAsync()
     {
         await _authService.LogoutAsync();
-        await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+        await Shell.Current.GoToAsync(nameof(LoginPage));
     }
     [RelayCommand]
     private async Task GoToAdminPanelAsync()

@@ -1,7 +1,7 @@
-﻿using DziennikPlecakowy.Models.Local;
-using DziennikPlecakowy.Repositories;
+﻿using DziennikPlecakowy.Interfaces.Local;
+using DziennikPlecakowy.Models.Local;
 using DziennikPlecakowy.PermissionsApp;
-using DziennikPlecakowy.Interfaces.Local;
+using DziennikPlecakowy.Repositories;
 
 namespace DziennikPlecakowy.Services.Local;
 // Serwis śledzenia wycieczek
@@ -231,29 +231,42 @@ public class TripTrackingService
 
     private async Task<bool> CheckPermissionsAsync()
     {
-        var locationStatus = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
-        if (locationStatus != PermissionStatus.Granted)
+        try
         {
-            locationStatus = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
-        }
-
-        if (DeviceInfo.Platform == DevicePlatform.Android)
-        {
-            var bgLocationStatus = await Permissions.CheckStatusAsync<Permissions.LocationAlways>();
-            if (bgLocationStatus != PermissionStatus.Granted)
+            var locationStatus = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+            if (locationStatus != PermissionStatus.Granted)
             {
-                bgLocationStatus = await Permissions.RequestAsync<Permissions.LocationAlways>();
+                locationStatus = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
             }
-        }
+            if (locationStatus != PermissionStatus.Granted)
+                return false;
 
-        var activityStatus = await Permissions.CheckStatusAsync<ActivityRecognitionPermission>();
-        if (activityStatus != PermissionStatus.Granted)
+            var activityStatus = await Permissions.CheckStatusAsync<ActivityRecognitionPermission>();
+            if (activityStatus != PermissionStatus.Granted)
+            {
+                activityStatus = await Permissions.RequestAsync<ActivityRecognitionPermission>();
+            }
+            if (activityStatus != PermissionStatus.Granted)
+                return false;
+
+            if (DeviceInfo.Platform == DevicePlatform.Android && DeviceInfo.Version.Major >= 13)
+            {
+                var notificationStatus = await Permissions.CheckStatusAsync<Permissions.PostNotifications>();
+                if (notificationStatus != PermissionStatus.Granted)
+                {
+                    notificationStatus = await Permissions.RequestAsync<Permissions.PostNotifications>();
+                }
+
+                if (notificationStatus != PermissionStatus.Granted)
+                    return false;
+            }
+            return true;
+        }
+        catch (Exception ex)
         {
-            activityStatus = await Permissions.RequestAsync<ActivityRecognitionPermission>();
+            System.Diagnostics.Debug.WriteLine($"Błąd podczas sprawdzania uprawnień: {ex.Message}");
+            return false;
         }
-
-        return locationStatus == PermissionStatus.Granted &&
-               activityStatus == PermissionStatus.Granted;
     }
 
     public class TrackingData
