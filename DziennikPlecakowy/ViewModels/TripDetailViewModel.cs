@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DziennikPlecakowy.DTO.Local;
+using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Models.Local;
 using DziennikPlecakowy.Repositories;
 using DziennikPlecakowy.Services.Local;

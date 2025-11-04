@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace DziennikPlecakowy.DTO.Local;
+namespace DziennikPlecakowy.DTO;
 // DTO punktu geograficznego
 
 public class GeoPointDTO

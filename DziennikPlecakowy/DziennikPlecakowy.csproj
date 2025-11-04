@@ -72,9 +72,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\DziennikPlecakowy.DTO\DziennikPlecakowy.DTO.csproj" />
-	  <ProjectReference Include="..\DziennikPlecakowy.Infrastructure\DziennikPlecakowy.Infrastructure.csproj" />
-	  <ProjectReference Include="..\DziennikPlecakowy.Interfaces\DziennikPlecakowy.Interfaces.csproj" />
-	  <ProjectReference Include="..\DziennikPlecakowy.Models\DziennikPlecakowy.Models.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
