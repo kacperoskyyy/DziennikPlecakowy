@@ -108,15 +108,14 @@ public partial class DashboardViewModel : BaseViewModel
             }
             else
             {
-                Console.WriteLine("Failed to start tracking trip.");
+                await Shell.Current.DisplayAlert("Błąd", "Nie udzielono wszystkich uprawnień (Lokalizacja, Aktywność fizyczna) niezbędnych do śledzenia.", "OK");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error starting trip tracking: {ex.Message}");
-            return;
+            await Shell.Current.DisplayAlert("Błąd śledzenia", $"Wystąpił nieoczekiwany błąd: {ex.Message}", "OK");
+            IsTracking = false;
         }
-        
     }
 
     [RelayCommand]
