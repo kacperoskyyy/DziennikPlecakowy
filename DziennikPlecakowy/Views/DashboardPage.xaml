@@ -8,6 +8,7 @@
              x:Class="DziennikPlecakowy.Views.DashboardPage"
              Title="{Binding Title}">
 
+
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
             EventName="Appearing"
@@ -21,7 +22,7 @@
             <ActivityIndicator IsRunning="{Binding IsBusy}" />
 
             <Grid x:DataType="dto:UserProfileDTO" 
-                BindingContext="{Binding UserProfile}"  ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" 
+                  BindingContext="{Binding UserProfile}"  ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" 
                  Padding="10">
 
                 <Label Grid.Row="0" Grid.Column="0" Text="Wszystkie Wycieczki:" />
@@ -31,10 +32,11 @@
                 <Label Grid.Row="1" Grid.Column="1" Text="{Binding Stats.TotalDistance, StringFormat='{0:F2} km'}" FontAttributes="Bold" />
 
                 <Label Grid.Row="2" Grid.Column="0" Text="Total Kroki:" />
-                <Label Grid.Row="2" Grid.Column="1" Text="{Binding Stats.TotalSteps}" FontAttributes="Bold" /> 
+                <Label Grid.Row="2" Grid.Column="1" Text="{Binding Stats.TotalSteps}" FontAttributes="Bold" />
             </Grid>
 
             <BoxView HeightRequest="1" Color="Gray" />
+
             <Label Text="Aktywna Wycieczka" FontSize="Large" FontAttributes="Bold" />
 
             <VerticalStackLayout Spacing="5" IsVisible="{Binding IsTracking}">
@@ -53,23 +55,14 @@
                     IsVisible="{Binding IsNotTracking}" 
                     HeightRequest="50" />
 
-            <Border x:Name="StopButtonBorder"
-                    IsVisible="{Binding IsTracking}"
+            <Button Text="STOP" 
+                    Command="{Binding StopTrackingCommand}"
                     BackgroundColor="Red"
+                    TextColor="White"
+                    IsVisible="{Binding IsTracking}" 
                     HeightRequest="50"
-                    StrokeShape="RoundRectangle 25">
-
-                <Border.GestureRecognizers>
-                    <PointerGestureRecognizer PointerPressed="StopButton_PointerPressed"
-                                              PointerReleased="StopButton_PointerReleased" />
-                </Border.GestureRecognizers>
-
-                <Label Text="STOP (Przytrzymaj 3s)" 
-                       TextColor="White"
-                       VerticalOptions="Center" 
-                       HorizontalOptions="Center"
-                       FontAttributes="Bold" />
-            </Border>
+                    CornerRadius="25"
+                    FontAttributes="Bold" />
 
         </VerticalStackLayout>
     </ScrollView>

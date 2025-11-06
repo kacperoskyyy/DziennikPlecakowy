@@ -7,7 +7,6 @@ using System.Net.Http.Json;
 namespace DziennikPlecakowy.ViewModels;
 
 // ViewModel dla Dashboardu
-
 public partial class DashboardViewModel : BaseViewModel
 {
     private readonly TripTrackingService _tripTrackingService;
@@ -40,6 +39,8 @@ public partial class DashboardViewModel : BaseViewModel
 
         Title = "Dashboard";
 
+        // Subskrybujemy zdarzenia TYLKO RAZ.
+        // ViewModel będzie teraz stale nasłuchiwał zmian z serwisu.
         SubscribeToTrackingEvents();
 
         IsTracking = _tripTrackingService.IsTracking;
@@ -47,16 +48,20 @@ public partial class DashboardViewModel : BaseViewModel
 
     private void SubscribeToTrackingEvents()
     {
+        // Ta metoda jest bezpieczna, usuwa starą subskrypcję (jeśli istnieje)
+        // i dodaje nową, zapobiegając duplikatom.
+        _tripTrackingService.OnTripDataUpdated -= OnTrackingDataUpdated;
         _tripTrackingService.OnTripDataUpdated += OnTrackingDataUpdated;
     }
 
-    public void Cleanup()
-    {
-        _tripTrackingService.OnTripDataUpdated -= OnTrackingDataUpdated;
-    }
+    // Metoda Cleanup() została USUNIĘTA.
+    // Już nie anulujemy subskrypcji przy opuszczaniu strony.
 
     private void OnTrackingDataUpdated(TripTrackingService.TrackingData data)
     {
+        // Ta metoda będzie teraz wywoływana zawsze, gdy serwis wyśle
+        // aktualizację, niezależnie od tego, czy strona Dashboard
+        // jest widoczna, czy nie.
         MainThread.BeginInvokeOnMainThread(() =>
         {
             CurrentTripData = data;
@@ -67,12 +72,15 @@ public partial class DashboardViewModel : BaseViewModel
     [RelayCommand]
     private async Task LoadStatsAsync()
     {
+        // USUNĘLIŚMY STĄD SubscribeToTrackingEvents().
+        // Nie jest już potrzebne, bo subskrypcja jest stała.
+
         if (IsBusy) return;
         IsBusy = true;
 
         try
         {
-            var response = await _apiClient.GetAsync("/api/User/getUserStats"); 
+            var response = await _apiClient.GetAsync("/api/User/getUserStats");
 
             if (response.IsSuccessStatusCode)
             {
@@ -80,12 +88,11 @@ public partial class DashboardViewModel : BaseViewModel
             }
             else
             {
-                Console.WriteLine("Failed to load user stats"); 
+                Console.WriteLine("Failed to load user stats");
             }
         }
-        catch (Exception ex) 
-        { 
-        
+        catch (Exception ex)
+        {
             Console.WriteLine($"Error loading user stats: {ex.Message}");
         }
         finally
@@ -106,6 +113,7 @@ public partial class DashboardViewModel : BaseViewModel
                 IsTracking = true;
                 TripName = string.Empty;
 
+                // Ustawiamy stan początkowy
                 CurrentTripData = new TripTrackingService.TrackingData
                 {
                     DistanceKm = 0,
@@ -129,9 +137,25 @@ public partial class DashboardViewModel : BaseViewModel
     private async Task StopTrackingAsync()
     {
         if (!IsTracking) return;
+
+        // Logika dialogu potwierdzającego
+        bool result = await Shell.Current.DisplayAlert(
+            "Zakończyć wycieczkę?",
+            "Czy na pewno chcesz zatrzymać śledzenie?",
+            "Tak, zakończ",
+            "Anuluj");
+
+        if (!result)
+        {
+            return; // Użytkownik anulował
+        }
+
+        // Użytkownik potwierdził
         try
         {
             await _tripTrackingService.StopTrackingAsync();
+
+            // Odświeżamy statystyki globalne (pobieramy z serwera)
             await LoadStatsAsync();
         }
         catch (Exception ex)
@@ -140,6 +164,7 @@ public partial class DashboardViewModel : BaseViewModel
         }
         finally
         {
+            // Czyścimy UI po zatrzymaniu
             IsTracking = false;
             CurrentTripData = null;
         }

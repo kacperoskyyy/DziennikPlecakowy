@@ -17,11 +17,9 @@ internal class PlatformNotificationService : IPlatformNotificationService
 
     public PlatformNotificationService()
     {
-
         _context = MApplication.Context;
         _notificationManager = (NotificationManager)_context.GetSystemService(Context.NotificationService);
     }
-
 
     public void StartForegroundService(string title, string text)
     {
@@ -42,7 +40,6 @@ internal class PlatformNotificationService : IPlatformNotificationService
         _notificationManager.Cancel(NotificationId);
     }
 
-
     private Notification BuildNotification(string title, string text)
     {
         var intent = _context.PackageManager.GetLaunchIntentForPackage(_context.PackageName);
@@ -51,9 +48,13 @@ internal class PlatformNotificationService : IPlatformNotificationService
         var notification = new NotificationCompat.Builder(_context, ChannelId)
             .SetContentTitle(title)
             .SetContentText(text)
-            .SetSmallIcon(Resource.Mipmap.appicon_foreground) 
+            .SetSmallIcon(Resource.Mipmap.appicon_foreground)
             .SetOngoing(true)
             .SetContentIntent(pendingIntent)
+
+            .SetPriority(NotificationCompat.PriorityLow) 
+            .SetSilent(true) 
+
             .Build();
 
         return notification;
@@ -68,10 +69,16 @@ internal class PlatformNotificationService : IPlatformNotificationService
 
         var channelName = "Dziennik Plecakowy";
         var channelDescription = "Powiadomienia o śledzeniu wycieczki";
-        var channel = new NotificationChannel(ChannelId, channelName, NotificationImportance.Default)
+
+        var channel = new NotificationChannel(ChannelId, channelName, NotificationImportance.Low)
         {
             Description = channelDescription
         };
+
+
+        channel.SetSound(null, null);
+        channel.EnableVibration(false);
+        channel.EnableLights(false);
 
         _notificationManager.CreateNotificationChannel(channel);
     }

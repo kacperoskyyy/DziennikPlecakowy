@@ -52,6 +52,13 @@ public partial class TripDetailViewModel : BaseViewModel
             LoadTripDataCommand.Execute(null);
     }
 
+    partial void OnServerTripIdChanged(string value)
+    {
+        if (!string.IsNullOrEmpty(value))
+            LoadTripDataCommand.Execute(null);
+    }
+
+
     [RelayCommand]
     private async Task LoadTripDataAsync()
     {

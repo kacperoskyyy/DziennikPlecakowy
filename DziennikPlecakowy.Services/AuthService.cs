@@ -44,6 +44,8 @@ public class AuthService : IAuthService
             };
         }
 
+        await _refreshTokenRepository.DeleteAllByUserIdAsync(user.Id);
+
         var jwtToken = _cypherService.GenerateJwtToken(user);
         var refreshToken = await CreateAndStoreRefreshToken(user.Id);
 
@@ -52,7 +54,8 @@ public class AuthService : IAuthService
         return new AuthResponseDTO
         {
             Token = jwtToken,
-            RefreshToken = refreshToken.Token
+            RefreshToken = refreshToken.Token,
+            MustChangePassword = user.MustChangePassword
         };
     }
     public async Task<AuthResponseDTO?> RefreshTokenAsync(string token)

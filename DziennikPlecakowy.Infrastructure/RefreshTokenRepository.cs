@@ -23,4 +23,8 @@ public class RefreshTokenRepository : IRefreshTokenRepository
     {
         await _refreshTokens.DeleteOneAsync(rt => rt.Id == tokenId);
     }
+    public async Task DeleteAllByUserIdAsync(string userId)
+    {
+        await _refreshTokens.DeleteManyAsync(rt => rt.UserId == userId);
+    }
 }
