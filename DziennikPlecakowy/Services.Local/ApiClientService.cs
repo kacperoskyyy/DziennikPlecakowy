@@ -114,7 +114,7 @@ public class ApiClientService
                 var authResponse = await response.Content.ReadFromJsonAsync<AuthResponseDTO>();
 
                 localToken.Token = authResponse.RefreshToken;
-                localToken.ExpiryDate = DateTime.UtcNow.AddDays(7);
+                localToken.ExpiryDate = DateTime.UtcNow.AddDays(1);
                 await _tokenRepository.SaveTokenAsync(localToken);
 
                 SetAccessToken(authResponse.Token);

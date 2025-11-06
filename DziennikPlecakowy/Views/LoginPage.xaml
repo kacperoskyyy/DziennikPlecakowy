@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
              x:DataType="vm:LoginViewModel"
+             NavigationPage.HasNavigationBar="False"
+             Shell.TabBarIsVisible="False"
              x:Class="DziennikPlecakowy.Views.LoginPage"
              Title="LoginPage">
     <VerticalStackLayout Padding="20" Spacing="10" VerticalOptions="Center">
