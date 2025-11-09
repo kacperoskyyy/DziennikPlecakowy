@@ -10,9 +10,9 @@ public class SecondsToHoursConverter : IValueConverter
         if (value is double seconds)
         {
             double hours = seconds / 3600.0;
-            return $"{hours:F1} h";
+            return $"{hours:F2} h";
         }
-        return "0.0 h";
+        return "0.00 h";
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

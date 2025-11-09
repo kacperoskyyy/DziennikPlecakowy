@@ -18,23 +18,7 @@ namespace DziennikPlecakowy
         {
             base.OnStart();
 
-            //MainPage = new AppShell();
-
-            var authService = IPlatformApplication.Current.Services.GetService<AuthService>();
-
-            var authResult = await authService.CheckAndRefreshTokenOnStartupAsync();
-
-            if (authResult.IsSuccess)
-            {
-                if (authResult.MustChangePassword)
-                {
-                    await Shell.Current.GoToAsync(nameof(ChangePasswordPage));
-                }
-            }
-            else
-            {
-                await Shell.Current.GoToAsync(nameof(LoginPage), false);
-            }
+            await Shell.Current.GoToAsync(nameof(LoginPage), false);
         }
     }
 }

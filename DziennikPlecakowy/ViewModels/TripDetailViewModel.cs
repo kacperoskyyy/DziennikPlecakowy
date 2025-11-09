@@ -17,6 +17,8 @@ namespace DziennikPlecakowy.ViewModels;
 [QueryProperty(nameof(ServerTripId), "ServerTripId")]
 public partial class TripDetailViewModel : BaseViewModel
 {
+
+    public IAsyncRelayCommand GoBackAsyncCommand { get; }
     private readonly LocalTripRepository _tripRepository;
     private readonly ApiClientService _apiClient;
 
@@ -44,6 +46,7 @@ public partial class TripDetailViewModel : BaseViewModel
         _apiClient = apiClient;
         Title = "Szczegóły Wycieczki";
         Pins = new ObservableCollection<Pin>();
+        GoBackAsyncCommand = new AsyncRelayCommand(GoBackAsync);
     }
 
     partial void OnLocalTripIdChanged(string value)
@@ -156,5 +159,20 @@ public partial class TripDetailViewModel : BaseViewModel
                 Timestamp = p.Timestamp
             }).ToList()
         };
+    }
+
+    //[RelayCommand]
+    private async Task GoBackAsync()
+    {
+        if (IsBusy) return;
+
+        try
+        {
+            await Shell.Current.GoToAsync("..");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Błąd nawigacji: {ex.Message}");
+        }
     }
 }

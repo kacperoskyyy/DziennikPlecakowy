@@ -20,6 +20,9 @@ public partial class LoginViewModel : BaseViewModel
     [ObservableProperty]
     string errorMessage;
 
+    [ObservableProperty]
+    bool isCheckingAutoLogin;
+
     public LoginViewModel(AuthService authService, SyncService syncService)
     {
         _authService = authService;
@@ -73,5 +76,42 @@ public partial class LoginViewModel : BaseViewModel
     private async Task GoToRegisterAsync()
     {
         await Shell.Current.GoToAsync(nameof(RegisterPage));
+    }
+
+    [RelayCommand]
+    private async Task CheckAutoLoginAsync()
+    {
+        if (IsBusy || IsCheckingAutoLogin) return;
+
+        try
+        {
+            IsCheckingAutoLogin = true;
+            IsBusy = true;
+            ErrorMessage = string.Empty;
+
+            var authResult = await _authService.CheckAndRefreshTokenOnStartupAsync();
+
+            if (authResult.IsSuccess)
+            {
+                if (authResult.MustChangePassword)
+                {
+                    await Shell.Current.GoToAsync(nameof(ChangePasswordPage));
+                }
+                else
+                {
+                    await _syncService.SynchronizePendingTripsAsync();
+                    await Shell.Current.GoToAsync("..");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Błąd auto-logowania: {ex.Message}";
+        }
+        finally
+        {
+            IsCheckingAutoLogin = false;
+            IsBusy = false;
+        }
     }
 }
