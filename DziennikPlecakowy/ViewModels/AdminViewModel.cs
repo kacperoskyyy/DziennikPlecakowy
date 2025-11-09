@@ -8,22 +8,20 @@ using System.Net.Http.Json;
 
 namespace DziennikPlecakowy.ViewModels;
 
-// ViewModel zarządzający panelem administratora
 public partial class AdminViewModel : BaseViewModel
 {
     private readonly ApiClientService _apiClient;
+    public IAsyncRelayCommand GoBackAsyncCommand { get; }
 
     [ObservableProperty]
     ObservableCollection<AdminUserDetailDTO> users;
-
-    [ObservableProperty]
-    AdminUserDetailDTO selectedUser;
 
     public AdminViewModel(ApiClientService apiClient)
     {
         _apiClient = apiClient;
         Title = "Panel Administratora";
         users = new ObservableCollection<AdminUserDetailDTO>();
+        GoBackAsyncCommand = new AsyncRelayCommand(GoBackAsync);
     }
 
     [RelayCommand]
@@ -51,15 +49,6 @@ public partial class AdminViewModel : BaseViewModel
         }
     }
 
-    partial void OnSelectedUserChanged(AdminUserDetailDTO value)
-    {
-        if (value == null)
-            return;
-
-        ShowUserActionsCommand.Execute(value);
-        SelectedUser = null;
-    }
-
     [RelayCommand]
     private async Task ShowUserActionsAsync(AdminUserDetailDTO user)
     {
@@ -71,7 +60,7 @@ public partial class AdminViewModel : BaseViewModel
         string action = await Shell.Current.DisplayActionSheet(
             $"Akcje dla: {user.Username}",
             "Anuluj",
-            null,
+            "Usuń użytkownika",
             blockAction,
             "Wymuś zmianę hasła",
             roleAction);
@@ -84,7 +73,23 @@ public partial class AdminViewModel : BaseViewModel
         {
             HttpResponseMessage response = null;
 
-            if (action == "Zablokuj użytkownika")
+            if (action == "Usuń użytkownika")
+            {
+                bool confirmed = await Shell.Current.DisplayAlert(
+                    "Potwierdź usunięcie",
+                    $"Czy na pewno chcesz nieodwracalnie usunąć użytkownika {user.Username}?",
+                    "Tak, usuń",
+                    "Anuluj"
+                );
+
+                if (!confirmed)
+                {
+                    IsBusy = false;
+                    return;
+                }
+                response = await _apiClient.DeleteAsync($"/api/Admin/deleteUser/{user.Id}");
+            }
+            else if (action == "Zablokuj użytkownika")
             {
                 response = await _apiClient.PutAsync($"/api/Admin/blockUser/{user.Id}", null);
             }
@@ -120,6 +125,19 @@ public partial class AdminViewModel : BaseViewModel
         {
             IsBusy = false;
             await LoadUsersAsync();
+        }
+    }
+    private async Task GoBackAsync()
+    {
+        if (IsBusy) return;
+
+        try
+        {
+            await Shell.Current.GoToAsync("..");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Błąd nawigacji: {ex.Message}");
         }
     }
 }

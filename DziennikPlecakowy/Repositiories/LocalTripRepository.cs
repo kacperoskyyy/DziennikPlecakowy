@@ -4,22 +4,27 @@ using SQLite;
 
 namespace DziennikPlecakowy.Repositories;
 
-//Repozytorium do zarządzania lokalnymi danymi podróży
 public class LocalTripRepository
 {
     private readonly SQLiteAsyncConnection _db;
     private readonly DatabaseService _dbService;
+    private readonly AuthService _authService;
 
-    public LocalTripRepository(DatabaseService dbService)
+    public LocalTripRepository(DatabaseService dbService, AuthService authService)
     {
         _dbService = dbService;
         _db = dbService.GetConnection();
+        _authService = authService;
     }
 
     public async Task<List<LocalTrip>> GetLast50TripsAsync()
     {
         await _dbService.InitializeDatabaseAsync();
+        var userId = _authService.GetCurrentUserId();
+        if (string.IsNullOrEmpty(userId)) return new List<LocalTrip>();
+
         return await _db.Table<LocalTrip>()
+                      .Where(t => t.UserId == userId)
                       .OrderByDescending(t => t.TripDate)
                       .Take(50)
                       .ToListAsync();
@@ -28,8 +33,11 @@ public class LocalTripRepository
     public async Task<List<TripWithGeoPoints>> GetUnsynchronizedTripsAsync()
     {
         await _dbService.InitializeDatabaseAsync();
+        var userId = _authService.GetCurrentUserId();
+        if (string.IsNullOrEmpty(userId)) return new List<TripWithGeoPoints>();
+
         var unsyncedTrips = await _db.Table<LocalTrip>()
-                                         .Where(t => !t.IsSynchronized)
+                                         .Where(t => !t.IsSynchronized && t.UserId == userId)
                                          .ToListAsync();
 
         var result = new List<TripWithGeoPoints>();
@@ -47,7 +55,10 @@ public class LocalTripRepository
     public async Task<TripWithGeoPoints> GetTripWithGeoPointsAsync(long localTripId)
     {
         await _dbService.InitializeDatabaseAsync();
-        var trip = await _db.Table<LocalTrip>().FirstOrDefaultAsync(t => t.LocalId == localTripId);
+        var userId = _authService.GetCurrentUserId();
+        if (string.IsNullOrEmpty(userId)) return null;
+
+        var trip = await _db.Table<LocalTrip>().FirstOrDefaultAsync(t => t.LocalId == localTripId && t.UserId == userId);
         if (trip == null)
             return null;
 
@@ -89,13 +100,11 @@ public class LocalTripRepository
         return trip.LocalId;
     }
 
-
     public async Task AddGeoPointAsync(LocalGeoPoint point)
     {
         await _dbService.InitializeDatabaseAsync();
         await _db.InsertAsync(point);
     }
-
 
     public async Task MarkTripAsSynchronizedAsync(long localTripId, string serverId)
     {
@@ -107,14 +116,19 @@ public class LocalTripRepository
             localTripId);
     }
 
-
     public async Task DeleteTripAsync(long localTripId)
     {
         await _dbService.InitializeDatabaseAsync();
 
-        await _db.RunInTransactionAsync(conn => { 
-            conn.Execute("DELETE FROM geo_points WHERE LocalTripId = ?", localTripId);
-            conn.Execute("DELETE FROM trips WHERE LocalId = ?", localTripId);
-        });
+        var userId = _authService.GetCurrentUserId();
+        var trip = await _db.Table<LocalTrip>().FirstOrDefaultAsync(t => t.LocalId == localTripId && t.UserId == userId);
+
+        if (trip != null)
+        {
+            await _db.RunInTransactionAsync(conn => {
+                conn.Execute("DELETE FROM geo_points WHERE LocalTripId = ?", localTripId);
+                conn.Execute("DELETE FROM trips WHERE LocalId = ?", localTripId);
+            });
+        }
     }
 }

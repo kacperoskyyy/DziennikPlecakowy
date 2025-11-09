@@ -49,8 +49,14 @@
                     </VerticalStackLayout>
                 </ContentView>
                 <Button Text="Wróć do listy"
-Command="{Binding GoBackAsyncCommand}"
-Margin="0,15,0,0" />
+                    Command="{Binding GoBackAsyncCommand}"
+                    Margin="0,15,0,0" />
+
+                <Button Text="Usuń wycieczkę"
+                        Command="{Binding DeleteTripCommand}"
+                        BackgroundColor="Red"
+                        TextColor="White"
+                        Margin="0,15,0,0" />
 
             </VerticalStackLayout>
         </ScrollView>

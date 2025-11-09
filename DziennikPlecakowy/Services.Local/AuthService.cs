@@ -36,7 +36,6 @@ public class AuthService
 
         var request = new RefreshTokenRequestDTO { RefreshToken = localToken.Token };
 
-        // POPRAWKA: Używamy PostAsJsonAsync z flagą false
         var response = await _apiClient.PostAsJsonAsync("/api/Auth/refresh", request, handleUnauthorized: false);
 
         if (!response.IsSuccessStatusCode)
@@ -66,7 +65,6 @@ public class AuthService
         await _dbService.InitializeDatabaseAsync();
         var request = new UserAuthRequestDTO { Email = email, Password = password };
 
-        // POPRAWKA: Używamy PostAsJsonAsync z flagą false
         var response = await _apiClient.PostAsJsonAsync("/api/Auth/login", request, handleUnauthorized: false);
 
         if (!response.IsSuccessStatusCode)
@@ -104,7 +102,6 @@ public class AuthService
             Password = password
         };
 
-        // POPRAWKA: Używamy PostAsJsonAsync z flagą false
         var response = await _apiClient.PostAsJsonAsync("/api/Auth/register", request, handleUnauthorized: false);
 
         if (!response.IsSuccessStatusCode)
@@ -112,7 +109,6 @@ public class AuthService
             return await ParseErrorResponse(response);
         }
 
-        // Oryginalna logika logowania po rejestracji jest OK
         return await LoginAsync(email, password);
     }
 
@@ -121,6 +117,7 @@ public class AuthService
         _apiClient.ClearAccessToken();
         await _tokenRepository.DeleteTokenAsync();
         Preferences.Clear();
+        await _dbService.DeleteDatabaseFileAsync();
     }
 
     private async Task<UserProfileDTO> FetchAndSaveUserDataAsync()

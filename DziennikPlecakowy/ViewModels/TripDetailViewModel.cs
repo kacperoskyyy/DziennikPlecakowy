@@ -19,6 +19,7 @@ public partial class TripDetailViewModel : BaseViewModel
 {
 
     public IAsyncRelayCommand GoBackAsyncCommand { get; }
+    public IAsyncRelayCommand DeleteTripCommand { get; }
     private readonly LocalTripRepository _tripRepository;
     private readonly ApiClientService _apiClient;
 
@@ -47,6 +48,7 @@ public partial class TripDetailViewModel : BaseViewModel
         Title = "Szczegóły Wycieczki";
         Pins = new ObservableCollection<Pin>();
         GoBackAsyncCommand = new AsyncRelayCommand(GoBackAsync);
+        DeleteTripCommand = new AsyncRelayCommand(DeleteTripAsync);
     }
 
     partial void OnLocalTripIdChanged(string value)
@@ -161,7 +163,6 @@ public partial class TripDetailViewModel : BaseViewModel
         };
     }
 
-    //[RelayCommand]
     private async Task GoBackAsync()
     {
         if (IsBusy) return;
@@ -173,6 +174,63 @@ public partial class TripDetailViewModel : BaseViewModel
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Błąd nawigacji: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteTripAsync()
+    {
+        if (IsBusy) return;
+
+        bool confirmed = await Shell.Current.DisplayAlert(
+            "Potwierdź usunięcie",
+            "Czy na pewno chcesz nieodwracalnie usunąć tę wycieczkę?",
+            "Tak, usuń",
+            "Anuluj"
+        );
+
+        if (!confirmed) return;
+
+        IsBusy = true;
+        bool deleteSuccess = false;
+        string apiError = string.Empty;
+
+        try
+        {
+            if (TripDetails != null && !string.IsNullOrEmpty(TripDetails.Id))
+            {
+                var response = await _apiClient.DeleteAsync($"/api/Trip/{TripDetails.Id}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    apiError = $"Błąd API: {response.StatusCode}.";
+                }
+            }
+
+            if (long.TryParse(LocalTripId, out long localId))
+            {
+                await _tripRepository.DeleteTripAsync(localId);
+            }
+
+            if (string.IsNullOrEmpty(apiError))
+            {
+                deleteSuccess = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Błąd", $"Wystąpił wyjątek: {ex.Message}", "OK");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+
+        if (deleteSuccess)
+        {
+            await Shell.Current.GoToAsync("..");
+        }
+        else
+        {
+            await Shell.Current.DisplayAlert("Błąd", $"Nie udało się usunąć wycieczki. {apiError}", "OK");
         }
     }
 }

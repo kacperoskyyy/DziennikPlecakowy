@@ -5,7 +5,8 @@
              x:DataType="vm:RegisterViewModel"
              x:Class="DziennikPlecakowy.Views.RegisterPage"
              Title="{Binding Title}"
-             Shell.NavBarIsVisible="False">
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="10" VerticalOptions="Center">

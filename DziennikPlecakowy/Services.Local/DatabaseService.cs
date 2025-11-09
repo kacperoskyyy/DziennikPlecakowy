@@ -85,4 +85,32 @@ public class DatabaseService
             throw new Exception($"Failed to initialize database tables: {ex.Message}", ex);
         }
     }
+
+    public async Task CloseConnectionAsync()
+    {
+        if (_lazyInitializer.IsValueCreated)
+        {
+            await Database.CloseAsync();
+            _isInitialized = false;
+        }
+    }
+
+    public async Task DeleteDatabaseFileAsync()
+    {
+        // Najpierw bezpiecznie zamknij aktywne połączenie
+        await CloseConnectionAsync();
+
+        if (File.Exists(DatabaseConstants.DatabasePath))
+        {
+            try
+            {
+                File.Delete(DatabaseConstants.DatabasePath);
+                System.Diagnostics.Debug.WriteLine("[DatabaseService] Database file deleted.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[DatabaseService] ERROR deleting database file: {ex.Message}");
+            }
+        }
+    }
 }

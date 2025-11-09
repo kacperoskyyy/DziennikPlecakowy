@@ -130,5 +130,20 @@ public class ApiClientService
         }
     }
 
+    public async Task<HttpResponseMessage> DeleteAsync(string requestUri, bool handleUnauthorized = true)
+    {
+        var response = await _httpClient.DeleteAsync(requestUri);
+
+        if (handleUnauthorized && response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            bool refreshed = await HandleUnauthorizedResponseAsync();
+            if (refreshed)
+            {
+                response = await _httpClient.DeleteAsync(requestUri);
+            }
+        }
+        return response;
+    }
+
 
 }

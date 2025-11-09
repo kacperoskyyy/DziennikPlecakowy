@@ -15,7 +15,11 @@ public static class MauiProgramExtensions
     public static MauiAppBuilder RegisterDatabaseAndRepositories(this MauiAppBuilder builder)
     {
         builder.Services.AddSingleton<DatabaseService>();
-        builder.Services.AddSingleton<LocalTripRepository>();
+        builder.Services.AddSingleton<LocalTripRepository>(sp =>
+    new LocalTripRepository(
+        sp.GetRequiredService<DatabaseService>(),
+        sp.GetRequiredService<AuthService>()
+    ));
         builder.Services.AddSingleton<TokenRepository>();
         return builder;
     }
@@ -59,6 +63,9 @@ public static class MauiProgramExtensions
 
         builder.Services.AddTransient<AdminViewModel>();
         builder.Services.AddTransient<AdminPage>();
+
+        builder.Services.AddTransient<ChangePasswordViewModel>();
+        builder.Services.AddTransient<ChangePasswordPage>();
 
         return builder;
     }

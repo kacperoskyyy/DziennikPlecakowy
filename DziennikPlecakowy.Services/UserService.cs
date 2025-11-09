@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace DziennikPlecakowy.Services;
 
-
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
@@ -13,7 +12,7 @@ public class UserService : IUserService
     private readonly ITripRepository _tripRepository;
     private readonly IHashService _hash;
     private readonly ICypherService _cypherService;
-    
+
     public UserService(IUserRepository userRepository, IUserStatRepository userStatRepository, ITripRepository tripRepository, IHashService hash, ICypherService cypherService)
     {
         _userRepository = userRepository;
@@ -22,14 +21,14 @@ public class UserService : IUserService
         _hash = hash;
         _cypherService = cypherService;
     }
-    
+
     private void DecryptUser(User user)
     {
         if (user == null) return;
         user.Email = _cypherService.Decrypt(user.Email);
         user.Username = _cypherService.Decrypt(user.Username);
     }
-    
+
     private async Task<bool> EncryptAndSaveUserAsync(User user)
     {
         user.Email = _cypherService.Encrypt(user.Email.ToLower());
@@ -45,7 +44,7 @@ public class UserService : IUserService
         return success;
     }
 
-    
+
     public async Task<bool> ChangeUsernameAsync(string userId, string newUsername)
     {
         User? user = await _userRepository.GetByIdAsync(userId);
@@ -54,7 +53,7 @@ public class UserService : IUserService
         user.Username = newUsername;
         return await EncryptAndSaveUserAsync(user);
     }
-    
+
     public async Task<bool> ChangeEmailAsync(string userId, string newEmail)
     {
         User? user = await _userRepository.GetByIdAsync(userId);
@@ -71,39 +70,48 @@ public class UserService : IUserService
         user.Email = newEmail;
         return await EncryptAndSaveUserAsync(user);
     }
-    
+
     public async Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword)
     {
         User? user = await _userRepository.GetByIdAsync(userId);
         if (user == null) return false;
 
-        if (!CheckPassword(user, currentPassword))
+        if (user.MustChangePassword == false)
         {
-            return false;
+            if (!CheckPassword(user, currentPassword))
+            {
+                return false;
+            }
         }
 
         string newPasswordHash = _hash.Hash(newPassword);
 
-
-        if (user.PasswordHashesHistory.Contains(newPasswordHash))
+        if (user.HashedPassword == newPasswordHash  || user.PasswordHashesHistory.Contains(newPasswordHash) )
         {
             return false;
         }
 
+        string oldPasswordHash = user.HashedPassword;
+
         user.HashedPassword = newPasswordHash;
-        user.PasswordHashesHistory.Add(newPasswordHash);
         user.MustChangePassword = false;
 
-        if (user.PasswordHashesHistory.Count > 10)
+        if (!string.IsNullOrEmpty(oldPasswordHash))
+        {
+            user.PasswordHashesHistory.Add(oldPasswordHash);
+        }
+
+        if (user.PasswordHashesHistory.Count > 3)
         {
             user.PasswordHashesHistory.Remove(user.PasswordHashesHistory.First());
         }
+
 
         var success = await _userRepository.UpdateAsync(user);
         if (success) DecryptUser(user);
         return success;
     }
-    
+
     public async Task<bool> DeleteUserAsync(string userId)
     {
         User? user = await _userRepository.GetByIdAsync(userId);
@@ -118,8 +126,6 @@ public class UserService : IUserService
 
     public async Task UserRegister(UserRegisterRequestDTO userRegister)
     {
-
-
         User user = new User
         {
             Email = _cypherService.Encrypt(userRegister.Email.ToLower()),
@@ -153,7 +159,7 @@ public class UserService : IUserService
         DecryptUser(user);
         return user;
     }
-    
+
     public async Task<User?> GetUserById(string id)
     {
         var user = await _userRepository.GetByIdAsync(id);
@@ -162,25 +168,25 @@ public class UserService : IUserService
         DecryptUser(user);
         return user;
     }
-    
+
     public bool CheckPassword(User user, string password)
     {
         return user.HashedPassword == _hash.Hash(password);
     }
 
-    
+
     public async Task<int> UpdateUser(User user)
     {
         var result = await _userRepository.UpdateAsync(user);
         return result ? 1 : -1;
     }
-    
+
     public async Task<int> DeleteUser(User user)
     {
         var result = await _userRepository.DeleteAsync(user.Id);
         return result ? 1 : -1;
     }
-    
+
     public async Task<int> SetLastLogin(string Id)
     {
         var user = await GetUserById(Id);
@@ -189,7 +195,7 @@ public class UserService : IUserService
 
         return await EncryptAndSaveUserAsync(user) ? 1 : 0;
     }
-    
+
     public async Task<int> SetAdmin(User user)
     {
         if (!user.Roles.Contains(UserRole.Admin))
@@ -199,11 +205,11 @@ public class UserService : IUserService
         }
         return 0;
     }
-    
+
     public async Task<UserStat> GetUserStats(string userId)
     {
         var stats = await _userStatRepository.GetByUserIdAsync(userId);
-        if(stats == null)
+        if (stats == null)
         {
             stats = new UserStat
             {
@@ -221,7 +227,12 @@ public class UserService : IUserService
 
     public async Task<IEnumerable<User>> GetAllUsersAsync()
     {
-        return await _userRepository.GetAllAsync();
+        var users = await _userRepository.GetAllAsync();
+        foreach (var user in users)
+        {
+            DecryptUser(user);
+        }
+        return users;
     }
 
     public async Task<bool> SetUserLockStatusAsync(string userId, bool isLocked)

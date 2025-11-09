@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Services.Local;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace DziennikPlecakowy.ViewModels;
 //View Model do edycji konta użytkownika
@@ -95,31 +96,57 @@ public partial class EditAccountViewModel : BaseViewModel
         }
         if (IsBusy) return;
         IsBusy = true;
+        PasswordMessage = string.Empty;
 
-        var request = new UserChangePasswordRequestDTO
+        try
         {
-            Password = CurrentPassword,
-            NewPassword = NewPassword
-        };
-        var response = await _apiClient.PostAsJsonAsync("/api/User/changePassword", request);
+            var request = new UserChangePasswordRequestDTO
+            {
+                Password = CurrentPassword,
+                NewPassword = NewPassword
+            };
+            var response = await _apiClient.PostAsJsonAsync("/api/User/changePassword", request);
 
-        if (response.IsSuccessStatusCode)
-        {
-            PasswordMessage = "Hasło zmienione pomyślnie!";
-            CurrentPassword = string.Empty;
-            NewPassword = string.Empty;
-            ConfirmNewPassword = string.Empty;
-            OnPropertyChanged(nameof(CurrentPassword));
-            OnPropertyChanged(nameof(NewPassword));
-            OnPropertyChanged(nameof(ConfirmNewPassword));
+            if (response.IsSuccessStatusCode)
+            {
+                PasswordMessage = "Hasło zmienione pomyślnie!";
+                CurrentPassword = string.Empty;
+                NewPassword = string.Empty;
+                ConfirmNewPassword = string.Empty;
+                OnPropertyChanged(nameof(CurrentPassword));
+                OnPropertyChanged(nameof(NewPassword));
+                OnPropertyChanged(nameof(ConfirmNewPassword));
+            }
+            else
+            {
+                string errorMsg = "Błąd zmiany hasła. Sprawdź bieżące hasło lub czy nowe hasło nie jest takie samo jak stare.";
+                try
+                {
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(jsonResponse))
+                    {
+                        var errorDto = System.Text.Json.JsonSerializer.Deserialize<ErrorResponseDTO>(jsonResponse);
+                        if (!string.IsNullOrEmpty(errorDto?.Message))
+                        {
+                            errorMsg = errorDto.Message;
+                        }
+                    }
+                }
+                catch (JsonException)
+                {
+                   
+                }
+                PasswordMessage = errorMsg;
+            }
         }
-        else
+        catch (Exception ex)
         {
-
-            var error = await response.Content.ReadFromJsonAsync<ErrorResponseDTO>();
-            PasswordMessage = error?.Message ?? "Błąd zmiany hasła.";
+            PasswordMessage = $"Wyjątek: {ex.Message}";
         }
-        IsBusy = false;
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]

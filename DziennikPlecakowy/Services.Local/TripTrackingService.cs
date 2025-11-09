@@ -21,6 +21,7 @@ public class TripTrackingService
     private double _totalDistanceKm = 0.0;
     private long _currentSteps = 0;
     private System.Threading.Timer _autoStopTimer;
+    private System.Threading.Timer _uiUpdateTimer;
 
     public event Action<TrackingData> OnTripDataUpdated;
     public bool IsTracking => _isRunning;
@@ -80,7 +81,15 @@ public class TripTrackingService
             AutoStopTripCallback,
             null,
             TimeSpan.FromHours(24),
-            Timeout.InfiniteTimeSpan);
+            Timeout.InfiniteTimeSpan
+        );
+
+        _uiUpdateTimer = new Timer(
+            UiUpdateTimerCallback,
+            null,
+            TimeSpan.FromSeconds(1),
+            TimeSpan.FromSeconds(1)
+        );
 
         _isRunning = true;
         return true;
@@ -89,6 +98,9 @@ public class TripTrackingService
     public async Task StopTrackingAsync()
     {
         if (!_isRunning) return;
+
+        _uiUpdateTimer?.Dispose();
+        _uiUpdateTimer = null;
 
         StopPedometer();
         StopGeolocation();
@@ -267,6 +279,18 @@ public class TripTrackingService
             System.Diagnostics.Debug.WriteLine($"Błąd podczas sprawdzania uprawnień: {ex.Message}");
             return false;
         }
+    }
+
+    private void UiUpdateTimerCallback(object state)
+    {
+        if (!_isRunning)
+        {
+            _uiUpdateTimer?.Dispose();
+            _uiUpdateTimer = null;
+            return;
+        }
+
+        UpdateStatsAndNotification();
     }
 
     public class TrackingData
