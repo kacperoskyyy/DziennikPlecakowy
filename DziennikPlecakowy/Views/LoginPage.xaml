@@ -7,29 +7,46 @@
              Shell.NavBarIsVisible="False"
              Shell.TabBarIsVisible="False"
              x:Class="DziennikPlecakowy.Views.LoginPage"
-             Title="LoginPage">
-    <VerticalStackLayout Padding="20" Spacing="10" VerticalOptions="Center">
+             Style="{StaticResource PageStyle}">
 
-        <Entry Placeholder="Email" 
-               Text="{Binding Email}" 
-               Keyboard="Email" />
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10" VerticalOptions="Center">
 
-        <Entry Placeholder="Hasło" 
-               Text="{Binding Password}" 
-               IsPassword="True" />
+            <ContentView ControlTemplate="{StaticResource AppLogo}" />
 
-        <Label Text="{Binding ErrorMessage}" 
-               TextColor="Red"
-               IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+            <Label Text="Zaloguj się" 
+                   Style="{StaticResource TitleLabel}" 
+                   HorizontalOptions="Center" />
 
-        <Button Text="Zaloguj" 
-                Command="{Binding LoginCommand}" 
-                IsEnabled="{Binding IsNotBusy}" />
+            <Entry Placeholder="Email" 
+                   Text="{Binding Email}" 
+                   Keyboard="Email" 
+                   Style="{StaticResource MainEntry}" />
 
-        <ActivityIndicator IsRunning="{Binding IsBusy}" />
+            <Entry Placeholder="Hasło" 
+                   Text="{Binding Password}" 
+                   IsPassword="True" 
+                   Style="{StaticResource MainEntry}" />
 
-        <Button Text="Nie masz konta? Zarejestruj się"
-                Command="{Binding GoToRegisterCommand}" />
+            <Label Text="{Binding ErrorMessage}" 
+                   Style="{StaticResource LabelError}"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
 
-    </VerticalStackLayout>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" />
+
+            <Button Text="Zaloguj" 
+                    Command="{Binding LoginCommand}" 
+                    IsEnabled="{Binding IsNotBusy}" 
+                    Style="{StaticResource MainButton}" />
+
+            <Button Text="Nie masz konta? Zarejestruj się"
+                    Command="{Binding GoToRegisterCommand}" 
+                    Style="{StaticResource MainButton}"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource MainBlue}"
+                    BorderColor="{StaticResource MainBlue}"
+                    BorderWidth="1" />
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

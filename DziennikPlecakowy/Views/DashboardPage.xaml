@@ -18,52 +18,57 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="10">
+        <VerticalStackLayout Padding="0,20,0,20" Spacing="10">
 
-            <Label Text="Moje Statystyki" FontSize="Large" FontAttributes="Bold" />
+            <Label Text="Dashboard" Style="{StaticResource TitleLabel}" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" />
 
-            <Grid x:DataType="dto:UserProfileDTO" 
-                  BindingContext="{Binding UserProfile}"  ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" 
-                 Padding="10">
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout>
+                    <Label Text="Moje Statystyki" FontSize="Large" FontAttributes="Bold" />
+                    <Grid x:DataType="dto:UserProfileDTO" 
+                          BindingContext="{Binding UserProfile}"  
+                          ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" 
+                          Padding="0,10,0,0">
+                        <Label Grid.Row="0" Grid.Column="0" Text="Wszystkie Wycieczki:" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding Stats.TripsCount}" FontAttributes="Bold" />
+                        <Label Grid.Row="1" Grid.Column="0" Text="Total Dystans:" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding Stats.TotalDistance, StringFormat='{0:F2} km'}" FontAttributes="Bold" />
+                        <Label Grid.Row="2" Grid.Column="0" Text="Total Kroki:" />
+                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding Stats.TotalSteps}" FontAttributes="Bold" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
 
-                <Label Grid.Row="0" Grid.Column="0" Text="Wszystkie Wycieczki:" />
-                <Label Grid.Row="0" Grid.Column="1" Text="{Binding Stats.TripsCount}" FontAttributes="Bold" />
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout>
+                    <Label Text="Aktywna Wycieczka" FontSize="Large" FontAttributes="Bold" />
 
-                <Label Grid.Row="1" Grid.Column="0" Text="Total Dystans:" />
-                <Label Grid.Row="1" Grid.Column="1" Text="{Binding Stats.TotalDistance, StringFormat='{0:F2} km'}" FontAttributes="Bold" />
+                    <VerticalStackLayout IsVisible="{Binding IsNotTracking}">
+                        <Entry Style="{StaticResource DashboardEntry}" />
+                        <Button Text="START" 
+                                Command="{Binding StartTrackingCommand}"
+                                BackgroundColor="{StaticResource SuccessGreen}"
+                                Style="{StaticResource MainButton}" />
+                    </VerticalStackLayout>
 
-                <Label Grid.Row="2" Grid.Column="0" Text="Total Kroki:" />
-                <Label Grid.Row="2" Grid.Column="1" Text="{Binding Stats.TotalSteps}" FontAttributes="Bold" />
-            </Grid>
+                    <VerticalStackLayout Spacing="5" IsVisible="{Binding IsTracking}" Padding="0,10,0,0">
 
-            <BoxView HeightRequest="1" Color="Gray" />
+                        <mapsui:MapView x:Name="ActiveTripMap"
+                                        HeightRequest="250"
+                                        Map="{Binding ActiveMap}" />
 
-            <Label Text="Aktywna Wycieczka" FontSize="Large" FontAttributes="Bold" />
+                        <Label Text="{Binding CurrentTripData.Duration, StringFormat='Czas: {0:hh\\:mm\\:ss}'}" FontSize="Medium" />
+                        <Label Text="{Binding CurrentTripData.DistanceKm, StringFormat='Dystans: {0:F2} km'}" FontSize="Medium" />
+                        <Label Text="{Binding CurrentTripData.Steps, StringFormat='Kroki: {0}'}" FontSize="Medium" />
 
-            <VerticalStackLayout Spacing="5" IsVisible="{Binding IsTracking}">
-                <Label Text="{Binding CurrentTripData.Duration, StringFormat='Czas: {0:hh\\:mm\\:ss}'}" FontSize="Medium" />
-                <Label Text="{Binding CurrentTripData.DistanceKm, StringFormat='Dystans: {0:F2} km'}" FontSize="Medium" />
-                <Label Text="{Binding CurrentTripData.Steps, StringFormat='Kroki: {0}'}" FontSize="Medium" />
-            </VerticalStackLayout>
+                        <Button Text="STOP" 
+                                Command="{Binding StopTrackingCommand}"
+                                Style="{StaticResource DeleteButton}" />
+                    </VerticalStackLayout>
 
-            <Entry Placeholder="Nazwa nowej wycieczki (opcjonalnie)" 
-                   Text="{Binding TripName}"
-                   IsVisible="{Binding IsNotTracking}" />
-
-            <Button Text="START" 
-                    Command="{Binding StartTrackingCommand}"
-                    BackgroundColor="Green"
-                    IsVisible="{Binding IsNotTracking}" 
-                    HeightRequest="50" />
-
-            <Button Text="STOP" 
-                    Command="{Binding StopTrackingCommand}"
-                    BackgroundColor="Red"
-                    TextColor="White"
-                    IsVisible="{Binding IsTracking}" 
-                    HeightRequest="50"
-                    CornerRadius="25"
-                    FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Frame>
 
         </VerticalStackLayout>
     </ScrollView>

@@ -24,6 +24,7 @@ public class TripTrackingService
     private System.Threading.Timer _uiUpdateTimer;
 
     public event Action<TrackingData> OnTripDataUpdated;
+    public event Action<Location> OnNewGeoPointAdded;
     public bool IsTracking => _isRunning;
 
     private const double MinDistanceThresholdMeters = 15.0;
@@ -211,6 +212,7 @@ public class TripTrackingService
             Timestamp = time
         };
         await _tripRepository.AddGeoPointAsync(newPoint);
+        OnNewGeoPointAdded?.Invoke(new Location(lat, lon));
     }
 
 
@@ -280,6 +282,7 @@ public class TripTrackingService
             return false;
         }
     }
+
 
     private void UiUpdateTimerCallback(object state)
     {

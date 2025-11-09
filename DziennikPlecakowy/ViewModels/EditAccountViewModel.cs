@@ -4,6 +4,7 @@ using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Services.Local;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace DziennikPlecakowy.ViewModels;
 //View Model do edycji konta użytkownika
@@ -22,6 +23,8 @@ public partial class EditAccountViewModel : BaseViewModel
     [ObservableProperty] string usernameMessage;
     [ObservableProperty] string emailMessage;
     [ObservableProperty] string passwordMessage;
+
+    private const string PasswordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$";
 
     public EditAccountViewModel(ApiClientService apiClient, AuthService authService)
     {
@@ -94,6 +97,13 @@ public partial class EditAccountViewModel : BaseViewModel
             PasswordMessage = "Nowe hasła nie są takie same.";
             return;
         }
+
+        if (!Regex.IsMatch(NewPassword, PasswordRegex))
+        {
+            PasswordMessage = "Nowe hasło musi mieć min. 6 znaków, 1 dużą literę, 1 cyfrę i 1 znak specjalny.";
+            return;
+        }
+
         if (IsBusy) return;
         IsBusy = true;
         PasswordMessage = string.Empty;

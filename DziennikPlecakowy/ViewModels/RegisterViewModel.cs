@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using DziennikPlecakowy.Services.Local;
 using DziennikPlecakowy.Views;
+using System.Text.RegularExpressions;
 
 namespace DziennikPlecakowy.ViewModels;
 
@@ -25,6 +26,8 @@ public partial class RegisterViewModel : BaseViewModel
 
     [ObservableProperty]
     string errorMessage;
+
+    private const string PasswordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$";
 
     public RegisterViewModel(AuthService authService, SyncService syncService)
     {
@@ -51,6 +54,18 @@ public partial class RegisterViewModel : BaseViewModel
         }
 
         if (IsBusy) return;
+
+        if (Password != ConfirmPassword)
+        {
+            ErrorMessage = "Hasła nie są zgodne.";
+            return;
+        }
+
+        if (!Regex.IsMatch(Password, PasswordRegex))
+        {
+            ErrorMessage = "Hasło musi mieć min. 6 znaków, 1 dużą literę, 1 cyfrę i 1 znak specjalny.";
+            return;
+        }
 
         try
         {

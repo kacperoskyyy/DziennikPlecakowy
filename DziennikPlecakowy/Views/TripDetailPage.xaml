@@ -6,8 +6,8 @@
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              x:DataType="vm:TripDetailViewModel"
              x:Class="DziennikPlecakowy.Views.TripDetailPage"
-             Title="{Binding Title}"
-             Shell.NavBarIsVisible="False">
+             Shell.NavBarIsVisible="False"
+             Style="{StaticResource PageStyle}">
 
     <Grid RowDefinitions="300, *">
 
@@ -15,8 +15,9 @@
                   MapType="Street"
                   Grid.Row="0"
                   ItemsSource="{Binding Pins}" />
+
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="10" Spacing="10">
+            <VerticalStackLayout Padding="0,20,0,20" Spacing="10">
 
                 <ContentView IsVisible="{Binding TripDetails, Converter={StaticResource IsNotNullConverter}}">
                     <VerticalStackLayout Spacing="10"
@@ -24,13 +25,15 @@
                                          x:DataType="dto:TripDetailDTO">
 
                         <Label Text="{Binding Name}"
-                               FontSize="Large"
-                               FontAttributes="Bold"
-                               HorizontalOptions="Center" />
+                               Style="{StaticResource TitleLabel}"
+                               HorizontalOptions="Center"
+                               Margin="20,0" />
                         <Label Text="{Binding TripDate, StringFormat='{0:dd.MM.yyyy HH:mm}'}"
-                               HorizontalOptions="Center" />
+                               HorizontalOptions="Center" 
+                               TextColor="{StaticResource TextSecondary}"
+                               Margin="0,-10,0,0" />
 
-                        <Frame Padding="10" CornerRadius="10" Margin="0,10,0,0">
+                        <Frame Style="{StaticResource CardFrame}">
                             <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto" Padding="5">
                                 <Label Grid.Row="0" Grid.Column="0" Text="Dystans:" />
                                 <Label Grid.Row="0" Grid.Column="1" Text="{Binding Distance, StringFormat='{0:F2} km'}" FontAttributes="Bold" />
@@ -48,15 +51,15 @@
 
                     </VerticalStackLayout>
                 </ContentView>
-                <Button Text="Wróć do listy"
-                    Command="{Binding GoBackAsyncCommand}"
-                    Margin="0,15,0,0" />
 
+                <Button Text="Wróć do listy"
+                        Command="{Binding GoBackAsyncCommand}"
+                        Style="{StaticResource MainButton}"
+                        BackgroundColor="Transparent"
+                        TextColor="{StaticResource TextSecondary}" />
                 <Button Text="Usuń wycieczkę"
                         Command="{Binding DeleteTripCommand}"
-                        BackgroundColor="Red"
-                        TextColor="White"
-                        Margin="0,15,0,0" />
+                        Style="{StaticResource DeleteButton}" />
 
             </VerticalStackLayout>
         </ScrollView>
@@ -65,7 +68,5 @@
                            HorizontalOptions="Center"
                            VerticalOptions="Center"
                            Grid.RowSpan="2" />
-        
-        
     </Grid>
 </ContentPage>

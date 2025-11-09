@@ -1,10 +1,10 @@
 using DziennikPlecakowy.ViewModels;
+
 namespace DziennikPlecakowy.Views;
 
 public partial class DashboardPage : ContentPage
 {
     private readonly DashboardViewModel _viewModel;
-
 
     public DashboardPage(DashboardViewModel dashboardViewModel)
     {

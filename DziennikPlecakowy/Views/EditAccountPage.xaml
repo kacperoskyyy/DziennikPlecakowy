@@ -4,61 +4,75 @@
              xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
              x:DataType="vm:EditAccountViewModel"
              x:Class="DziennikPlecakowy.Views.EditAccountPage"
-             Title="{Binding Title}"
-             Shell.NavBarIsVisible="False">
+             Shell.NavBarIsVisible="False"
+             Style="{StaticResource PageStyle}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15" IsEnabled="{Binding IsNotBusy}">
+        <VerticalStackLayout Padding="0,20,0,20" Spacing="10" IsEnabled="{Binding IsNotBusy}">
 
-            <Frame Padding="10" CornerRadius="10">
+            <Label Text="Edytuj Konto" Style="{StaticResource TitleLabel}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" />
+
+            <Frame Style="{StaticResource CardFrame}">
                 <VerticalStackLayout Spacing="5">
                     <Label Text="Zmień nazwę użytkownika" FontAttributes="Bold" />
                     <Entry Placeholder="Nowa nazwa" 
-                           Text="{Binding NewUsername}" />
-                    <Label Text="{Binding UsernameMessage}" TextColor="Red" 
+                           Text="{Binding NewUsername}" 
+                           Style="{StaticResource MainEntry}" />
+                    <Label Text="{Binding UsernameMessage}" 
+                           Style="{StaticResource LabelError}"
                            IsVisible="{Binding UsernameMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
                     <Button Text="Zapisz nazwę" 
-                            Command="{Binding ChangeUsernameCommand}" />
+                            Command="{Binding ChangeUsernameCommand}" 
+                            Style="{StaticResource MainButton}" />
                 </VerticalStackLayout>
             </Frame>
 
-            <Frame Padding="10" CornerRadius="10">
+            <Frame Style="{StaticResource CardFrame}">
                 <VerticalStackLayout Spacing="5">
                     <Label Text="Zmień adres e-mail" FontAttributes="Bold" />
                     <Entry Placeholder="Nowy e-mail" 
                            Text="{Binding NewEmail}" 
-                           Keyboard="Email" />
-                    <Label Text="{Binding EmailMessage}" TextColor="Red" 
+                           Keyboard="Email" 
+                           Style="{StaticResource MainEntry}" />
+                    <Label Text="{Binding EmailMessage}" 
+                           Style="{StaticResource LabelError}"
                            IsVisible="{Binding EmailMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
                     <Button Text="Zapisz e-mail" 
-                            Command="{Binding ChangeEmailCommand}" />
+                            Command="{Binding ChangeEmailCommand}" 
+                            Style="{StaticResource MainButton}" />
                 </VerticalStackLayout>
             </Frame>
 
-            <Frame Padding="10" CornerRadius="10">
+            <Frame Style="{StaticResource CardFrame}">
                 <VerticalStackLayout Spacing="5">
                     <Label Text="Zmień hasło" FontAttributes="Bold" />
                     <Entry Placeholder="Bieżące hasło" 
                            Text="{Binding CurrentPassword}" 
-                           IsPassword="True" />
+                           IsPassword="True" 
+                           Style="{StaticResource MainEntry}" />
                     <Entry Placeholder="Nowe hasło" 
                            Text="{Binding NewPassword}" 
-                           IsPassword="True" />
+                           IsPassword="True" 
+                           Style="{StaticResource MainEntry}" />
                     <Entry Placeholder="Potwierdź nowe hasło" 
                            Text="{Binding ConfirmNewPassword}" 
-                           IsPassword="True" />
-                    <Label Text="{Binding PasswordMessage}" TextColor="Red" 
+                           IsPassword="True" 
+                           Style="{StaticResource MainEntry}" />
+                    <Label Text="{Binding PasswordMessage}" 
+                           Style="{StaticResource LabelError}"
                            IsVisible="{Binding PasswordMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
                     <Button Text="Zapisz hasło" 
-                            Command="{Binding ChangePasswordCommand}" />
+                            Command="{Binding ChangePasswordCommand}" 
+                            Style="{StaticResource MainButton}" />
                 </VerticalStackLayout>
             </Frame>
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" />
-
             <Button Text="Wróć" 
                     Command="{Binding GoBackCommand}" 
-                    Margin="0,20,0,0" />
+                    Style="{StaticResource MainButton}"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource TextSecondary}" />
 
         </VerticalStackLayout>
     </ScrollView>

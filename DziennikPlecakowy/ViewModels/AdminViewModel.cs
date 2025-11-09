@@ -16,6 +16,11 @@ public partial class AdminViewModel : BaseViewModel
     [ObservableProperty]
     ObservableCollection<AdminUserDetailDTO> users;
 
+    private List<AdminUserDetailDTO> allUsers = new List<AdminUserDetailDTO>();
+
+    [ObservableProperty]
+    string searchText;
+
     public AdminViewModel(ApiClientService apiClient)
     {
         _apiClient = apiClient;
@@ -35,17 +40,41 @@ public partial class AdminViewModel : BaseViewModel
             var response = await _apiClient.GetAsync("/api/Admin/getAllUsers");
             if (response.IsSuccessStatusCode)
             {
-                var userList = await response.Content.ReadFromJsonAsync<List<AdminUserDetailDTO>>();
-                users.Clear();
-                foreach (var user in userList)
-                {
-                    users.Add(user);
-                }
+                allUsers = await response.Content.ReadFromJsonAsync<List<AdminUserDetailDTO>>();
+                FilterUsers();
             }
         }
         finally
         {
             IsBusy = false;
+        }
+    }
+
+    partial void OnSearchTextChanged(string value)
+    {
+        FilterUsers();
+    }
+
+    private void FilterUsers()
+    {
+        users.Clear();
+        IEnumerable<AdminUserDetailDTO> filtered;
+
+        if (string.IsNullOrWhiteSpace(SearchText))
+        {
+            filtered = allUsers;
+        }
+        else
+        {
+            filtered = allUsers.Where(u =>
+                u.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                u.Username.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+            );
+        }
+
+        foreach (var user in filtered)
+        {
+            users.Add(user);
         }
     }
 

@@ -9,11 +9,11 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Logo.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <converters:IsNotNullOrEmptyConverter x:Key="IsNotNullOrEmptyConverter" />
             <converters:SecondsToHoursConverter x:Key="SecondsToHoursConverter" />
-
             <converters:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter" />
 
         </ResourceDictionary>
