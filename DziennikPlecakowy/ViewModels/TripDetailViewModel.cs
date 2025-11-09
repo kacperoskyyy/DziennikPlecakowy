@@ -11,15 +11,10 @@ using Microsoft.Maui.Maps;
 
 namespace DziennikPlecakowy.ViewModels;
 
-// ViewModel dla Szczegółów Wycieczki
-
 [QueryProperty(nameof(LocalTripId), "LocalTripId")]
 [QueryProperty(nameof(ServerTripId), "ServerTripId")]
 public partial class TripDetailViewModel : BaseViewModel
 {
-
-    public IAsyncRelayCommand GoBackAsyncCommand { get; }
-    public IAsyncRelayCommand DeleteTripCommand { get; }
     private readonly LocalTripRepository _tripRepository;
     private readonly ApiClientService _apiClient;
 
@@ -32,6 +27,7 @@ public partial class TripDetailViewModel : BaseViewModel
     [ObservableProperty]
     TripDetailDTO tripDetails;
 
+ 
     [ObservableProperty]
     ObservableCollection<Pin> pins;
 
@@ -41,12 +37,17 @@ public partial class TripDetailViewModel : BaseViewModel
     [ObservableProperty]
     MapSpan mapStartRegion;
 
+
+    public IAsyncRelayCommand GoBackAsyncCommand { get; }
+    public IAsyncRelayCommand DeleteTripCommand { get; }
+
     public TripDetailViewModel(LocalTripRepository tripRepository, ApiClientService apiClient)
     {
         _tripRepository = tripRepository;
         _apiClient = apiClient;
         Title = "Szczegóły Wycieczki";
         Pins = new ObservableCollection<Pin>();
+
         GoBackAsyncCommand = new AsyncRelayCommand(GoBackAsync);
         DeleteTripCommand = new AsyncRelayCommand(DeleteTripAsync);
     }
@@ -63,7 +64,6 @@ public partial class TripDetailViewModel : BaseViewModel
             LoadTripDataCommand.Execute(null);
     }
 
-
     [RelayCommand]
     private async Task LoadTripDataAsync()
     {
@@ -72,6 +72,7 @@ public partial class TripDetailViewModel : BaseViewModel
         TripDetails = null;
         Pins.Clear();
         RoutePolyline = null;
+        MapStartRegion = null;
 
         try
         {
@@ -166,15 +167,8 @@ public partial class TripDetailViewModel : BaseViewModel
     private async Task GoBackAsync()
     {
         if (IsBusy) return;
-
-        try
-        {
-            await Shell.Current.GoToAsync("..");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Błąd nawigacji: {ex.Message}");
-        }
+        try { await Shell.Current.GoToAsync(".."); }
+        catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Błąd nawigacji: {ex.Message}"); }
     }
 
     private async Task DeleteTripAsync()

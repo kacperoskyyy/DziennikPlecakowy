@@ -3,10 +3,14 @@ using CommunityToolkit.Mvvm.Input;
 using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Services.Local;
 using System.Net.Http.Json;
+using System.Collections.ObjectModel;
+using Microsoft.Maui.Controls.Maps;
+using Microsoft.Maui.Maps;
+using Microsoft.Maui.Devices.Sensors; 
+//using Location = Microsoft.Maui.Devices.Sensors.Location;
 
 namespace DziennikPlecakowy.ViewModels;
 
-// ViewModel dla Dashboardu
 public partial class DashboardViewModel : BaseViewModel
 {
     private readonly TripTrackingService _tripTrackingService;
@@ -26,6 +30,16 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty]
     string tripName;
 
+
+    [ObservableProperty]
+    ObservableCollection<Pin> activePins;
+
+    [ObservableProperty]
+    Polyline activeRoute;
+
+    [ObservableProperty]
+    MapSpan activeMapRegion;
+
     public bool IsNotTracking => !IsTracking;
 
     public DashboardViewModel(
@@ -36,32 +50,36 @@ public partial class DashboardViewModel : BaseViewModel
         _tripTrackingService = tripTrackingService;
         _authService = authService;
         _apiClient = apiClient;
-
         Title = "Dashboard";
 
-        // Subskrybujemy zdarzenia TYLKO RAZ.
-        // ViewModel będzie teraz stale nasłuchiwał zmian z serwisu.
-        SubscribeToTrackingEvents();
+        ActivePins = new ObservableCollection<Pin>();
+        ActiveRoute = new Polyline
+        {
+            StrokeColor = Colors.Blue,
+            StrokeWidth = 5
+        };
 
+        SubscribeToTrackingEvents();
         IsTracking = _tripTrackingService.IsTracking;
     }
 
-    private void SubscribeToTrackingEvents()
+    public void SubscribeToTrackingEvents()
     {
-        // Ta metoda jest bezpieczna, usuwa starą subskrypcję (jeśli istnieje)
-        // i dodaje nową, zapobiegając duplikatom.
         _tripTrackingService.OnTripDataUpdated -= OnTrackingDataUpdated;
+        _tripTrackingService.OnNewGeoPointAdded -= OnNewGeoPointAdded;
+
         _tripTrackingService.OnTripDataUpdated += OnTrackingDataUpdated;
+        _tripTrackingService.OnNewGeoPointAdded += OnNewGeoPointAdded;
     }
 
-    // Metoda Cleanup() została USUNIĘTA.
-    // Już nie anulujemy subskrypcji przy opuszczaniu strony.
+    public void Cleanup()
+    {
+        _tripTrackingService.OnTripDataUpdated -= OnTrackingDataUpdated;
+        _tripTrackingService.OnNewGeoPointAdded -= OnNewGeoPointAdded;
+    }
 
     private void OnTrackingDataUpdated(TripTrackingService.TrackingData data)
     {
-        // Ta metoda będzie teraz wywoływana zawsze, gdy serwis wyśle
-        // aktualizację, niezależnie od tego, czy strona Dashboard
-        // jest widoczna, czy nie.
         MainThread.BeginInvokeOnMainThread(() =>
         {
             CurrentTripData = data;
@@ -69,12 +87,33 @@ public partial class DashboardViewModel : BaseViewModel
         });
     }
 
+    private void OnNewGeoPointAdded(Location newLocation)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            if (!IsTracking) return;
+
+            var mapLocation = new Location(newLocation.Latitude, newLocation.Longitude);
+
+            ActiveRoute.Geopath.Add(mapLocation);
+
+            if (ActivePins.Count == 0)
+            {
+                ActivePins.Add(new Pin
+                {
+                    Label = "Start",
+                    Location = mapLocation,
+                    Type = PinType.Place
+                });
+            }
+
+            ActiveMapRegion = MapSpan.FromCenterAndRadius(mapLocation, Distance.FromKilometers(0.5));
+        });
+    }
+
     [RelayCommand]
     private async Task LoadStatsAsync()
     {
-        // USUNĘLIŚMY STĄD SubscribeToTrackingEvents().
-        // Nie jest już potrzebne, bo subskrypcja jest stała.
-
         if (IsBusy) return;
         IsBusy = true;
 
@@ -107,13 +146,17 @@ public partial class DashboardViewModel : BaseViewModel
         if (IsTracking) return;
         try
         {
+            ActivePins.Clear();
+            ActiveRoute.Geopath.Clear();
+            ActiveMapRegion = null;
+
             bool success = await _tripTrackingService.StartTrackingAsync(TripName);
             if (success)
             {
                 IsTracking = true;
                 TripName = string.Empty;
+                OnPropertyChanged(nameof(TripName));
 
-                // Ustawiamy stan początkowy
                 CurrentTripData = new TripTrackingService.TrackingData
                 {
                     DistanceKm = 0,
@@ -138,7 +181,6 @@ public partial class DashboardViewModel : BaseViewModel
     {
         if (!IsTracking) return;
 
-        // Logika dialogu potwierdzającego
         bool result = await Shell.Current.DisplayAlert(
             "Zakończyć wycieczkę?",
             "Czy na pewno chcesz zatrzymać śledzenie?",
@@ -147,15 +189,12 @@ public partial class DashboardViewModel : BaseViewModel
 
         if (!result)
         {
-            return; // Użytkownik anulował
+            return;
         }
 
-        // Użytkownik potwierdził
         try
         {
             await _tripTrackingService.StopTrackingAsync();
-
-            // Odświeżamy statystyki globalne (pobieramy z serwera)
             await LoadStatsAsync();
         }
         catch (Exception ex)
@@ -164,7 +203,6 @@ public partial class DashboardViewModel : BaseViewModel
         }
         finally
         {
-            // Czyścimy UI po zatrzymaniu
             IsTracking = false;
             CurrentTripData = null;
         }

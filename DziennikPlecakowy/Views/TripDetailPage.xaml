@@ -37,13 +37,10 @@
                             <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto" Padding="5">
                                 <Label Grid.Row="0" Grid.Column="0" Text="Dystans:" />
                                 <Label Grid.Row="0" Grid.Column="1" Text="{Binding Distance, StringFormat='{0:F2} km'}" FontAttributes="Bold" />
-
                                 <Label Grid.Row="1" Grid.Column="0" Text="Czas trwania:" />
                                 <Label Grid.Row="1" Grid.Column="1" Text="{Binding Duration, Converter={StaticResource SecondsToHoursConverter}}" FontAttributes="Bold" />
-
                                 <Label Grid.Row="2" Grid.Column="0" Text="Przewyższenie:" />
                                 <Label Grid.Row="2" Grid.Column="1" Text="{Binding ElevationGain, StringFormat='{0:F0} m'}" FontAttributes="Bold" />
-
                                 <Label Grid.Row="3" Grid.Column="0" Text="Kroki:" />
                                 <Label Grid.Row="3" Grid.Column="1" Text="{Binding Steps}" FontAttributes="Bold" />
                             </Grid>
