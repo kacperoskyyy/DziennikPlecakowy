@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using DziennikPlecakowy.DTO;
+﻿using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 
 namespace DziennikPlecakowy.API.Controllers;
 
-//Kontroler logowania i rejestracji
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
@@ -13,13 +13,11 @@ public class AuthController : ControllerBase
     private readonly IAuthService _authService;
     private readonly ILogger<AuthController> _logger;
 
-    // Konstruktor kontrolera ze wstrzykiwaniem zależności
     public AuthController(IAuthService authService, ILogger<AuthController> logger)
     {
         _authService = authService;
         _logger = logger;
     }
-    // Endpoint rejestracji nowego użytkownika
     [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] UserRegisterRequestDTO request)
@@ -28,14 +26,14 @@ public class AuthController : ControllerBase
 
         try
         {
-            var success = await _authService.RegisterAsync(request);
+            await _authService.RegisterAsync(request); 
 
-            if (success)
-            {
-                return Ok(new { Message = "Rejestracja zakończona pomyślnie." });
-            }
-
-            return BadRequest("Rejestracja nie powiodła się. Sprawdź, czy email nie jest już zajęty.");
+            return Ok(new { Message = "Rejestracja zakończona pomyślnie." });
+        }
+        catch (MongoWriteException ex) when (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
+        {
+            _logger.LogWarning(ex, "Duplicate key error during registration for {Email}.", request.Email);
+            return Conflict("Użytkownik o tym adresie e-mail już istnieje.");
         }
         catch (System.Exception e)
         {
@@ -43,7 +41,6 @@ public class AuthController : ControllerBase
             return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
         }
     }
-    // Endpoint logowania użytkownika
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserAuthRequestDTO userAuthData)
@@ -56,11 +53,30 @@ public class AuthController : ControllerBase
 
             if (authResponse != null)
             {
+                if(authResponse.MustChangePassword)
+                {
+                    _logger.LogInformation("User with email {Email} must change password.", userAuthData.Email);
+                    return Ok(new
+                    {
+                        Token = authResponse.Token,
+                        RefreshToken = authResponse.RefreshToken,
+                        MustChangePassword = true,
+                        Message = "Wymagana jest zmiana hasła."
+                    });
+                }
+
+                if(authResponse.Token == "LOCKED" && authResponse.RefreshToken == "LOCKED")
+                {
+                    _logger.LogWarning("Login attempt for email {Email}, but user blocked", userAuthData.Email);
+                    return Unauthorized("Uzytkownik zablokowany.");
+                }
+
                 _logger.LogInformation("User logged in successfully with email {Email}.", userAuthData.Email);
                 return Ok(new
                 {
                     Token = authResponse.Token,
                     RefreshToken = authResponse.RefreshToken,
+                    MustChangePassword = false,
                     Message = "Pomyślnie zalogowano."
                 });
             }
@@ -74,7 +90,6 @@ public class AuthController : ControllerBase
         }
     }
 
-    // Endpoint odświeżania tokenu
     [AllowAnonymous]
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDTO request)

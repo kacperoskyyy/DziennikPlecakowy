@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
+             x:DataType="vm:EditAccountViewModel"
+             x:Class="DziennikPlecakowy.Views.EditAccountPage"
+             Shell.NavBarIsVisible="False"
+             Style="{StaticResource PageStyle}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="0,20,0,20" Spacing="10" IsEnabled="{Binding IsNotBusy}">
+
+            <Label Text="Edytuj Konto" Style="{StaticResource TitleLabel}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" />
+
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Zmień nazwę użytkownika" FontAttributes="Bold" />
+                    <Entry Placeholder="Nowa nazwa" 
+                           Text="{Binding NewUsername}" 
+                           Style="{StaticResource MainEntry}" />
+                    <Label Text="{Binding UsernameMessage}" 
+                           Style="{StaticResource LabelError}"
+                           IsVisible="{Binding UsernameMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+                    <Button Text="Zapisz nazwę" 
+                            Command="{Binding ChangeUsernameCommand}" 
+                            Style="{StaticResource MainButton}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Zmień adres e-mail" FontAttributes="Bold" />
+                    <Entry Placeholder="Nowy e-mail" 
+                           Text="{Binding NewEmail}" 
+                           Keyboard="Email" 
+                           Style="{StaticResource MainEntry}" />
+                    <Label Text="{Binding EmailMessage}" 
+                           Style="{StaticResource LabelError}"
+                           IsVisible="{Binding EmailMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+                    <Button Text="Zapisz e-mail" 
+                            Command="{Binding ChangeEmailCommand}" 
+                            Style="{StaticResource MainButton}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Zmień hasło" FontAttributes="Bold" />
+                    <Entry Placeholder="Bieżące hasło" 
+                           Text="{Binding CurrentPassword}" 
+                           IsPassword="True" 
+                           Style="{StaticResource MainEntry}" />
+                    <Entry Placeholder="Nowe hasło" 
+                           Text="{Binding NewPassword}" 
+                           IsPassword="True" 
+                           Style="{StaticResource MainEntry}" />
+                    <Entry Placeholder="Potwierdź nowe hasło" 
+                           Text="{Binding ConfirmNewPassword}" 
+                           IsPassword="True" 
+                           Style="{StaticResource MainEntry}" />
+                    <Label Text="{Binding PasswordMessage}" 
+                           Style="{StaticResource LabelError}"
+                           IsVisible="{Binding PasswordMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+                    <Button Text="Zapisz hasło" 
+                            Command="{Binding ChangePasswordCommand}" 
+                            Style="{StaticResource MainButton}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Button Text="Wróć" 
+                    Command="{Binding GoBackCommand}" 
+                    Style="{StaticResource MainButton}"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource TextSecondary}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

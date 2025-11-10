@@ -1,12 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
+             x:DataType="vm:LoginViewModel"
+             NavigationPage.HasNavigationBar="False"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
              x:Class="DziennikPlecakowy.Views.LoginPage"
-             Title="Logowanie">
-    <StackLayout Padding="20" Spacing="15">
-        <Label Text="Dziennik Plecakowy" FontSize="24" HorizontalOptions="Center"/>
-        <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email"/>
-        <Entry Placeholder="Hasło" Text="{Binding Password}" IsPassword="True"/>
-        <Button Text="Zaloguj" Command="{Binding LoginCommand}" />
-        <Button Text="Zarejestruj" Command="{Binding GoRegisterCommand}" BackgroundColor="Transparent" TextColor="{StaticResource PrimaryColor}"/>
-    </StackLayout>
+             Style="{StaticResource PageStyle}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10" VerticalOptions="Center">
+
+            <Image Source="logo_bez_tla.png"
+                HorizontalOptions="Center"
+                HeightRequest="256" 
+                WidthRequest="256"
+                SemanticProperties.Description="Logo aplikacji" />
+
+            <Label Text="Zaloguj się" 
+                   Style="{StaticResource TitleLabel}" 
+                   HorizontalOptions="Center" />
+
+            <Entry Placeholder="Email" 
+                   Text="{Binding Email}" 
+                   Keyboard="Email" 
+                   Style="{StaticResource MainEntry}" />
+
+            <Entry Placeholder="Hasło" 
+                   Text="{Binding Password}" 
+                   IsPassword="True" 
+                   Style="{StaticResource MainEntry}" />
+
+            <Label Text="{Binding ErrorMessage}" 
+                   Style="{StaticResource LabelError}"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" />
+
+            <Button Text="Zaloguj" 
+                    Command="{Binding LoginCommand}" 
+                    IsEnabled="{Binding IsNotBusy}" 
+                    Style="{StaticResource MainButton}" />
+
+            <Button Text="Nie masz konta? Zarejestruj się"
+                    Command="{Binding GoToRegisterCommand}" 
+                    Style="{StaticResource MainButton}"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource MainBlue}"
+                    BorderColor="{StaticResource MainBlue}"
+                    BorderWidth="1" />
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

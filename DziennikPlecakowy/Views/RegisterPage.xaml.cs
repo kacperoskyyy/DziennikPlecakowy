@@ -1,15 +1,12 @@
-using Microsoft.Maui.Controls;
-using Microsoft.Extensions.DependencyInjection;
 using DziennikPlecakowy.ViewModels;
 
-namespace DziennikPlecakowy.Views
+namespace DziennikPlecakowy.Views;
+
+public partial class RegisterPage : ContentPage
 {
-    public partial class RegisterPage : ContentPage
+    public RegisterPage(RegisterViewModel viewModel)
     {
-        public RegisterPage()
-        {
-            InitializeComponent();
-            BindingContext = App.Services.GetService<RegisterViewModel>();
-        }
+        InitializeComponent();
+        BindingContext = viewModel;
     }
 }

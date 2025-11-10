@@ -10,14 +10,12 @@ using System.Text;
 
 namespace DziennikPlecakowy.Services;
 
-// Serwis szyfrowania i tokenów
 public class CypherService : ICypherService
 {
     private static string? _key;
     private static string? _iv;
     private readonly IConfiguration _configuration;
     private readonly IServiceProvider _serviceProvider;
-    // Konstruktor serwisu szyfrowania i tokenów
     public CypherService(IConfiguration config, IServiceProvider serviceProvider)
     {
         _configuration = config;
@@ -30,7 +28,6 @@ public class CypherService : ICypherService
             throw new ArgumentNullException("Brak kluczy szyfrowania w konfiguracji!");
         }
     }
-    // Szyfrowanie tekstu
     public string Encrypt(string text)
     {
         byte[] textBytes = Encoding.UTF8.GetBytes(text);
@@ -51,7 +48,6 @@ public class CypherService : ICypherService
             }
         }
     }
-    // Odszyfrowywanie tekstu
     public string Decrypt(string text)
     {
         byte[] textBytes = Convert.FromBase64String(text);
@@ -73,7 +69,6 @@ public class CypherService : ICypherService
             }
         }
     }
-    // Generowanie tokenu JWT dla użytkownika
     public string GenerateJwtToken(User user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -98,7 +93,6 @@ public class CypherService : ICypherService
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
-    // Walidacja tokenu JWT
     public ClaimsPrincipal ValidateJwtToken(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -125,7 +119,6 @@ public class CypherService : ICypherService
             throw new SecurityTokenException("Invalid token.", ex);
         }
     }
-    // Pobieranie informacji o użytkowniku na podstawie tokenu
     public async Task<User?> GetUserInfoFromTokenAsync(string token)
     {
         var principal = ValidateJwtToken(token);
@@ -140,7 +133,6 @@ public class CypherService : ICypherService
             return await userService.GetUserById(userIdClaim.Value);
         }
     }
-    // Pobieranie ID użytkownika na podstawie tokenu
     public string GetUserIdFromToken(string token)
     {
         var principal = ValidateJwtToken(token);

@@ -1,11 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
+             x:DataType="vm:RegisterViewModel"
              x:Class="DziennikPlecakowy.Views.RegisterPage"
-             Title="Rejestracja">
-    <StackLayout Padding="20" Spacing="10">
-        <Entry Placeholder="Email" Text="{Binding Email}" />
-        <Entry Placeholder="Nazwa użytkownika" Text="{Binding Username}" />
-        <Entry Placeholder="Hasło" Text="{Binding Password}" IsPassword="True"/>
-        <Button Text="Zarejestruj" Command="{Binding RegisterCommand}"/>
-    </StackLayout>
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
+             Style="{StaticResource PageStyle}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10" VerticalOptions="Center">
+
+            <Label Text="Stwórz konto" 
+                   Style="{StaticResource TitleLabel}" 
+                   HorizontalOptions="Center" />
+
+            <Entry Placeholder="Nazwa użytkownika" 
+                   Text="{Binding Username}" 
+                   Style="{StaticResource MainEntry}" />
+
+            <Entry Placeholder="Email" 
+                   Text="{Binding Email}" 
+                   Keyboard="Email" 
+                   Style="{StaticResource MainEntry}" />
+
+            <Entry Placeholder="Hasło" 
+                   Text="{Binding Password}" 
+                   IsPassword="True" 
+                   Style="{StaticResource MainEntry}" />
+
+            <Entry Placeholder="Potwierdź hasło" 
+                   Text="{Binding ConfirmPassword}" 
+                   IsPassword="True" 
+                   Style="{StaticResource MainEntry}" />
+
+            <Label Text="{Binding ErrorMessage}" 
+                   Style="{StaticResource LabelError}"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" />
+
+            <Button Text="Zarejestruj się" 
+                    Command="{Binding RegisterCommand}" 
+                    IsEnabled="{Binding IsNotBusy}" 
+                    Style="{StaticResource MainButton}" />
+
+            <Button Text="Masz już konto? Zaloguj się"
+                    Command="{Binding GoToLoginCommand}" 
+                    Style="{StaticResource MainButton}"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource TextSecondary}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

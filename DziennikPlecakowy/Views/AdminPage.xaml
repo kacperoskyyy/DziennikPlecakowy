@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
+             xmlns:dto="clr-namespace:DziennikPlecakowy.DTO;assembly=DziennikPlecakowy.DTO"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:DataType="vm:AdminViewModel"
+             x:Class="DziennikPlecakowy.Views.AdminPage"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
+             Style="{StaticResource PageStyle}">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            EventName="Appearing"
+            Command="{Binding LoadUsersCommand}" />
+    </ContentPage.Behaviors>
+
+    <Grid RowDefinitions="Auto, Auto, Auto, *">
+
+        <Label Grid.Row="0" Text="Panel Administratora" Style="{StaticResource TitleLabel}" />
+
+        <Button Grid.Row="1" 
+            Text="Wróć do Konta"
+            Command="{Binding GoBackAsyncCommand}"
+            Style="{StaticResource MainButton}"
+            WidthRequest="200" />
+
+        <SearchBar Grid.Row="2"
+                   Placeholder="Szukaj po emailu lub nazwie..."
+                   Text="{Binding SearchText}"
+                   Margin="20,10" />
+
+        <CollectionView Grid.Row="3"
+                        ItemsSource="{Binding Users}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="dto:AdminUserDetailDTO">
+                    <Frame Padding="10" Margin="20,5" CornerRadius="8" HeightRequest="100" VerticalOptions="Start" BorderColor="{StaticResource BorderGray}" HasShadow="False">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminViewModel}}, Path=ShowUserActionsCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
+
+                        <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto">
+                            <VerticalStackLayout Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" VerticalOptions="Start">
+                                <Label Text="{Binding Username}" FontAttributes="Bold" FontSize="16" />
+                                <Label Text="{Binding Email}" FontSize="Small" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+
+                            <Label Grid.Column="1" Grid.Row="0" 
+                                   Text="ADMIN" FontAttributes="Bold" TextColor="{StaticResource WarningOrange}"
+                                   IsVisible="{Binding Roles.Count, Converter={StaticResource GreaterThanZeroConverter}}" />
+                            <Label Grid.Column="1" Grid.Row="1" 
+                                   Text="ZABLOKOWANY" FontAttributes="Bold" TextColor="{StaticResource DeleteRed}"
+                                   IsVisible="{Binding IsLocked}" />
+                            <Label Grid.Column="1" Grid.Row="2" 
+                                   Text="ZMIEŃ HASŁO" FontAttributes="Bold" TextColor="{StaticResource MainBlue}"
+                                   IsVisible="{Binding MustChangePassword}" />
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <ActivityIndicator Grid.Row="0" Grid.RowSpan="4" IsRunning="{Binding IsBusy}" HorizontalOptions="Center" VerticalOptions="Center" />
+
+    </Grid>
+</ContentPage>

@@ -8,7 +8,6 @@ using DziennikPlecakowy.Services;
 
 namespace DziennikPlecakowy.API.Controllers;
 
-//Kontroler zarządzania wycieczkami
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "User, Admin")]
@@ -16,18 +15,15 @@ public class TripController : ControllerBase
 {
     private readonly ITripService _tripService;
     private readonly ILogger<TripController> _logger;
-    //Konstruktor kontrolera ze wstrzykiwaniem zależności
     public TripController(ITripService tripService, ILogger<TripController> logger)
     {
         _tripService = tripService;
         _logger = logger;
     }
-    //Endpoint dodawania nowej wycieczki
     [HttpPost("addTrip")]
     public async Task<IActionResult> AddTrip([FromBody] TripAddRequestDTO tripAddRequest)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
         if (string.IsNullOrEmpty(userId))
         {
             return Unauthorized("Brak Id użytkownika w tokenie.");
@@ -46,12 +42,17 @@ public class TripController : ControllerBase
                 Steps = tripAddRequest.Steps
             };
 
-            var result = await _tripService.AddTripAsync(trip);
+            var newTrip = await _tripService.AddTripAsync(trip);
 
-            if (result)
+            if (newTrip != null)
             {
                 _logger.LogInformation("Trip added successfully by user {UserId}.", userId);
-                return Ok(new { Message = "Wycieczka została pomyślnie dodana." });
+
+                return Ok(new
+                {
+                    Message = "Wycieczka została pomyślnie dodana.",
+                    TripId = newTrip.Id 
+                });
             }
             else
             {
@@ -65,7 +66,6 @@ public class TripController : ControllerBase
             return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera: {e.Message}");
         }
     }
-    //Endpoint aktualizacji istniejącej wycieczki
     [HttpPost("updateTrip")]
     public async Task<IActionResult> UpdateTrip([FromBody] Trip trip)
     {
@@ -100,7 +100,6 @@ public class TripController : ControllerBase
             return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera: {e.Message}");
         }
     }
-    //Endpoint usuwania wycieczki
     [HttpDelete("deleteTrip")]
     public async Task<IActionResult> DeleteTrip([FromQuery] string tripId)
     {
@@ -135,7 +134,6 @@ public class TripController : ControllerBase
             return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera: {e.Message}");
         }
     }
-    //Endpoint pobierania wycieczek użytkownika
     [HttpGet("getUserTrips")]
     public async Task<IActionResult> GetUserTrips()
     {
@@ -162,6 +160,35 @@ public class TripController : ControllerBase
         catch (Exception e)
         {
             _logger.LogError(e, "Unexpected error during GetUserTrips for user {UserId}.", userId);
+            return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera: {e.Message}");
+        }
+    }
+    [HttpGet("getUserTripSummaries")]
+    public async Task<IActionResult> GetUserTripSummaries()
+    {
+        _logger.LogInformation("Endpoint: GET api/Trip/getUserTripSummaries invoked.");
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null) return Unauthorized();
+
+        try
+        {
+            var result = await _tripService.GetUserTripSummariesAsync(userId);
+
+            if (result != null)
+            {
+                _logger.LogInformation("Successfully retrieved {Count} trip summaries for user {UserId}.", result.Count(), userId);
+                return Ok(result);
+            }
+            else
+            {
+                _logger.LogInformation("No trip summaries found for user {UserId}.", userId);
+                return NotFound("Nie znaleziono wycieczek dla tego użytkownika.");
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Unexpected error during GetUserTripSummaries for user {UserId}.", userId);
             return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera: {e.Message}");
         }
     }

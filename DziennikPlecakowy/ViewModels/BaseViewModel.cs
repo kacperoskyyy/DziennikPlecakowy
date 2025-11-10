@@ -1,19 +1,16 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace DziennikPlecakowy.ViewModels
+namespace DziennikPlecakowy.ViewModels;
+//View Model bazowy dla innych ViewModeli
+
+public partial class BaseViewModel : ObservableObject
 {
-    public class BaseViewModel : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "")
-        {
-            if (Equals(backingStore, value)) return;
-            backingStore = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsNotBusy))]
+    bool isBusy;
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
+    [ObservableProperty]
+    string title;
+
+    public bool IsNotBusy => !IsBusy;
 }

@@ -18,14 +18,12 @@ public class MongoDBHealthCheck : IHealthCheck
     {
         try
         {
-            // Próba wykonania prostej, niewymagającej zasobów operacji na bazie
             await _dbContext.Users.EstimatedDocumentCountAsync(cancellationToken: cancellationToken);
 
             return HealthCheckResult.Healthy("Połączenie z MongoDB jest sprawne.");
         }
         catch (Exception ex)
         {
-            // Jeśli wystąpi błąd (np. brak połączenia), zwracamy status Unhealthy
             return HealthCheckResult.Unhealthy($"Połączenie z MongoDB nie działa: {ex.Message}");
         }
     }

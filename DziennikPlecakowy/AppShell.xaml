@@ -1,22 +1,37 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <Shell
+    x:Class="DziennikPlecakowy.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:DziennikPlecakowy.Views"
-    x:Class="DziennikPlecakowy.AppShell">
+    Shell.FlyoutBehavior="Disabled"
+    Title="DziennikPlecakowy"
+    
+    Shell.TabBarBackgroundColor="{StaticResource CardBackgroundWhite}"
+    Shell.TabBarUnselectedColor="{StaticResource PlaceholderGray}"
+    Shell.TabBarTitleColor="{StaticResource MainBlue}">
 
-    <FlyoutItem Title="Wycieczki" Icon="icon_trip.png">
-        <ShellContent Title="Lista" ContentTemplate="{DataTemplate views:TripsListPage}" />
-        <ShellContent Title="Nowa" ContentTemplate="{DataTemplate views:TripPage}" />
-    </FlyoutItem>
+    <TabBar>
+        <Tab Title="Dashboard" Icon="dashboard_icon.png">
+            <ShellContent
+                Title="Dashboard"
+                ContentTemplate="{DataTemplate views:DashboardPage}"
+                Route="DashboardPage" />
+        </Tab>
 
-    <FlyoutItem Title="Profil" Icon="icon_profile.png">
-        <ShellContent Title="Mój profil" ContentTemplate="{DataTemplate views:ProfilePage}" />
-    </FlyoutItem>
+        <Tab Title="Wycieczki" Icon="trips_icon.png">
+            <ShellContent
+                Title="Moje Wycieczki"
+                ContentTemplate="{DataTemplate views:TripListPage}"
+                Route="TripListPage" />
+        </Tab>
 
-    <FlyoutItem Title="Statystyki" Icon="icon_stats.png">
-        <ShellContent Title="Statystyki" ContentTemplate="{DataTemplate views:StatsPage}" />
-    </FlyoutItem>
+        <Tab Title="Konto" Icon="account_icon.png">
+            <ShellContent
+                Title="Moje Konto"
+                ContentTemplate="{DataTemplate views:AccountPage}"
+                Route="AccountPage" />
+        </Tab>
+    </TabBar>
 
-    <MenuItem Text="Wyloguj" Clicked="OnLogoutClicked" />
 </Shell>

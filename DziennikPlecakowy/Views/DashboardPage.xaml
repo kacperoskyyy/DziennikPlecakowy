@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
+             xmlns:dto="clr-namespace:DziennikPlecakowy.DTO;assembly=DziennikPlecakowy.DTO"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
+             x:DataType="vm:DashboardViewModel"
+             x:Class="DziennikPlecakowy.Views.DashboardPage"
+             Shell.NavBarIsVisible="False"
+             Style="{StaticResource PageStyle}">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            EventName="Appearing"
+            Command="{Binding LoadStatsCommand}" />
+    </ContentPage.Behaviors>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="0,20,0,20" Spacing="10">
+
+            <Label Text="Dashboard" Style="{StaticResource TitleLabel}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" />
+
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout>
+                    <Label Text="Moje Statystyki" FontSize="Large" FontAttributes="Bold" />
+                    <Grid x:DataType="dto:UserProfileDTO" 
+                          BindingContext="{Binding UserProfile}"  
+                          ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" 
+                          Padding="0,10,0,0">
+                        <Label Grid.Row="0" Grid.Column="0" Text="Wszystkie Wycieczki:" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding Stats.TripsCount}" FontAttributes="Bold" />
+                        <Label Grid.Row="1" Grid.Column="0" Text="Total Dystans:" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding Stats.TotalDistance, StringFormat='{0:F2} km'}" FontAttributes="Bold" />
+                        <Label Grid.Row="2" Grid.Column="0" Text="Total Kroki:" />
+                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding Stats.TotalSteps}" FontAttributes="Bold" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout>
+                    <Label Text="Aktywna Wycieczka" FontSize="Large" FontAttributes="Bold" />
+
+                    <VerticalStackLayout IsVisible="{Binding IsNotTracking}">
+                        <Entry Style="{StaticResource DashboardEntry}" />
+                        <Button Text="START" 
+                                Command="{Binding StartTrackingCommand}"
+                                BackgroundColor="{StaticResource SuccessGreen}"
+                                Style="{StaticResource MainButton}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="5" IsVisible="{Binding IsTracking}" Padding="0,10,0,0">
+
+                        <maps:Map x:Name="ActiveTripMap"
+                                  HeightRequest="250"
+                                  MapType="Street"
+                                  ItemsSource="{Binding ActivePins}" />
+
+                        <Label Text="{Binding CurrentTripData.Duration, StringFormat='Czas: {0:hh\\:mm\\:ss}'}" FontSize="Medium" />
+                        <Label Text="{Binding CurrentTripData.DistanceKm, StringFormat='Dystans: {0:F2} km'}" FontSize="Medium" />
+                        <Label Text="{Binding CurrentTripData.Steps, StringFormat='Kroki: {0}'}" FontSize="Medium" />
+
+                        <Button Text="STOP" 
+                                Command="{Binding StopTrackingCommand}"
+                                Style="{StaticResource DeleteButton}" />
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

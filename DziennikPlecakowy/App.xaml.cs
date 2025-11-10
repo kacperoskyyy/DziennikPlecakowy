@@ -1,24 +1,24 @@
-﻿using DziennikPlecakowy.Views;
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Storage;
+﻿using DziennikPlecakowy.Services.Local;
+using DziennikPlecakowy.Views;
 
 namespace DziennikPlecakowy
 {
     public partial class App : Application
     {
-        public static IServiceProvider Services { get; private set; }
+        private readonly AuthService _authService;
 
-        public App()
+        public App(AuthService authService)
         {
             InitializeComponent();
+            _authService = authService;
+            MainPage = new AppShell();
+        }
 
-            var builder = MauiApp.CreateBuilder();
-            // ... konfiguracja DI
-            var mauiApp = builder.Build();
-            Services = mauiApp.Services;
+        protected override async void OnStart()
+        {
+            base.OnStart();
 
-            MainPage = new NavigationPage(new LoginPage());
+            await Shell.Current.GoToAsync(nameof(LoginPage), false);
         }
     }
 }

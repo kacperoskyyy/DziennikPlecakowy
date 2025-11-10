@@ -1,17 +1,22 @@
-﻿namespace DziennikPlecakowy
-{
-    public partial class AppShell : Shell
-    {
-        public AppShell()
-        {
-            InitializeComponent();
-        }
+﻿using DziennikPlecakowy.Views;
 
-        private void OnLogoutClicked(object sender, EventArgs e)
-        {
-            SecureStorage.Default.Remove("auth_token");
-            Preferences.Remove("auth_token");
-            Application.Current.MainPage = new NavigationPage(new Views.LoginPage());
-        }
+namespace DziennikPlecakowy;
+
+public partial class AppShell : Shell
+{
+    public AppShell()
+    {
+        InitializeComponent();
+
+        Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
+        Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
+        Routing.RegisterRoute(nameof(DashboardPage), typeof(DashboardPage));
+        Routing.RegisterRoute(nameof(AccountPage), typeof(AccountPage));
+        Routing.RegisterRoute(nameof(EditAccountPage), typeof(EditAccountPage));
+        Routing.RegisterRoute(nameof(TripListPage), typeof(TripListPage));
+        Routing.RegisterRoute(nameof(TripDetailPage), typeof(TripDetailPage));
+        Routing.RegisterRoute(nameof(AdminPage), typeof(AdminPage));
+        Routing.RegisterRoute(nameof(ChangePasswordPage), typeof(ChangePasswordPage));
     }
+
 }

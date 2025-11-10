@@ -3,7 +3,6 @@ using System.Security.Claims;
 
 namespace DziennikPlecakowy.Interfaces;
 
-// Interfejs serwisu szyfrowania i tokenów
 public interface ICypherService
 {
     public string Encrypt(string text);

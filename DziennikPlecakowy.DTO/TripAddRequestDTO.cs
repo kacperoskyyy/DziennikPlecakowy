@@ -1,8 +1,6 @@
 ﻿using DziennikPlecakowy.Models;
 
 namespace DziennikPlecakowy.DTO;
-
-// DTO dla dodawania nowej wycieczki
 public class TripAddRequestDTO
 {
     public DateTime TripDate { get; set; }

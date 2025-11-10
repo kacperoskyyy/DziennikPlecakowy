@@ -5,14 +5,12 @@ using System.Security.Cryptography;
 
 namespace DziennikPlecakowy.Services;
 
-// Serwis uwierzytelniania
 public class AuthService : IAuthService
 {
     private readonly IUserService _userService;
     private readonly ICypherService _cypherService;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
 
-    // Konstruktor serwisu uwierzytelniania
     public AuthService(
         IUserService userService,
         ICypherService cypherService,
@@ -22,13 +20,11 @@ public class AuthService : IAuthService
         _cypherService = cypherService;
         _refreshTokenRepository = refreshTokenRepository;
     }
-    // Rejestracja nowego użytkownika
-    public async Task<bool> RegisterAsync(UserRegisterRequestDTO request)
+    public async Task RegisterAsync(UserRegisterRequestDTO request)
     {
-        var result = await _userService.UserRegister(request);
-        return result > 0;
+
+        await _userService.UserRegister(request);
     }
-    // Logowanie użytkownika
     public async Task<AuthResponseDTO?> Login(UserAuthRequestDTO userAuthData)
     {
         var user = await _userService.GetUserByEmail(userAuthData.Email);
@@ -38,6 +34,18 @@ public class AuthService : IAuthService
             return null;
         }
 
+        if(user.IsBlocked)
+        {
+            return new AuthResponseDTO
+            {
+                Token = "LOCKED",
+                RefreshToken = "LOCKED",
+                MustChangePassword = false
+            };
+        }
+
+        await _refreshTokenRepository.DeleteAllByUserIdAsync(user.Id);
+
         var jwtToken = _cypherService.GenerateJwtToken(user);
         var refreshToken = await CreateAndStoreRefreshToken(user.Id);
 
@@ -46,10 +54,10 @@ public class AuthService : IAuthService
         return new AuthResponseDTO
         {
             Token = jwtToken,
-            RefreshToken = refreshToken.Token
+            RefreshToken = refreshToken.Token,
+            MustChangePassword = user.MustChangePassword
         };
     }
-    // Odświeżanie tokenu
     public async Task<AuthResponseDTO?> RefreshTokenAsync(string token)
     {
         var storedToken = await _refreshTokenRepository.GetByTokenAsync(token);
@@ -64,6 +72,15 @@ public class AuthService : IAuthService
         {
             return null;
         }
+        if (user.IsBlocked)
+        {
+            return new AuthResponseDTO
+            {
+                Token = "LOCKED",
+                RefreshToken = "LOCKED",
+                MustChangePassword = false
+            };
+        }
 
         var newJwtToken = _cypherService.GenerateJwtToken(user);
         var newRefreshToken = await CreateAndStoreRefreshToken(user.Id);
@@ -76,20 +93,18 @@ public class AuthService : IAuthService
             RefreshToken = newRefreshToken.Token
         };
     }
-    // Tworzenie i przechowywanie tokenu odświeżającego
     private async Task<RefreshToken> CreateAndStoreRefreshToken(string userId)
     {
         var refreshToken = new RefreshToken
         {
             UserId = userId,
             Token = GenerateRefreshTokenString(),
-            ExpiryDate = DateTime.UtcNow.AddMonths(1)
+            ExpiryDate = DateTime.UtcNow.AddDays(1)
         };
 
         await _refreshTokenRepository.AddAsync(refreshToken);
         return refreshToken;
     }
-    // Generowanie losowego tokenu odświeżającego
     private string GenerateRefreshTokenString()
     {
         var randomNumber = new byte[32];

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
+             xmlns:localModels="clr-namespace:DziennikPlecakowy.Models.Local"
+             xmlns:dto="clr-namespace:DziennikPlecakowy.DTO;assembly=DziennikPlecakowy.DTO"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:DataType="vm:TripListViewModel"
+             x:Class="DziennikPlecakowy.Views.TripListPage"
+             Shell.NavBarIsVisible="False"
+             Style="{StaticResource PageStyle}">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            EventName="Appearing"
+            Command="{Binding LoadInitialTripsCommand}" />
+    </ContentPage.Behaviors>
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <Label Grid.Row="0" Text="Moje Wycieczki" Style="{StaticResource TitleLabel}" />
+        <ActivityIndicator Grid.Row="0" IsRunning="{Binding IsBusy}" HorizontalOptions="Center" VerticalOptions="Center" />
+
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding LocalTrips}"
+                        IsVisible="{Binding ShowLocalList}"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="localModels:LocalTrip">
+                    <Frame Style="{StaticResource CardFrame}" Margin="20,5" Padding="15">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TripListViewModel}}, Path=GoToTripDetailCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
+                        <Grid ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label Text="{Binding Name}" FontAttributes="Bold" />
+                                <Label Text="{Binding TripDate, StringFormat='{0:dd.MM.yyyy HH:mm}'}" FontSize="Small" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="1" Text="{Binding Distance, StringFormat='{0:F2} km'}" VerticalOptions="Center" />
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding ServerTrips}"
+                        IsVisible="{Binding ShowServerList}"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="dto:TripSummaryDTO">
+                    <Frame Style="{StaticResource CardFrame}" Margin="20,5" Padding="15">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TripListViewModel}}, Path=GoToTripDetailCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
+                        <Grid ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label Text="{Binding Name}" FontAttributes="Bold" />
+                                <Label Text="{Binding TripDate, StringFormat='{0:dd.MM.yyyy HH:mm}'}" FontSize="Small" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="1" Text="{Binding Distance, StringFormat='{0:F2} km'}" VerticalOptions="Center" />
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <VerticalStackLayout Grid.Row="2" Padding="20" Spacing="5">
+            <Button Text="Pokaż wszystkie z serwera" 
+                    Command="{Binding LoadAllFromServerCommand}"
+                    IsVisible="{Binding ShowLocalList}" 
+                    Style="{StaticResource MainButton}" />
+            <Button Text="Pokaż 50 ostatnich (lokalne)" 
+                    Command="{Binding ShowLocalListCommand}"
+                    IsVisible="{Binding ShowServerList}" 
+                    Style="{StaticResource MainButton}" />
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>

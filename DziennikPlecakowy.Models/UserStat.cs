@@ -4,10 +4,11 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace DziennikPlecakowy.Models;
 
-// Model reprezentujący statystyki użytkownika
+
 public class UserStat
 {
     [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; }
     [BsonElement("userId")]
     [BsonRepresentation(BsonType.ObjectId)]

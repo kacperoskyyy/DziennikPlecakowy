@@ -1,29 +1,30 @@
-﻿using DziennikPlecakowy.Models;
+﻿using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Interfaces;
+using DziennikPlecakowy.Models;
 
 namespace DziennikPlecakowy.Services;
 
-// Klasa wyjątku dla nieautoryzowanych modyfikacji wycieczek
+
 public class UnauthorizedTripModificationException : Exception
 {
     public UnauthorizedTripModificationException(string message) : base(message) { }
 }
 
-// Serwis zarządzania wycieczkami
+
 public class TripService : ITripService
 {
     private readonly ITripRepository _tripRepository;
     private readonly IUserStatRepository _userStatRepository;
-    // Konstruktor serwisu wycieczek
+
     public TripService(ITripRepository tripRepository, IUserStatRepository userStatRepository)
     {
         _tripRepository = tripRepository;
         _userStatRepository = userStatRepository;
     }
-    // Dodawanie nowej wycieczki
-    public async Task<bool> AddTripAsync(Trip trip)
+
+    public async Task<Trip> AddTripAsync(Trip trip)
     {
-        if (trip == null) return false;
+        if (trip == null) return null;
 
         await _tripRepository.AddAsync(trip);
 
@@ -40,9 +41,9 @@ public class TripService : ITripService
             await _userStatRepository.UpdateAsync(stats);
         }
 
-        return true;
+        return trip;
     }
-    // Aktualizowanie istniejącej wycieczki
+
     public async Task<bool> UpdateTripAsync(Trip trip, string userId)
     {
         Trip? existingTrip = await _tripRepository.GetByIdAsync(trip.Id);
@@ -65,7 +66,7 @@ public class TripService : ITripService
 
         return result;
     }
-    // Usuwanie wycieczki
+
     public async Task<bool> DeleteTripAsync(string tripId, string userId)
     {
         Trip? existingTrip = await _tripRepository.GetByIdAsync(tripId);
@@ -101,9 +102,29 @@ public class TripService : ITripService
 
         return result;
     }
-    // Pobieranie wycieczek użytkownika
+    
     public async Task<IEnumerable<Trip>> GetUserTripsAsync(string userId)
     {
-        return await _tripRepository.GetByUserAsync(userId);
+        return await _tripRepository.GetByUserAsync(userId); 
+    }
+    public async Task<IEnumerable<TripSummaryDTO>> GetUserTripSummariesAsync(string userId)
+    {
+        var fullTrips = await _tripRepository.GetByUserAsync(userId);
+        if (fullTrips == null)
+        {
+            return new List<TripSummaryDTO>();
+        }
+
+        return fullTrips.Select(trip => new TripSummaryDTO
+        {
+            Id = trip.Id,
+            UserId = trip.UserId,
+            Name = trip.Name,
+            TripDate = trip.TripDate,
+            Distance = trip.Distance,
+            Duration = trip.Duration,
+            ElevationGain = trip.ElevationGain,
+            Steps = trip.Steps
+        });
     }
 }

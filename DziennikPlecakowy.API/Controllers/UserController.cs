@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Interfaces;
-using DziennikPlecakowy.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
 namespace DziennikPlecakowy.API.Controllers;
 
-//Kontroler zarządzania użytkownikami
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "User, Admin")]
@@ -15,18 +13,15 @@ public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly ILogger<UserController> _logger;
-    // Konstruktor kontrolera ze wstrzykiwaniem zależności
     public UserController(IUserService userService, ILogger<UserController> logger)
     {
         _userService = userService;
         _logger = logger;
     }
-    // Pobierz Id użytkownika z tokena JWT
     private string? GetUserIdFromToken()
     {
         return User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
-    // Endpoint zmiany nazwy użytkownika
     [HttpPut("changeName")]
     public async Task<IActionResult> ChangeName([FromBody] UserChangeNameRequestDTO request)
     {
@@ -54,7 +49,6 @@ public class UserController : ControllerBase
             return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
         }
     }
-    // Endpoint zmiany hasła użytkownika
     [HttpPut("changePassword")]
     public async Task<IActionResult> ChangePassword([FromBody] UserChangePasswordRequestDTO request)
     {
@@ -82,7 +76,6 @@ public class UserController : ControllerBase
             return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
         }
     }
-    // Endpoint zmiany emaila użytkownika
     [HttpPut("changeEmail")]
     public async Task<IActionResult> ChangeEmail([FromBody] UserChangeEmailRequestDTO request)
     {
@@ -110,7 +103,6 @@ public class UserController : ControllerBase
             return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
         }
     }
-    // Endpoint usunięcia konta użytkownika
     [HttpDelete("delete")]
     public async Task<IActionResult> DeleteUser()
     {
@@ -138,7 +130,6 @@ public class UserController : ControllerBase
             return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
         }
     }
-    // Endpoint ustawienia daty ostatniego logowania
     [HttpGet("setLastLogin")]
     public async Task<IActionResult> SetLastLogin()
     {
@@ -166,67 +157,49 @@ public class UserController : ControllerBase
             return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
         }
     }
-    // Endpoint nadania roli Admin innemu użytkownikowi (tylko dla Adminów)
-    [HttpPut("makeAdmin/{targetUserId}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> MakeAdminAsync(string targetUserId)
-    {
-        _logger.LogInformation("Endpoint: PUT api/User/makeAdmin invoked by Admin {AdminId} for user {TargetId}.", GetUserIdFromToken(), targetUserId);
 
+    [HttpGet("getUserStats")]
+    [Authorize(Roles = "User, Admin")]
+    public async Task<IActionResult> GetUserStats()
+    {
+        _logger.LogInformation("Endpoint: GET api/User/getUserStats invoked.");
+        var userId = GetUserIdFromToken();
+        if (userId == null) return Unauthorized();
         try
         {
-            var user = await _userService.GetUserById(targetUserId);
+            var user = await _userService.GetUserById(userId);
             if (user == null)
             {
-                _logger.LogWarning("MakeAdmin failed: Target user {TargetId} not found.", targetUserId);
-                return NotFound("Nie znaleziono użytkownika docelowego.");
+                return NotFound("Nie znaleziono użytkownika.");
             }
 
-            var result = await _userService.SetAdmin(user);
+            var userStats = await _userService.GetUserStats(userId);
 
-            if (result > 0)
+            var userProfileDto = new UserProfileDTO
             {
-                _logger.LogInformation("User {TargetId} successfully granted Admin role.", targetUserId);
-                return Ok(new { Message = "Rola administratora pomyślnie nadana." });
-            }
+                Id = user.Id,
+                Email = user.Email,
+                Username = user.Username,
+                Roles = user.Roles.ToList(),
+                Stats = new UserStatDTO
+                {
+                    TripsCount = userStats.TripsCount,
+                    TotalDistance = userStats.TotalDistance,
+                    TotalDuration = userStats.TotalDuration,
+                    TotalElevationGain = userStats.TotalElevationGain,
+                    TotalSteps = userStats.TotalSteps
+                }
+            };
 
-            _logger.LogWarning("MakeAdmin failed for user {TargetId}.", targetUserId);
-            return BadRequest("Nie udało się potwierdzić roli Admin.");
+            _logger.LogInformation("User stats retrieved successfully for user {UserId}.", userId);
+
+            return Ok(userProfileDto);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error during makeAdmin for user {TargetId}.", targetUserId);
+            _logger.LogError(e, "Error during getUserStats for user {UserId}.", userId);
             return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
         }
     }
-    // Endpoint sprawdzenia, czy dany użytkownik ma rolę Admin (tylko dla Adminów)
-    [HttpGet("checkAdmin/{targetUserId}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CheckAdminAsync(string targetUserId)
-    {
-        _logger.LogInformation("Endpoint: GET api/User/checkAdmin invoked by Admin {AdminId} for user {TargetId}.", GetUserIdFromToken(), targetUserId);
 
-        try
-        {
-            var user = await _userService.GetUserById(targetUserId);
-            if (user == null) return NotFound("Nie znaleziono użytkownika.");
-
-            var isAdmin = user.Roles.Contains(UserRole.Admin);
-
-            if (isAdmin)
-            {
-                _logger.LogInformation("User {TargetId} is an Admin.", targetUserId);
-                return Ok(new { IsAdmin = true, Message = "Użytkownik ma rolę Admina." });
-            }
-
-            _logger.LogInformation("User {TargetId} is NOT an Admin.", targetUserId);
-            return Ok(new { IsAdmin = false, Message = "Użytkownik nie ma roli Admina." });
-
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error during checkAdmin for user {TargetId}.", targetUserId);
-            return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
-        }
-    }
 }

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
+             xmlns:dto="clr-namespace:DziennikPlecakowy.DTO;assembly=DziennikPlecakowy.DTO"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:DataType="vm:AccountViewModel"
+             x:Class="DziennikPlecakowy.Views.AccountPage"
+             Shell.NavBarIsVisible="False"
+             Style="{StaticResource PageStyle}">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            EventName="Appearing"
+            Command="{Binding LoadProfileCommand}" />
+    </ContentPage.Behaviors>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="0,20,0,20" Spacing="10">
+
+            <Label Text="Moje Konto" Style="{StaticResource TitleLabel}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" />
+
+            <Frame Style="{StaticResource CardFrame}" x:DataType="dto:UserProfileDTO" BindingContext="{Binding UserProfile}">
+                <VerticalStackLayout>
+                    <Label Text="Profil Użytkownika" FontSize="Large" FontAttributes="Bold" />
+                    <VerticalStackLayout Spacing="5" Padding="0,10,0,0">
+                        <Label>
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Nazwa: " TextColor="{StaticResource TextSecondary}" />
+                                    <Span Text="{Binding Username}" FontAttributes="Bold" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label>
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Email: " TextColor="{StaticResource TextSecondary}" />
+                                    <Span Text="{Binding Email}" FontAttributes="Bold" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Style="{StaticResource CardFrame}" x:DataType="dto:UserProfileDTO" BindingContext="{Binding UserProfile}">
+                <VerticalStackLayout>
+                    <Label Text="Globalne Statystyki" FontSize="Large" FontAttributes="Bold" />
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Padding="0,10,0,0">
+                        <Label Grid.Row="0" Grid.Column="0" Text="Wszystkie Wycieczki:" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding Stats.TripsCount}" FontAttributes="Bold" />
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="Total Dystans:" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding Stats.TotalDistance, StringFormat='{0:F2} km'}" FontAttributes="Bold" />
+
+                        <Label Grid.Row="2" Grid.Column="0" Text="Total Czas:" />
+                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding Stats.TotalDuration, Converter={StaticResource SecondsToHoursConverter}}" FontAttributes="Bold" />
+
+                        <Label Grid.Row="3" Grid.Column="0" Text="Total Przewyższenia:" />
+                        <Label Grid.Row="3" Grid.Column="1" Text="{Binding Stats.TotalElevationGain, StringFormat='{0:F0} m'}" FontAttributes="Bold" />
+
+                        <Label Grid.Row="4" Grid.Column="0" Text="Total Kroki:" />
+                        <Label Grid.Row="4" Grid.Column="1" Text="{Binding Stats.TotalSteps}" FontAttributes="Bold" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Button Text="Edytuj Konto" 
+                    Command="{Binding GoToEditAccountCommand}" 
+                    Style="{StaticResource MainButton}" />
+
+            <Button Text="Panel Administratora" 
+                    Command="{Binding GoToAdminPanelCommand}"
+                    IsVisible="{Binding IsAdmin}"
+                    BackgroundColor="{StaticResource WarningOrange}"
+                    TextColor="{StaticResource TextPrimary}"
+                    Style="{StaticResource MainButton}" />
+
+            <Button Text="Wyloguj" 
+                    Command="{Binding LogoutCommand}" 
+                    Style="{StaticResource DeleteButton}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

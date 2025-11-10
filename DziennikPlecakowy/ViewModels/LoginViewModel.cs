@@ -1,71 +1,117 @@
-﻿using System.Windows.Input;
-using DziennikPlecakowy.Interfaces;
-using DziennikPlecakowy.DTO;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DziennikPlecakowy.Services.Local;
 using DziennikPlecakowy.Views;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Storage;
-using DziennikPlecakowy.Services;
-using ReactiveUI;
-using System.Reactive;
 
-namespace DziennikPlecakowy.ViewModels
+namespace DziennikPlecakowy.ViewModels;
+// View Model do logowania użytkownika
+
+public partial class LoginViewModel : BaseViewModel
 {
-    public class LoginViewModel : BaseViewModel
+    private readonly AuthService _authService;
+    private readonly SyncService _syncService;
+
+    [ObservableProperty]
+    string email;
+
+    [ObservableProperty]
+    string password;
+
+    [ObservableProperty]
+    string errorMessage;
+
+    [ObservableProperty]
+    bool isCheckingAutoLogin;
+
+    public LoginViewModel(AuthService authService, SyncService syncService)
     {
-        private readonly  AuthServiceClient _auth;
-        private string _email;
-        private string _password;
-        public string Email 
-        {
-            get => _email; 
-            set => SetProperty(ref _email, value);
-        }
-        public string Password
-        { 
-            get => _password;
-            set => SetProperty(ref _password, value);
-        }
+        _authService = authService;
+        _syncService = syncService;
+        Title = "Logowanie";
+    }
 
-        public ReactiveCommand<Unit,Unit> LoginCommand { get; }
-        public ReactiveCommand<Unit, Unit> GoRegisterCommand { get; }
-
-        public LoginViewModel(AuthServiceClient auth)
+    [RelayCommand]
+    private async Task LoginAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
         {
-            _auth = auth;
-            LoginCommand = ReactiveCommand.CreateFromTask(LoginAsync);
-            GoRegisterCommand = ReactiveCommand.CreateFromTask(GoRegisterAsync);
+            ErrorMessage = "Email i hasło są wymagane.";
+            return;
         }
 
-        private async Task LoginAsync()
+        if (IsBusy) return;
+
+        try
         {
-            if (string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(Password))
+            IsBusy = true;
+            ErrorMessage = string.Empty;
+
+            var result = await _authService.LoginAsync(Email, Password);
+
+            if (result.IsSuccess)
             {
-                await Application.Current.MainPage.DisplayAlert("Błąd", "Aby się zalogować wprowadź email oraz hasło", "OK");
-            }
-            else
-            {
-                var req = new UserAuthRequestDTO { Email = Email, Password = Password };
-                var res = await _auth.LoginAsync(req);
-                if (res != null)
+                if (result.MustChangePassword)
                 {
-                    await SecureStorage.Default.SetAsync("auth_token", res);
-                    Application.Current.MainPage = new NavigationPage(new TripPage());
+                    await Shell.Current.GoToAsync(nameof(ChangePasswordPage));
                 }
                 else
                 {
-                    await Application.Current.MainPage.DisplayAlert("Błąd", "Uzytkownik nie istnieje lub wprowadzono niepoprawne hasło", "OK");
+                    await _syncService.SynchronizePendingTripsAsync();
+
+                    await Shell.Current.GoToAsync("..");
                 }
             }
         }
-        private async Task GoRegisterAsync()
+        catch (Exception ex)
         {
-            if (Application.Current?.MainPage == null)
+            ErrorMessage = $"Wystąpił nieoczekiwany błąd: {ex.Message}";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task GoToRegisterAsync()
+    {
+        await Shell.Current.GoToAsync(nameof(RegisterPage));
+    }
+
+    [RelayCommand]
+    private async Task CheckAutoLoginAsync()
+    {
+        if (IsBusy || IsCheckingAutoLogin) return;
+
+        try
+        {
+            IsCheckingAutoLogin = true;
+            IsBusy = true;
+            ErrorMessage = string.Empty;
+
+            var authResult = await _authService.CheckAndRefreshTokenOnStartupAsync();
+
+            if (authResult.IsSuccess)
             {
-                await Application.Current.MainPage.DisplayAlert("Błąd", "Nie można otworzyć strony rejestracji, brak głównej strony aplikacji.", "OK");
-                return;
+                if (authResult.MustChangePassword)
+                {
+                    await Shell.Current.GoToAsync(nameof(ChangePasswordPage));
+                }
+                else
+                {
+                    await _syncService.SynchronizePendingTripsAsync();
+                    await Shell.Current.GoToAsync("..");
+                }
             }
-            Application.Current.MainPage = new RegisterPage();
-            await Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Błąd auto-logowania: {ex.Message}";
+        }
+        finally
+        {
+            IsCheckingAutoLogin = false;
+            IsBusy = false;
         }
     }
 }

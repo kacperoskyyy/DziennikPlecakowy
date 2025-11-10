@@ -3,7 +3,6 @@ using MongoDB.Driver;
 
 namespace DziennikPlecakowy.Interfaces;
 
-// Interfejs kontekstu bazy danych MongoDB
 public interface IMongoDbContext
 {
     IMongoCollection<User> Users { get; }
