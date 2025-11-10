@@ -9,163 +9,153 @@ using System.Collections.ObjectModel;
 using System.Net.Http.Json;
 
 namespace DziennikPlecakowy.ViewModels;
-//View Model dla listy wycieczek
 
 public partial class TripListViewModel : BaseViewModel
 {
     private readonly LocalTripRepository _tripRepository;
     private readonly ApiClientService _apiClient;
+    private readonly IConnectivity _connectivity; 
 
     [ObservableProperty]
-    ObservableCollection<LocalTrip> localTrips;
-    [ObservableProperty]
-    ObservableCollection<TripSummaryDTO> serverTrips;
+    ObservableCollection<LocalTrip> trips;
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowLocalList))]
-    bool showServerList;
 
-    public bool ShowLocalList => !ShowServerList;
 
     [ObservableProperty]
     object selectedTrip;
 
-    public TripListViewModel(LocalTripRepository tripRepository, ApiClientService apiClient)
+
+    public TripListViewModel(LocalTripRepository tripRepository, ApiClientService apiClient, IConnectivity connectivity)
     {
         _tripRepository = tripRepository;
         _apiClient = apiClient;
+        _connectivity = connectivity; 
         Title = "Moje Wycieczki";
 
-        localTrips = new ObservableCollection<LocalTrip>();
-        serverTrips = new ObservableCollection<TripSummaryDTO>();
+        Trips = new ObservableCollection<LocalTrip>();
     }
 
     [RelayCommand]
-    private async Task LoadInitialTripsAsync()
-    {
-        if (ShowServerList) return;
-
-        await LoadLocalTripsAsync();
-    }
-
-
-    private async Task LoadLocalTripsAsync()
-    {
+    private async Task LoadTripsAsync() 
+    { 
         if (IsBusy) return;
         IsBusy = true;
 
         try
         {
-            LocalTrips.Clear();
-            var trips = await _tripRepository.GetLast50TripsAsync();
-            foreach (var trip in trips)
-            {
-                LocalTrips.Add(trip);
-            }
-            ShowServerList = false;
+            await SynchronizeAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Błąd synchronizacji: {ex.Message}");
         }
         finally
         {
+            await LoadTripsFromLocalDbAsync();
             IsBusy = false;
         }
     }
 
-    [RelayCommand]
-    private async Task LoadAllFromServerAsync()
+    private async Task LoadTripsFromLocalDbAsync()
     {
-        if (IsBusy) return;
-        IsBusy = true;
-
         try
         {
-            var response = await _apiClient.GetAsync("/api/Trip/getUserTripSummaries");
+            Trips.Clear();
+            var localTrips = await _tripRepository.GetTripsForUserAsync();
+            foreach (var trip in localTrips)
+            {
+                Trips.Add(trip);
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Błąd", $"Nie udało się załadować lokalnych wycieczek: {ex.Message}", "OK");
+        }
+    }
+
+    private async Task SynchronizeAsync()
+    {
+        if (_connectivity.NetworkAccess != NetworkAccess.Internet)
+        {
+            await Shell.Current.DisplayAlert("Brak sieci", "Brak połączenia z internetem. Wyświetlanie danych lokalnych.", "OK");
+            return;
+        }
+
+        var unsyncedTrips = await _tripRepository.GetUnsynchronizedTripsAsync();
+        foreach (var tripWithPoints in unsyncedTrips)
+        {
+            var createDto = MapLocalToCreateDTO(tripWithPoints);
+            var response = await _apiClient.PostAsJsonAsync("/api/Trip", createDto);
 
             if (response.IsSuccessStatusCode)
             {
-                var trips = await response.Content.ReadFromJsonAsync<List<TripSummaryDTO>>();
-                ServerTrips.Clear();
-                foreach (var trip in trips)
+                var createdTrip = await response.Content.ReadFromJsonAsync<TripDetailDTO>();
+                if (createdTrip != null && !string.IsNullOrEmpty(createdTrip.Id))
                 {
-                    ServerTrips.Add(trip);
+                    await _tripRepository.MarkTripAsSynchronizedAsync(tripWithPoints.Trip.LocalId, createdTrip.Id);
                 }
-                ShowServerList = true;
             }
             else
             {
-                throw new Exception($"Nie udało się załadować wycieczek z serwera: {response}");
+                System.Diagnostics.Debug.WriteLine($"Nie udało się wysłać wycieczki {tripWithPoints.Trip.LocalId}");
             }
         }
-        finally
+
+        var serverResponse = await _apiClient.GetAsync("/api/Trip/getUserTripSummaries");
+        if (serverResponse.IsSuccessStatusCode)
         {
-            IsBusy = false;
+            var serverTrips = await serverResponse.Content.ReadFromJsonAsync<List<TripSummaryDTO>>();
+            foreach (var summary in serverTrips)
+            {
+                await _tripRepository.UpsertTripFromServerAsync(summary);
+            }
         }
     }
 
-    [RelayCommand]
-    private async Task ShowLocalListAsync()
+    private TripDetailDTO MapLocalToCreateDTO(TripWithGeoPoints localData)
     {
-        await LoadLocalTripsAsync();
+        return new TripDetailDTO
+        {
+            Name = localData.Trip.Name,
+            TripDate = localData.Trip.TripDate,
+            Distance = localData.Trip.Distance,
+            Duration = localData.Trip.Duration,
+            ElevationGain = localData.Trip.ElevationGain,
+            Steps = (int)localData.Trip.Steps,
+            GeoPointList = localData.GeoPoints.Select(p => new GeoPointDTO
+            {
+                Latitude = p.Latitude,
+                Longitude = p.Longitude,
+                Height = p.Height,
+                Timestamp = p.Timestamp
+            }).ToList()
+        };
     }
+
 
     [RelayCommand]
     private async Task GoToTripDetailAsync(object selectedItem)
     {
-        if (selectedItem == null)
+        if (selectedItem == null || selectedItem is not LocalTrip localTrip)
             return;
 
         try
         {
-            string localTripId = null;
-            string serverTripId = null;
-
-            if (selectedItem is LocalTrip localTrip)
-            {
-                localTripId = localTrip.LocalId.ToString();
-                serverTripId = localTrip.ServerId;
-            }
-            else if (selectedItem is TripSummaryDTO serverTrip)
-            {
-                serverTripId = serverTrip.Id;
-            }
-
-            if (localTripId != null || serverTripId != null)
-            {
-                await Shell.Current.GoToAsync(
-                    $"{nameof(TripDetailPage)}?LocalTripId={localTripId}&ServerTripId={serverTripId}");
-            }
+            await Shell.Current.GoToAsync(
+                $"{nameof(TripDetailPage)}?LocalTripId={localTrip.LocalId}&ServerTripId={localTrip.ServerId}");
         }
         catch (Exception ex)
         {
             await Shell.Current.DisplayAlert("Błąd nawigacji", ex.Message, "OK");
         }
     }
+
     async partial void OnSelectedTripChanged(object value)
     {
         if (value == null)
             return;
 
-        try
-        {
-            string localTripId = null;
-            string serverTripId = null;
-
-            if (value is LocalTrip localTrip)
-            {
-                localTripId = localTrip.LocalId.ToString();
-                serverTripId = localTrip.ServerId;
-            }
-            else if (value is TripSummaryDTO serverTrip)
-            {
-                serverTripId = serverTrip.Id;
-            }
-
-            await Shell.Current.GoToAsync(
-                $"{nameof(TripDetailPage)}?LocalTripId={localTripId}&ServerTripId={serverTripId}");
-        }
-        finally
-        {
-            SelectedTrip = null;
-        }
+        await GoToTripDetailAsync(value);
+        SelectedTrip = null;
     }
-
 }

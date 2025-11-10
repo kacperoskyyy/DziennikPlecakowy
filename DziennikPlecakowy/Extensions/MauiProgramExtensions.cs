@@ -52,6 +52,7 @@ public static class MauiProgramExtensions
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<SyncService>();
         builder.Services.AddSingleton<TripTrackingService>();
+        builder.Services.AddSingleton(Connectivity.Current);
 
 #if ANDROID
         builder.Services.AddSingleton<IPedometerService, AndroidPedometerService>();
