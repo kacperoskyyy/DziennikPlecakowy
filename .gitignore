@@ -56,3 +56,4 @@ DziennikPlecakowy.API/appsettings.json
 /.vs/
 /DziennikPlecakowy/secrets.json
 /DziennikPlecakowy/secrets.props
+DziennikPlecakowy/secrets.json
