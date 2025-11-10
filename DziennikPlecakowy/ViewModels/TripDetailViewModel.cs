@@ -52,16 +52,11 @@ public partial class TripDetailViewModel : BaseViewModel
         DeleteTripCommand = new AsyncRelayCommand(DeleteTripAsync);
     }
 
-    partial void OnLocalTripIdChanged(string value)
-    {
-        if (!string.IsNullOrEmpty(value))
-            LoadTripDataCommand.Execute(null);
-    }
+    partial void OnLocalTripIdChanged(string value) { } //celowo pusta
 
     partial void OnServerTripIdChanged(string value)
     {
-        if (!string.IsNullOrEmpty(value))
-            LoadTripDataCommand.Execute(null);
+        LoadTripDataCommand.Execute(null);
     }
 
     [RelayCommand]

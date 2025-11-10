@@ -14,8 +14,8 @@
 
             <Image Source="logo_bez_tla.png"
                 HorizontalOptions="Center"
-                HeightRequest="120" 
-                WidthRequest="120"
+                HeightRequest="256" 
+                WidthRequest="256"
                 SemanticProperties.Description="Logo aplikacji" />
 
             <Label Text="Zaloguj się" 
