@@ -100,8 +100,8 @@ public class TripController : ControllerBase
             return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera: {e.Message}");
         }
     }
-    [HttpDelete("deleteTrip")]
-    public async Task<IActionResult> DeleteTrip([FromQuery] string tripId)
+    [HttpDelete("delete/{tripId}")]
+    public async Task<IActionResult> DeleteTrip([FromRoute] string tripId) 
     {
         _logger.LogInformation("Endpoint: DELETE api/Trip/deleteTrip invoked for trip {TripId}.", tripId);
 

@@ -52,8 +52,6 @@ public partial class TripDetailViewModel : BaseViewModel
         DeleteTripCommand = new AsyncRelayCommand(DeleteTripAsync);
     }
 
-    partial void OnLocalTripIdChanged(string value) { } //celowo pusta
-
     partial void OnServerTripIdChanged(string value)
     {
         LoadTripDataCommand.Execute(null);
@@ -187,7 +185,7 @@ public partial class TripDetailViewModel : BaseViewModel
         {
             if (TripDetails != null && !string.IsNullOrEmpty(TripDetails.Id))
             {
-                var response = await _apiClient.DeleteAsync($"/api/Trip/{TripDetails.Id}");
+                var response = await _apiClient.DeleteAsync($"/api/Trip/delete/{TripDetails.Id}");
                 if (!response.IsSuccessStatusCode)
                 {
                     apiError = $"Błąd API: {response.StatusCode}.";

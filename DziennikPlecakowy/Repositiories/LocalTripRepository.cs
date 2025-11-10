@@ -1,4 +1,5 @@
-﻿using DziennikPlecakowy.Models.Local;
+﻿using DziennikPlecakowy.DTO;
+using DziennikPlecakowy.Models.Local;
 using DziennikPlecakowy.Services.Local;
 using SQLite;
 
@@ -17,7 +18,7 @@ public class LocalTripRepository
         _authService = authService;
     }
 
-    public async Task<List<LocalTrip>> GetLast50TripsAsync()
+    public async Task<List<LocalTrip>> GetTripsForUserAsync()
     {
         await _dbService.InitializeDatabaseAsync();
         var userId = _authService.GetCurrentUserId();
@@ -26,8 +27,39 @@ public class LocalTripRepository
         return await _db.Table<LocalTrip>()
                       .Where(t => t.UserId == userId)
                       .OrderByDescending(t => t.TripDate)
-                      .Take(50)
                       .ToListAsync();
+    }
+
+    public async Task UpsertTripFromServerAsync(TripSummaryDTO summary)
+    {
+        await _dbService.InitializeDatabaseAsync();
+        var userId = _authService.GetCurrentUserId();
+        if (string.IsNullOrEmpty(userId)) return;
+
+        var existingTrip = await _db.Table<LocalTrip>()
+                                    .FirstOrDefaultAsync(t => t.ServerId == summary.Id && t.UserId == userId);
+
+        if (existingTrip != null)
+        {
+            existingTrip.Name = summary.Name;
+            existingTrip.TripDate = summary.TripDate;
+            existingTrip.Distance = summary.Distance;
+            existingTrip.IsSynchronized = true;
+            await _db.UpdateAsync(existingTrip);
+        }
+        else
+        {
+            var newTrip = new LocalTrip
+            {
+                ServerId = summary.Id,
+                UserId = userId,
+                Name = summary.Name,
+                TripDate = summary.TripDate,
+                Distance = summary.Distance,
+                IsSynchronized = true,
+            };
+            await _db.InsertAsync(newTrip);
+        }
     }
 
     public async Task<List<TripWithGeoPoints>> GetUnsynchronizedTripsAsync()
