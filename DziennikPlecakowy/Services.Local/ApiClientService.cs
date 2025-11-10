@@ -11,20 +11,15 @@ public class ApiClientService
     private readonly HttpClient _httpClient;
     private readonly TokenRepository _tokenRepository;
 
-    private const string BaseApiUrl = "http://10.0.2.2:5101";
 
     private string _currentAccessToken;
     private bool _isRefreshingToken = false;
     private static readonly SemaphoreSlim _tokenRefreshLock = new SemaphoreSlim(1, 1);
 
-    public ApiClientService(TokenRepository tokenRepository)
+    public ApiClientService(HttpClient httpClient, TokenRepository tokenRepository)
     {
         _tokenRepository = tokenRepository;
-        _httpClient = new HttpClient
-        {
-            BaseAddress = new Uri(BaseApiUrl)
-        };
-        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        _httpClient = httpClient;
     }
 
     public void SetAccessToken(string token)

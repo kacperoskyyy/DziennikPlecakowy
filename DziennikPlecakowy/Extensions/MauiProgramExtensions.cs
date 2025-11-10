@@ -7,6 +7,8 @@ using DziennikPlecakowy.Services.Local;
 using DziennikPlecakowy.ViewModels;
 using DziennikPlecakowy.Views;
 using Microsoft.Extensions.Configuration;
+using System.Net.Http.Headers;
+using Microsoft.Extensions.Http;
 
 namespace DziennikPlecakowy.Extensions;
 
@@ -26,7 +28,27 @@ public static class MauiProgramExtensions
 
     public static MauiAppBuilder RegisterAppServices(this MauiAppBuilder builder)
     {
-        builder.Services.AddSingleton<ApiClientService>();
+        const string BaseApiUrl = "https://10.0.2.2:7046";
+
+        builder.Services.AddHttpClient<ApiClientService>(client =>
+        {
+            client.BaseAddress = new Uri(BaseApiUrl);
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+        })
+        .ConfigurePrimaryHttpMessageHandler(() =>
+        {
+#if DEBUG
+            return new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback =
+                    (message, cert, chain, errors) => true
+            };
+#else
+            return new HttpClientHandler();
+#endif
+        });
+
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<SyncService>();
         builder.Services.AddSingleton<TripTrackingService>();

@@ -12,7 +12,11 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="10" VerticalOptions="Center">
 
-            <ContentView ControlTemplate="{StaticResource AppLogo}" />
+            <Image Source="logo_bez_tla.png"
+                HorizontalOptions="Center"
+                HeightRequest="120" 
+                WidthRequest="120"
+                SemanticProperties.Description="Logo aplikacji" />
 
             <Label Text="Zaloguj się" 
                    Style="{StaticResource TitleLabel}" 
