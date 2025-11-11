@@ -76,7 +76,7 @@ public partial class RegisterViewModel : BaseViewModel
 
             if (result.IsSuccess)
             {
-                await Shell.Current.DisplayAlert("Sukces", "Konto utworzone. Możesz się teraz zalogować.", "OK");
+                await Shell.Current.DisplayAlert("Sukces", "Konto utworzone.", "OK");
                 await Shell.Current.GoToAsync("..");
             }
             else

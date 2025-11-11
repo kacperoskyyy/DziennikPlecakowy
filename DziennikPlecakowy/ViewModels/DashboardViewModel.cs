@@ -116,18 +116,27 @@ public partial class DashboardViewModel : BaseViewModel
     {
         if (IsBusy) return;
         IsBusy = true;
+        UserProfile = null;
 
         try
         {
-            var response = await _apiClient.GetAsync("/api/User/getUserStats");
-
-            if (response.IsSuccessStatusCode)
+            if (_authService.CurrentUserProfile != null)
             {
-                UserProfile = await response.Content.ReadFromJsonAsync<UserProfileDTO>();
+                UserProfile = _authService.CurrentUserProfile;
             }
             else
             {
-                Console.WriteLine("Failed to load user stats");
+                var response = await _apiClient.GetAsync("/api/User/getUserStats");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    UserProfile = await response.Content.ReadFromJsonAsync<UserProfileDTO>();
+                    _authService.SetCurrentUserProfile(UserProfile);
+                }
+                else
+                {
+                    Console.WriteLine("Failed to load user stats");
+                }
             }
         }
         catch (Exception ex)

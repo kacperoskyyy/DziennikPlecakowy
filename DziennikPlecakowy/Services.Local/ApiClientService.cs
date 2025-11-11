@@ -37,14 +37,44 @@ public class ApiClientService
 
     public async Task<HttpResponseMessage> GetAsync(string requestUri, bool handleUnauthorized = true)
     {
-        var response = await _httpClient.GetAsync(requestUri);
+        var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+
+        if (!string.IsNullOrEmpty(_currentAccessToken))
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _currentAccessToken);
+        }
+
+        request.Headers.CacheControl = new CacheControlHeaderValue
+        {
+            NoCache = true,
+            NoStore = true,
+            MustRevalidate = true
+        };
+        request.Headers.Pragma.ParseAdd("no-cache");
+
+        var response = await _httpClient.SendAsync(request);
 
         if (handleUnauthorized && response.StatusCode == HttpStatusCode.Unauthorized)
         {
             bool refreshed = await HandleUnauthorizedResponseAsync();
             if (refreshed)
             {
-                response = await _httpClient.GetAsync(requestUri);
+                var retryRequest = new HttpRequestMessage(HttpMethod.Get, requestUri);
+
+                if (!string.IsNullOrEmpty(_currentAccessToken))
+                {
+                    retryRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _currentAccessToken);
+                }
+
+                retryRequest.Headers.CacheControl = new CacheControlHeaderValue
+                {
+                    NoCache = true,
+                    NoStore = true,
+                    MustRevalidate = true
+                };
+                retryRequest.Headers.Pragma.ParseAdd("no-cache");
+
+                response = await _httpClient.SendAsync(retryRequest);
             }
         }
         return response;
@@ -60,6 +90,21 @@ public class ApiClientService
             if (refreshed)
             {
                 response = await _httpClient.PostAsJsonAsync(requestUri, value);
+            }
+        }
+        return response;
+    }
+
+    public async Task<HttpResponseMessage> PutAsJsonAsync<T>(string requestUri, T value, bool handleUnauthorized = true)
+    {
+        var response = await _httpClient.PutAsJsonAsync(requestUri, value);
+
+        if (handleUnauthorized && response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            bool refreshed = await HandleUnauthorizedResponseAsync();
+            if (refreshed)
+            {
+                response = await _httpClient.PutAsJsonAsync(requestUri, value);
             }
         }
         return response;
@@ -88,7 +133,6 @@ public class ApiClientService
         {
             if (_isRefreshingToken)
             {
-
                 return true;
             }
 
@@ -102,7 +146,8 @@ public class ApiClientService
 
             var refreshRequest = new RefreshTokenRequestDTO { RefreshToken = localToken.Token };
 
-            var response = await PostAsJsonAsync("/api/Auth/refresh", refreshRequest, handleUnauthorized: false);
+
+            var response = await _httpClient.PostAsJsonAsync("/api/Auth/refresh", refreshRequest);
 
             if (response.IsSuccessStatusCode)
             {
@@ -116,6 +161,11 @@ public class ApiClientService
                 return true;
             }
 
+            return false;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Błąd w HandleUnauthorizedResponseAsync: {ex.Message}");
             return false;
         }
         finally

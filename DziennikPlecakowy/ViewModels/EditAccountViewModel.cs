@@ -15,7 +15,6 @@ public partial class EditAccountViewModel : BaseViewModel
     private readonly AuthService _authService;
 
     [ObservableProperty] string newUsername;
-    [ObservableProperty] string newEmail;
     [ObservableProperty] string currentPassword;
     [ObservableProperty] string newPassword;
     [ObservableProperty] string confirmNewPassword;
@@ -58,31 +57,6 @@ public partial class EditAccountViewModel : BaseViewModel
         IsBusy = false;
     }
 
-    [RelayCommand]
-    private async Task ChangeEmailAsync()
-    {
-        if (string.IsNullOrWhiteSpace(NewEmail))
-        {
-            EmailMessage = "Email nie może być pusty.";
-            return;
-        }
-        if (IsBusy) return;
-        IsBusy = true;
-
-        var request = new UserChangeEmailRequestDTO { NewEmail = NewEmail };
-        var response = await _apiClient.PostAsJsonAsync("/api/User/changeEmail", request);
-
-        if (response.IsSuccessStatusCode)
-        {
-            EmailMessage = "Email zmieniony pomyślnie!";
-        }
-        else
-        {
-            var error = await response.Content.ReadFromJsonAsync<ErrorResponseDTO>();
-            EmailMessage = error?.Message ?? "Błąd zmiany emaila (może być zajęty).";
-        }
-        IsBusy = false;
-    }
 
     [RelayCommand]
     private async Task ChangePasswordAsync()
@@ -115,7 +89,7 @@ public partial class EditAccountViewModel : BaseViewModel
                 Password = CurrentPassword,
                 NewPassword = NewPassword
             };
-            var response = await _apiClient.PostAsJsonAsync("/api/User/changePassword", request);
+            var response = await _apiClient.PutAsJsonAsync("/api/User/changePassword", request);
 
             if (response.IsSuccessStatusCode)
             {

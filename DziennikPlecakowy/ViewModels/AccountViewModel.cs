@@ -32,21 +32,31 @@ public partial class AccountViewModel : BaseViewModel
     {
         if (IsBusy) return;
         IsBusy = true;
+        UserProfile = null;
+
         try
         {
-            var response = await _apiClientService.GetAsync("/api/User/getUserStats");
-            if (response.IsSuccessStatusCode)
+            if (_authService.CurrentUserProfile != null)
             {
-                UserProfile = await response.Content.ReadFromJsonAsync<UserProfileDTO>();
+                UserProfile = _authService.CurrentUserProfile;
             }
             else
             {
-                throw new Exception($"Nie udało się załadować profilu użytkownika: {response}");
+                var response = await _apiClientService.GetAsync("/api/User/getUserStats");
+                if (response.IsSuccessStatusCode)
+                {
+                    UserProfile = await response.Content.ReadFromJsonAsync<UserProfileDTO>();
+                    _authService.SetCurrentUserProfile(UserProfile);
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"Nie udało się załadować profilu użytkownika: {response}");
+                }
             }
         }
         catch (Exception ex)
         {
-            throw new Exception("Wystąpił błąd podczas ładowania profilu użytkownika.", ex);
+            System.Diagnostics.Debug.WriteLine($"Wystąpił błąd podczas ładowania profilu użytkownika: {ex.Message}");
         }
         finally
         {
@@ -63,6 +73,9 @@ public partial class AccountViewModel : BaseViewModel
     private async Task LogoutAsync()
     {
         await _authService.LogoutAsync();
+
+        UserProfile = null;
+
         await Shell.Current.GoToAsync(nameof(LoginPage));
     }
     [RelayCommand]

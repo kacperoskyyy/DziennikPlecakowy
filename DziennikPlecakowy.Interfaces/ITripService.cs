@@ -10,4 +10,5 @@ public interface ITripService
     Task<bool> DeleteTripAsync(string tripId, string userId);
     Task<IEnumerable<Trip>> GetUserTripsAsync(string userId);
     Task<IEnumerable<TripSummaryDTO>> GetUserTripSummariesAsync(string userId);
+    Task<Trip?> GetTripByIdAsync(string tripId, string userId);
 }

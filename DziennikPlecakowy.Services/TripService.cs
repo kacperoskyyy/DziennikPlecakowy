@@ -102,10 +102,10 @@ public class TripService : ITripService
 
         return result;
     }
-    
+
     public async Task<IEnumerable<Trip>> GetUserTripsAsync(string userId)
     {
-        return await _tripRepository.GetByUserAsync(userId); 
+        return await _tripRepository.GetByUserAsync(userId);
     }
     public async Task<IEnumerable<TripSummaryDTO>> GetUserTripSummariesAsync(string userId)
     {
@@ -127,4 +127,25 @@ public class TripService : ITripService
             Steps = trip.Steps
         });
     }
+
+
+    public async Task<Trip?> GetTripByIdAsync(string tripId, string userId)
+    {
+        Trip? existingTrip = await _tripRepository.GetByIdAsync(tripId);
+
+        if (existingTrip == null)
+        {
+            return null;
+        }
+
+        if (existingTrip.UserId != userId)
+        {
+            throw new UnauthorizedTripModificationException(
+                $"Użytkownik {userId} próbował uzyskać dostęp do wycieczki {tripId} należącej do innego użytkownika."
+            );
+        }
+
+        return existingTrip;
+    }
+
 }

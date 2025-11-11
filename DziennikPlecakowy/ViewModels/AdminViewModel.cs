@@ -35,6 +35,9 @@ public partial class AdminViewModel : BaseViewModel
         if (IsBusy) return;
         IsBusy = true;
 
+        allUsers.Clear();
+        Users.Clear();
+
         try
         {
             var response = await _apiClient.GetAsync("/api/Admin/getAllUsers");
@@ -133,12 +136,12 @@ public partial class AdminViewModel : BaseViewModel
             else if (action == "Nadaj Admina")
             {
                 var req = new AdminChangeRoleRequestDTO { UserId = user.Id, NewRole = UserRole.Admin };
-                response = await _apiClient.PostAsJsonAsync("/api/Admin/changeRole", req);
+                response = await _apiClient.PutAsJsonAsync("/api/Admin/changeRole", req);
             }
             else if (action == "Odbierz Admina")
             {
                 var req = new AdminChangeRoleRequestDTO { UserId = user.Id, NewRole = UserRole.User };
-                response = await _apiClient.PostAsJsonAsync("/api/Admin/changeRole", req);
+                response = await _apiClient.PutAsJsonAsync("/api/Admin/changeRole", req);
             }
 
             if (response != null && !response.IsSuccessStatusCode)

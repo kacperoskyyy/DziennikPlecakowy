@@ -9,4 +9,5 @@ public partial class AccountPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+
 }

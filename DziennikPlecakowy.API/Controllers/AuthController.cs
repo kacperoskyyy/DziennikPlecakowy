@@ -122,4 +122,27 @@ public class AuthController : ControllerBase
             return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
         }
     }
+
+    [AllowAnonymous]
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout([FromBody] RefreshTokenRequestDTO request)
+    {
+        _logger.LogInformation("Endpoint: POST api/Auth/logout invoked.");
+
+        if (request == null || string.IsNullOrEmpty(request.RefreshToken))
+        {
+            return Ok(new { Message = "Wylogowano." });
+        }
+
+        try
+        {
+            await _authService.LogoutAsync(request.RefreshToken);
+            return Ok(new { Message = "Wylogowano pomyślnie." });
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Unexpected error during remote logout.");
+            return Ok(new { Message = "Wylogowano (z błędem serwera)." });
+        }
+    }
 }

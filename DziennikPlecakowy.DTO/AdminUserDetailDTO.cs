@@ -10,4 +10,5 @@ public class AdminUserDetailDTO
     public bool IsLocked { get; set; }
     public bool MustChangePassword { get; set; }
     public List<UserRole> Roles { get; set; }
+    public bool IsAdmin => Roles?.Contains(UserRole.Admin) ?? false;
 }
