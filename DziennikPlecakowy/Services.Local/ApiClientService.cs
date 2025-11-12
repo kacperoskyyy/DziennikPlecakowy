@@ -25,14 +25,11 @@ public class ApiClientService
     public void SetAccessToken(string token)
     {
         _currentAccessToken = token;
-        _httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
     }
 
     public void ClearAccessToken()
     {
         _currentAccessToken = null;
-        _httpClient.DefaultRequestHeaders.Authorization = null;
     }
 
     public async Task<HttpResponseMessage> GetAsync(string requestUri, bool handleUnauthorized = true)
@@ -82,14 +79,29 @@ public class ApiClientService
 
     public async Task<HttpResponseMessage> PostAsJsonAsync<T>(string requestUri, T value, bool handleUnauthorized = true)
     {
-        var response = await _httpClient.PostAsJsonAsync(requestUri, value);
+        var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+        request.Content = JsonContent.Create(value);
+
+        if (!string.IsNullOrEmpty(_currentAccessToken))
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _currentAccessToken);
+        }
+
+        var response = await _httpClient.SendAsync(request);
 
         if (handleUnauthorized && response.StatusCode == HttpStatusCode.Unauthorized)
         {
             bool refreshed = await HandleUnauthorizedResponseAsync();
             if (refreshed)
             {
-                response = await _httpClient.PostAsJsonAsync(requestUri, value);
+                var retryRequest = new HttpRequestMessage(HttpMethod.Post, requestUri);
+                retryRequest.Content = JsonContent.Create(value);
+
+                if (!string.IsNullOrEmpty(_currentAccessToken))
+                {
+                    retryRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _currentAccessToken);
+                }
+                response = await _httpClient.SendAsync(retryRequest);
             }
         }
         return response;
@@ -97,14 +109,29 @@ public class ApiClientService
 
     public async Task<HttpResponseMessage> PutAsJsonAsync<T>(string requestUri, T value, bool handleUnauthorized = true)
     {
-        var response = await _httpClient.PutAsJsonAsync(requestUri, value);
+        var request = new HttpRequestMessage(HttpMethod.Put, requestUri);
+        request.Content = JsonContent.Create(value);
+
+        if (!string.IsNullOrEmpty(_currentAccessToken))
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _currentAccessToken);
+        }
+
+        var response = await _httpClient.SendAsync(request);
 
         if (handleUnauthorized && response.StatusCode == HttpStatusCode.Unauthorized)
         {
             bool refreshed = await HandleUnauthorizedResponseAsync();
             if (refreshed)
             {
-                response = await _httpClient.PutAsJsonAsync(requestUri, value);
+                var retryRequest = new HttpRequestMessage(HttpMethod.Put, requestUri);
+                retryRequest.Content = JsonContent.Create(value);
+
+                if (!string.IsNullOrEmpty(_currentAccessToken))
+                {
+                    retryRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _currentAccessToken);
+                }
+                response = await _httpClient.SendAsync(retryRequest);
             }
         }
         return response;
@@ -112,14 +139,29 @@ public class ApiClientService
 
     public async Task<HttpResponseMessage> PutAsync(string requestUri, HttpContent content = null, bool handleUnauthorized = true)
     {
-        var response = await _httpClient.PutAsync(requestUri, content);
+        var request = new HttpRequestMessage(HttpMethod.Put, requestUri);
+        request.Content = content;
+
+        if (!string.IsNullOrEmpty(_currentAccessToken))
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _currentAccessToken);
+        }
+
+        var response = await _httpClient.SendAsync(request);
 
         if (handleUnauthorized && response.StatusCode == HttpStatusCode.Unauthorized)
         {
             bool refreshed = await HandleUnauthorizedResponseAsync();
             if (refreshed)
             {
-                response = await _httpClient.PutAsync(requestUri, content);
+                var retryRequest = new HttpRequestMessage(HttpMethod.Put, requestUri);
+                retryRequest.Content = content;
+
+                if (!string.IsNullOrEmpty(_currentAccessToken))
+                {
+                    retryRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _currentAccessToken);
+                }
+                response = await _httpClient.SendAsync(retryRequest);
             }
         }
         return response;
@@ -177,18 +219,29 @@ public class ApiClientService
 
     public async Task<HttpResponseMessage> DeleteAsync(string requestUri, bool handleUnauthorized = true)
     {
-        var response = await _httpClient.DeleteAsync(requestUri);
+        var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
+
+        if (!string.IsNullOrEmpty(_currentAccessToken))
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _currentAccessToken);
+        }
+
+        var response = await _httpClient.SendAsync(request);
 
         if (handleUnauthorized && response.StatusCode == HttpStatusCode.Unauthorized)
         {
             bool refreshed = await HandleUnauthorizedResponseAsync();
             if (refreshed)
             {
-                response = await _httpClient.DeleteAsync(requestUri);
+                var retryRequest = new HttpRequestMessage(HttpMethod.Delete, requestUri);
+
+                if (!string.IsNullOrEmpty(_currentAccessToken))
+                {
+                    retryRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _currentAccessToken);
+                }
+                response = await _httpClient.SendAsync(retryRequest);
             }
         }
         return response;
     }
-
-
 }

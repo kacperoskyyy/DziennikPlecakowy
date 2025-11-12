@@ -120,23 +120,16 @@ public partial class DashboardViewModel : BaseViewModel
 
         try
         {
-            if (_authService.CurrentUserProfile != null)
+            var response = await _apiClient.GetAsync("/api/User/getUserStats");
+
+            if (response.IsSuccessStatusCode)
             {
-                UserProfile = _authService.CurrentUserProfile;
+                UserProfile = await response.Content.ReadFromJsonAsync<UserProfileDTO>();
+                _authService.SetCurrentUserProfile(UserProfile);
             }
             else
             {
-                var response = await _apiClient.GetAsync("/api/User/getUserStats");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    UserProfile = await response.Content.ReadFromJsonAsync<UserProfileDTO>();
-                    _authService.SetCurrentUserProfile(UserProfile);
-                }
-                else
-                {
-                    Console.WriteLine("Failed to load user stats");
-                }
+                Console.WriteLine("Failed to load user stats");
             }
         }
         catch (Exception ex)
@@ -204,6 +197,7 @@ public partial class DashboardViewModel : BaseViewModel
         try
         {
             await _tripTrackingService.StopTrackingAsync();
+            _authService.SetCurrentUserProfile(null);
             await LoadStatsAsync();
         }
         catch (Exception ex)

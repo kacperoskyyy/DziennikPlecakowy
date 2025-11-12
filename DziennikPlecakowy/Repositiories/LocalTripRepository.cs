@@ -163,4 +163,10 @@ public class LocalTripRepository
             });
         }
     }
+    public async Task DeletaAllTrips()
+    {
+        await _dbService.InitializeDatabaseAsync();
+        await _db.ExecuteAsync("DELETE FROM geo_points");
+        await _db.ExecuteAsync("DELETE FROM trips");
+    }
 }

@@ -49,6 +49,7 @@ public partial class EditAccountViewModel : BaseViewModel
         if (response.IsSuccessStatusCode)
         {
             UsernameMessage = "Nazwa użytkownika została zmieniona.";
+            _authService.SetCurrentUserProfile(null);
         }
         else
         {
