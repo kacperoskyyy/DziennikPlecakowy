@@ -5,9 +5,9 @@ using DziennikPlecakowy.Models.Local;
 using DziennikPlecakowy.Repositories;
 using DziennikPlecakowy.Services.Local;
 using System.Collections.ObjectModel;
-using Microsoft.Maui.Controls.Maps;
-using Microsoft.Maui.Maps;
-using System.Text.Json; 
+using System.Text.Json;
+// USUNIĘTO: using Microsoft.Maui.Controls.Maps;
+// USUNIĘTO: using Microsoft.Maui.Maps;
 
 namespace DziennikPlecakowy.ViewModels;
 
@@ -33,18 +33,11 @@ public partial class TripDetailViewModel : BaseViewModel
     [ObservableProperty]
     TripDetailDTO tripDetails;
 
+    // USUNIĘTO: pins, routePolyline, mapStartRegion
 
+    // Ta właściwość jest dla WebView (Leaflet) i zostaje
     [ObservableProperty]
-    ObservableCollection<Pin> pins;
-
-    [ObservableProperty]
-    Microsoft.Maui.Controls.Maps.Polyline routePolyline;
-
-    [ObservableProperty]
-    MapSpan mapStartRegion;
-
-    [ObservableProperty]
-    IDictionary<string, object> mapParameters; 
+    IDictionary<string, object> mapParameters;
 
     public IAsyncRelayCommand GoBackAsyncCommand { get; }
     public IAsyncRelayCommand DeleteTripCommand { get; }
@@ -54,7 +47,7 @@ public partial class TripDetailViewModel : BaseViewModel
         _tripRepository = tripRepository;
         _apiClient = apiClient;
         Title = "Szczegóły Wycieczki";
-        Pins = new ObservableCollection<Pin>();
+        // USUNIĘTO: Inicjalizację Pins
 
         GoBackAsyncCommand = new AsyncRelayCommand(GoBackAsync);
         DeleteTripCommand = new AsyncRelayCommand(DeleteTripAsync);
@@ -62,13 +55,11 @@ public partial class TripDetailViewModel : BaseViewModel
 
     partial void OnServerTripIdChanged(string value)
     {
- 
         if (!string.IsNullOrEmpty(value))
         {
             LoadTripDataCommand.Execute(null);
         }
     }
-
 
     partial void OnLocalTripIdChanged(string value)
     {
@@ -76,7 +67,6 @@ public partial class TripDetailViewModel : BaseViewModel
         {
             return;
         }
-
     }
 
 
@@ -93,9 +83,8 @@ public partial class TripDetailViewModel : BaseViewModel
 
         IsBusy = true;
         TripDetails = null;
-        Pins.Clear();
-        RoutePolyline = null;
-        MapStartRegion = null;
+
+        // USUNIĘTO: Czyszczenie Pins, RoutePolyline, MapStartRegion
 
         try
         {
@@ -111,10 +100,8 @@ public partial class TripDetailViewModel : BaseViewModel
                 await Shell.Current.DisplayAlert("Błąd API", $"Nie udało się pobrać danych: {response.StatusCode}", "OK");
             }
 
-            if (TripDetails != null)
-            {
-                PrepareMapData();
-            }
+            // USUNIĘTO: Wywołanie PrepareMapData()
+            // (Logika mapowania jest teraz w OnTripDetailsChanged)
         }
         catch (Exception ex)
         {
@@ -126,48 +113,7 @@ public partial class TripDetailViewModel : BaseViewModel
         }
     }
 
-    private void PrepareMapData()
-    {
-        if (TripDetails.GeoPointList == null || !TripDetails.GeoPointList.Any())
-        {
-            System.Diagnostics.Debug.WriteLine("[DEBUG] PrepareMapData: GeoPointList jest pusta lub null.");
-            return;
-        }
-
-
-        var points = TripDetails.GeoPointList;
-
-        var polyline = new Microsoft.Maui.Controls.Maps.Polyline
-        {
-            StrokeColor = Colors.Blue,
-            StrokeWidth = 5
-        };
-        foreach (var point in points)
-        {
-            polyline.Geopath.Add(new Location(point.Latitude, point.Longitude));
-        }
-        RoutePolyline = polyline;
-
-        var startPoint = points.First();
-        var endPoint = points.Last();
-
-        Pins.Add(new Pin
-        {
-            Label = "Start",
-            Location = new Location(startPoint.Latitude, startPoint.Longitude),
-            Type = PinType.Place
-        });
-        Pins.Add(new Pin
-        {
-            Label = "Koniec",
-            Location = new Location(endPoint.Latitude, endPoint.Longitude),
-            Type = PinType.Place
-        });
-
-        MapStartRegion = MapSpan.FromCenterAndRadius(
-            new Location(startPoint.Latitude, startPoint.Longitude),
-            Distance.FromKilometers(1));
-    }
+    // USUNIĘTO: Całą metodę PrepareMapData()
 
     private async Task GoBackAsync()
     {
@@ -233,6 +179,7 @@ public partial class TripDetailViewModel : BaseViewModel
         }
     }
 
+    // Ta metoda jest kluczowa dla mapy WebView i zostaje
     partial void OnTripDetailsChanged(TripDetailDTO value)
     {
         MapParameters = new Dictionary<string, object>

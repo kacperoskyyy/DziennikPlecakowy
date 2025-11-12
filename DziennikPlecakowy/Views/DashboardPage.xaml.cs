@@ -20,7 +20,7 @@ public partial class DashboardPage : ContentPage
     {
         base.OnAppearing();
         _viewModel.SubscribeToTrackingEvents();
-        UpdateMapElements();
+        // USUNIÊTO: UpdateMapElements();
     }
 
     protected override void OnDisappearing()
@@ -32,25 +32,8 @@ public partial class DashboardPage : ContentPage
 
     private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(DashboardViewModel.ActiveMapRegion) && _viewModel.ActiveMapRegion != null)
-        {
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                ActiveTripMap.MoveToRegion(_viewModel.ActiveMapRegion);
-            });
-        }
-        else if (e.PropertyName == nameof(DashboardViewModel.ActiveRoute))
-        {
-            MainThread.BeginInvokeOnMainThread(UpdateMapElements);
-        }
+        // USUNIÊTO: Ca³¹ logikê MoveToRegion i UpdateMapElements
     }
 
-    private void UpdateMapElements()
-    {
-        ActiveTripMap.MapElements.Clear();
-        if (_viewModel.ActiveRoute != null)
-        {
-            ActiveTripMap.MapElements.Add(_viewModel.ActiveRoute);
-        }
-    }
+    // USUNIÊTO: Ca³¹ metodê UpdateMapElements()
 }
