@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
              xmlns:dto="clr-namespace:DziennikPlecakowy.DTO;assembly=DziennikPlecakowy.DTO"
-             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              x:DataType="vm:TripDetailViewModel"
              x:Class="DziennikPlecakowy.Views.TripDetailPage"
              Shell.NavBarIsVisible="False"
@@ -11,10 +10,7 @@
 
     <Grid RowDefinitions="300, *">
 
-        <maps:Map x:Name="TripMap"
-                  MapType="Street"
-                  Grid.Row="0"
-                  ItemsSource="{Binding Pins}" />
+        <WebView x:Name="mapWebView" Grid.Row="0" Source="wwwroot/index.html" />
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="0,20,0,20" Spacing="10">
@@ -29,7 +25,7 @@
                                HorizontalOptions="Center"
                                Margin="20,0" />
                         <Label Text="{Binding TripDate, StringFormat='{0:dd.MM.yyyy HH:mm}'}"
-                               HorizontalOptions="Center" 
+                               HorizontalOptions="Center"
                                TextColor="{StaticResource TextSecondary}"
                                Margin="0,-10,0,0" />
 
