@@ -147,6 +147,56 @@ public class AuthService
         CurrentUserProfile = null;
     }
 
+    public async Task<string> RequestPasswordResetAsync(string email)
+    {
+        var response = await _apiClient.RequestPasswordResetAsync(email);
+
+        if (response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        try
+        {
+            var errorDto = await response.Content.ReadFromJsonAsync<ErrorResponseDTO>();
+            if (errorDto != null && !string.IsNullOrEmpty(errorDto.Message))
+            {
+                return errorDto.Message;
+            }
+        }
+        catch
+        {
+        }
+
+        return "Wystąpił nieoczekiwany błąd serwera. Spróbuj ponownie później.";
+    }
+
+    public async Task<string> ResetPasswordAsync(string token, string newPassword)
+    {
+        var response = await _apiClient.ResetPasswordAsync(token, newPassword);
+
+        if (response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+        try
+        {
+            var errorDto = await response.Content.ReadFromJsonAsync<ErrorResponseDTO>();
+            if (errorDto != null && !string.IsNullOrEmpty(errorDto.Message))
+            {
+                return errorDto.Message;
+            }
+        }
+        catch { }
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            return "Nieprawidłowe dane. Sprawdź token lub hasło.";
+        }
+
+        return "Wystąpił nieoczekiwany błąd serwera.";
+    }
+
     private async Task<UserProfileDTO> FetchAndSaveUserDataAsync()
     {
         var userResponse = await _apiClient.GetAsync("/api/User/getUserStats", handleUnauthorized: false);

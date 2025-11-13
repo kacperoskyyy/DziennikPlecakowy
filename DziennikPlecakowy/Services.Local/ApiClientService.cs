@@ -244,4 +244,22 @@ public class ApiClientService
         }
         return response;
     }
+
+    private sealed record ForgotPasswordRequest(string Email);
+
+    public async Task<HttpResponseMessage> RequestPasswordResetAsync(string email)
+    {
+        var requestDto = new ForgotPasswordRequest(email);
+
+        return await PostAsJsonAsync("/api/Auth/forgot-password", requestDto, handleUnauthorized: false);
+    }
+
+    private sealed record ResetPasswordRequest(string Token, string NewPassword);
+
+    public async Task<HttpResponseMessage> ResetPasswordAsync(string token, string newPassword)
+    {
+        var requestDto = new ResetPasswordRequest(token, newPassword);
+
+        return await PostAsJsonAsync("/api/Auth/reset-password", requestDto, handleUnauthorized: false);
+    }
 }

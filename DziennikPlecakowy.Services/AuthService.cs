@@ -10,15 +10,24 @@ public class AuthService : IAuthService
     private readonly IUserService _userService;
     private readonly ICypherService _cypherService;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IPasswordResetTokenRepository _passwordResetTokenRepository;
+    private readonly IEmailService _emailService;
+    private readonly IHashService _hashService;
 
     public AuthService(
         IUserService userService,
         ICypherService cypherService,
-        IRefreshTokenRepository refreshTokenRepository)
+        IRefreshTokenRepository refreshTokenRepository,
+        IPasswordResetTokenRepository passwordResetTokenRepository,
+        IEmailService emailService,
+        IHashService hashService)
     {
         _userService = userService;
         _cypherService = cypherService;
         _refreshTokenRepository = refreshTokenRepository;
+        _passwordResetTokenRepository = passwordResetTokenRepository;
+        _emailService = emailService;
+        _hashService = hashService;
     }
     public async Task RegisterAsync(UserRegisterRequestDTO request)
     {
@@ -120,5 +129,57 @@ public class AuthService : IAuthService
         {
             await _refreshTokenRepository.DeleteAsync(storedToken.Id);
         }
+    }
+
+    public async Task<bool> RequestPasswordResetAsync(string email)
+    { 
+        var user = await _userService.GetUserByEmail(email);
+
+        if (user == null)
+        {
+            return true;
+        }
+
+        await _passwordResetTokenRepository.DeleteAllByUserIdAsync(user.Id);
+
+        var plainTextToken = new Random().Next(100000, 999999).ToString();
+        var hashedToken = _hashService.Hash(plainTextToken);
+
+        var expiryTime = DateTime.UtcNow.AddMinutes(15);
+
+        var resetToken = new PasswordResetToken
+        {
+            UserId = user.Id,
+            TokenHash = hashedToken,
+            ExpiryDate = expiryTime,
+            ExpireAt = expiryTime
+        };
+
+        await _passwordResetTokenRepository.AddAsync(resetToken);
+
+        await _emailService.SendPasswordResetEmailAsync(user.Email, plainTextToken);
+
+        return true;
+    }
+
+    public async Task<bool> ResetPasswordAsync(string token, string newPassword)
+    {
+        var hashedToken = _hashService.Hash(token);
+
+        var storedToken = await _passwordResetTokenRepository.GetByHashedTokenAsync(hashedToken);
+
+        if (storedToken == null || storedToken.ExpiryDate <= DateTime.UtcNow)
+        {
+            return false;
+        }
+
+        var success = await _userService.ResetPasswordAsync(storedToken.UserId, newPassword);
+
+        if (success)
+        {
+ 
+            await _passwordResetTokenRepository.DeleteAsync(storedToken.Id);
+        }
+        return success;
     }
 }

@@ -279,4 +279,35 @@ public class UserService : IUserService
 
         return await _userRepository.UpdateAsync(user);
     }
+
+    public async Task<bool> ResetPasswordAsync(string userId, string newPassword)
+    {
+        User? user = await _userRepository.GetByIdAsync(userId);
+        if (user == null) return false;
+
+        string newPasswordHash = _hash.Hash(newPassword);
+
+        if (user.HashedPassword == newPasswordHash || user.PasswordHashesHistory.Contains(newPasswordHash))
+        {
+            return false;
+        }
+
+        string oldPasswordHash = user.HashedPassword;
+        user.HashedPassword = newPasswordHash;
+        user.MustChangePassword = false;
+
+        if (!string.IsNullOrEmpty(oldPasswordHash))
+        {
+            user.PasswordHashesHistory.Add(oldPasswordHash);
+        }
+
+        if (user.PasswordHashesHistory.Count > 3)
+        {
+            user.PasswordHashesHistory.Remove(user.PasswordHashesHistory.First());
+        }
+
+        var success = await _userRepository.UpdateAsync(user);
+        if (success) DecryptUser(user);
+        return success;
+    }
 }

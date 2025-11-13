@@ -9,4 +9,5 @@ public interface IMongoDbContext
     IMongoCollection<Trip> Trips { get; }
     IMongoCollection<UserStat> UserStats { get; }
     IMongoCollection<RefreshToken> RefreshTokens { get; }
+    IMongoCollection<PasswordResetToken> PasswordResetTokens { get; }
 }

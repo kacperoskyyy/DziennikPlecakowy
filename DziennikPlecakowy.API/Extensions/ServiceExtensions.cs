@@ -21,12 +21,14 @@ public static class ServiceExtensions
         services.AddScoped<ITripRepository, TripRepository>();
         services.AddScoped<IUserStatRepository, UserStatRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IHashService, HashService>();
         services.AddScoped<ICypherService, CypherService>();
         services.AddScoped<ITripService, TripService>();
+        services.AddScoped<IEmailService, EmailService>();
 
         return services;
     }

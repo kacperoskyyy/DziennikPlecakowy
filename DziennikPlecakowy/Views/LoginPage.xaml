@@ -43,6 +43,15 @@
                     IsEnabled="{Binding IsNotBusy}" 
                     Style="{StaticResource MainButton}" />
 
+            <Button Text="Nie pamiętasz hasła?"
+                    Command="{Binding GoToForgotPasswordCommand}"
+                    Style="{StaticResource MainButton}"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource TextSecondary}"
+                    HorizontalOptions="Center"
+                    FontSize="Small"
+                    Padding="0" />
+
             <Button Text="Nie masz konta? Zarejestruj się"
                     Command="{Binding GoToRegisterCommand}" 
                     Style="{StaticResource MainButton}"

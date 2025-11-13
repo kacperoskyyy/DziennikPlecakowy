@@ -22,4 +22,5 @@ public interface IUserService
     Task<bool> SetUserLockStatusAsync(string userId, bool isLocked);
     Task<bool> SetPasswordChangeStatusAsync(string userId, bool mustChange);
     Task<bool> SetUserRoleAsync(string userId, UserRole newRole);
+    Task<bool> ResetPasswordAsync(string userId, string newPassword);
 }

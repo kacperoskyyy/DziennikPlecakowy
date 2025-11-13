@@ -57,3 +57,4 @@ DziennikPlecakowy.API/appsettings.json
 /DziennikPlecakowy/secrets.json
 /DziennikPlecakowy/secrets.props
 DziennikPlecakowy/secrets.json
+DziennikPlecakowy.API/.config/dotnet-tools.json

@@ -119,4 +119,11 @@ public partial class LoginViewModel : BaseViewModel
             IsBusy = false;
         }
     }
+
+    [RelayCommand]
+    private async Task GoToForgotPasswordAsync()
+    {
+        if (IsBusy) return;
+        await Shell.Current.GoToAsync(nameof(ForgotPasswordPage));
+    }
 }
