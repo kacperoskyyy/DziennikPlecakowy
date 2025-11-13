@@ -40,8 +40,7 @@
 
 	<PropertyGroup Condition="$(TargetFramework.Contains('-android')) and '$(Configuration)' == 'Release'">
 		<AndroidPackageFormat>apk</AndroidPackageFormat>
-		<AndroidEnableR8>false</AndroidEnableR8>
-		<AndroidLinkMode>None</AndroidLinkMode>
+		<AndroidLinkMode>SdkOnly</AndroidLinkMode>
 	</PropertyGroup>
 
 	<ItemGroup>

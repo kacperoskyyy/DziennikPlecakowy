@@ -1,9 +1,12 @@
+using DziennikPlecakowy.ViewModels;
+
 namespace DziennikPlecakowy.Views;
 
 public partial class ForgotPasswordPage : ContentPage
 {
-	public ForgotPasswordPage()
+	public ForgotPasswordPage(ForgotPasswordViewModel viewModel)
 	{
 		InitializeComponent();
-	}
+        BindingContext = viewModel;
+    }
 }

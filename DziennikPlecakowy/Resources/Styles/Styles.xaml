@@ -90,5 +90,9 @@
         <Setter Property="Margin" Value="0,5" />
     </Style>
 
+    <Style TargetType="Shell" ApplyToDerivedTypes="True">
+        <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource CardBackgroundWhite}" />
+        <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource MainBlue}" />
+    </Style>
 
 </ResourceDictionary>
