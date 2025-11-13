@@ -2,7 +2,6 @@
 using System.Text.Json.Serialization;
 
 namespace DziennikPlecakowy.DTO;
-// DTO profilu użytkownika
 public class UserProfileDTO
 {
     [JsonPropertyName("id")]

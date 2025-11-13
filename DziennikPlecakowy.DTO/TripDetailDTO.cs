@@ -1,8 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace DziennikPlecakowy.DTO;
-
-//DTO detali wycieczki
 public class TripDetailDTO
 {
     [JsonPropertyName("id")]

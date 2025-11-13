@@ -15,7 +15,7 @@
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="0,20,0,20" Spacing="10">
 
-                <ContentView IsVisible="{Binding TripDetails, Converter={StaticResource IsNotNullConverter}}">
+                <ContentView IsVisible="{Binding TripDetails, Converter={StaticResource IsNotNullOrEmptyConverter}}">
                     <VerticalStackLayout Spacing="10"
                                          BindingContext="{Binding TripDetails}"
                                          x:DataType="dto:TripDetailDTO">

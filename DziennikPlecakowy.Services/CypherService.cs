@@ -50,7 +50,6 @@ public class CypherService : ICypherService
     }
     public string Decrypt(string text)
     {
-        // Jeśli tekst jest pusty, zwróć go od razu
         if (string.IsNullOrEmpty(text))
         {
             return text;
