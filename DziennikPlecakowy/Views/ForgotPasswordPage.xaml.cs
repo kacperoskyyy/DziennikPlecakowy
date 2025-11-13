@@ -1,6 +1,6 @@
 namespace DziennikPlecakowy.Views;
 
-public partial class ForgotPasswordPage : ContentView
+public partial class ForgotPasswordPage : ContentPage
 {
 	public ForgotPasswordPage()
 	{

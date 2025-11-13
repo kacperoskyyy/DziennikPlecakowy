@@ -29,7 +29,7 @@ public static class MauiProgramExtensions
     public static MauiAppBuilder RegisterAppServices(this MauiAppBuilder builder)
     {
 #if DEBUG
-        //const string BaseApiUrl = "https://10.0.2.2:7046";
+        const string BaseApiUrl = "https://10.0.2.2:7046";
 #else
         const string BaseApiUrl = "http://dziennikplecakowyapi.eu-central-1.elasticbeanstalk.com";
 #endif
