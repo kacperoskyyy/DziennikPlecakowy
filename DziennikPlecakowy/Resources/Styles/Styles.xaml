@@ -75,4 +75,11 @@
         <Setter Property="Margin" Value="0,5" />
     </Style>
 
+
+    <Style x:Key="PageStyle" TargetType="ContentPage">
+        <Setter Property="BackgroundColor" Value="{StaticResource AppBackgroundGray}" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+
 </ResourceDictionary>

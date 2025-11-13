@@ -5,12 +5,19 @@ using System.Net;
 using System.Net.Http.Json;
 
 namespace DziennikPlecakowy.Services.Local;
-// Serwis uwierzytelniania uzytkownika
+
 public class AuthService
 {
     private readonly ApiClientService _apiClient;
     private readonly TokenRepository _tokenRepository;
     private readonly DatabaseService _dbService;
+
+    public UserProfileDTO CurrentUserProfile { get; private set; }
+
+    public void SetCurrentUserProfile(UserProfileDTO profile)
+    {
+        CurrentUserProfile = profile;
+    }
 
     private const string UserIdKey = "auth_user_id";
     private const string UserEmailKey = "auth_user_email";
@@ -56,6 +63,8 @@ public class AuthService
             return AuthResult.Fail("Nie udało się pobrać danych użytkownika.");
         }
 
+        SetCurrentUserProfile(userDto);
+
         return AuthResult.Success(authResponse.MustChangePassword);
     }
 
@@ -81,6 +90,8 @@ public class AuthService
             _apiClient.ClearAccessToken();
             return AuthResult.Fail("Błąd pobierania profilu po zalogowaniu.");
         }
+
+        SetCurrentUserProfile(userDto);
 
         var localToken = new LocalRefreshToken
         {
@@ -114,15 +125,31 @@ public class AuthService
 
     public async Task LogoutAsync()
     {
+        try
+        {
+            var localToken = await _tokenRepository.GetTokenAsync();
+            if (localToken != null && !string.IsNullOrEmpty(localToken.Token))
+            {
+                var request = new RefreshTokenRequestDTO { RefreshToken = localToken.Token };
+                await _apiClient.PostAsJsonAsync("/api/Auth/logout", request, handleUnauthorized: false);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error calling remote logout endpoint: {ex.Message}");
+        }
+
         _apiClient.ClearAccessToken();
         await _tokenRepository.DeleteTokenAsync();
         Preferences.Clear();
         await _dbService.DeleteDatabaseFileAsync();
+
+        CurrentUserProfile = null;
     }
 
     private async Task<UserProfileDTO> FetchAndSaveUserDataAsync()
     {
-        var userResponse = await _apiClient.GetAsync("/api/User/getUserStats");
+        var userResponse = await _apiClient.GetAsync("/api/User/getUserStats", handleUnauthorized: false);
         if (!userResponse.IsSuccessStatusCode)
         {
             return null;
@@ -141,9 +168,6 @@ public class AuthService
 
         return userDto;
     }
-
-
-
 
     private async Task<AuthResult> ParseErrorResponse(HttpResponseMessage response)
     {

@@ -33,6 +33,6 @@ public class Trip
     public double ElevationGain { get; set; }
 
     [BsonElement("steps")]
-    public int Steps { get; set; } // DODAJ
+    public int Steps { get; set; }
 
 }

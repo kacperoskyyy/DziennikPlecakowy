@@ -5,9 +5,9 @@ using DziennikPlecakowy.Models.Local;
 using DziennikPlecakowy.Repositories;
 using DziennikPlecakowy.Services.Local;
 using System.Collections.ObjectModel;
-using System.Net.Http.Json;
-using Microsoft.Maui.Controls.Maps;
-using Microsoft.Maui.Maps;
+using System.Text.Json;
+// USUNIĘTO: using Microsoft.Maui.Controls.Maps;
+// USUNIĘTO: using Microsoft.Maui.Maps;
 
 namespace DziennikPlecakowy.ViewModels;
 
@@ -18,6 +18,12 @@ public partial class TripDetailViewModel : BaseViewModel
     private readonly LocalTripRepository _tripRepository;
     private readonly ApiClientService _apiClient;
 
+    private static readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
+
     [ObservableProperty]
     string localTripId;
 
@@ -27,16 +33,11 @@ public partial class TripDetailViewModel : BaseViewModel
     [ObservableProperty]
     TripDetailDTO tripDetails;
 
- 
-    [ObservableProperty]
-    ObservableCollection<Pin> pins;
+    // USUNIĘTO: pins, routePolyline, mapStartRegion
 
+    // Ta właściwość jest dla WebView (Leaflet) i zostaje
     [ObservableProperty]
-    Microsoft.Maui.Controls.Maps.Polyline routePolyline;
-
-    [ObservableProperty]
-    MapSpan mapStartRegion;
-
+    IDictionary<string, object> mapParameters;
 
     public IAsyncRelayCommand GoBackAsyncCommand { get; }
     public IAsyncRelayCommand DeleteTripCommand { get; }
@@ -46,7 +47,7 @@ public partial class TripDetailViewModel : BaseViewModel
         _tripRepository = tripRepository;
         _apiClient = apiClient;
         Title = "Szczegóły Wycieczki";
-        Pins = new ObservableCollection<Pin>();
+        // USUNIĘTO: Inicjalizację Pins
 
         GoBackAsyncCommand = new AsyncRelayCommand(GoBackAsync);
         DeleteTripCommand = new AsyncRelayCommand(DeleteTripAsync);
@@ -54,42 +55,57 @@ public partial class TripDetailViewModel : BaseViewModel
 
     partial void OnServerTripIdChanged(string value)
     {
-        LoadTripDataCommand.Execute(null);
+        if (!string.IsNullOrEmpty(value))
+        {
+            LoadTripDataCommand.Execute(null);
+        }
     }
+
+    partial void OnLocalTripIdChanged(string value)
+    {
+        if (!string.IsNullOrEmpty(ServerTripId))
+        {
+            return;
+        }
+    }
+
 
     [RelayCommand]
     private async Task LoadTripDataAsync()
     {
         if (IsBusy) return;
+
+        if (string.IsNullOrEmpty(ServerTripId))
+        {
+            await Shell.Current.DisplayAlert("Błąd", "Nie można załadować wycieczki, brak ServerId.", "OK");
+            return;
+        }
+
         IsBusy = true;
         TripDetails = null;
-        Pins.Clear();
-        RoutePolyline = null;
-        MapStartRegion = null;
+
+        // USUNIĘTO: Czyszczenie Pins, RoutePolyline, MapStartRegion
 
         try
         {
-            if (long.TryParse(LocalTripId, out long localId))
+            var response = await _apiClient.GetAsync($"/api/Trip/{ServerTripId}");
+
+            if (response.IsSuccessStatusCode)
             {
-                var localData = await _tripRepository.GetTripWithGeoPointsAsync(localId);
-                if (localData != null)
-                {
-                    TripDetails = MapLocalToDetailDTO(localData);
-                }
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                TripDetails = JsonSerializer.Deserialize<TripDetailDTO>(jsonResponse, _jsonOptions);
             }
-            else if (!string.IsNullOrEmpty(ServerTripId))
+            else
             {
-                var response = await _apiClient.GetAsync($"/api/Trip/{ServerTripId}");
-                if (response.IsSuccessStatusCode)
-                {
-                    TripDetails = await response.Content.ReadFromJsonAsync<TripDetailDTO>();
-                }
+                await Shell.Current.DisplayAlert("Błąd API", $"Nie udało się pobrać danych: {response.StatusCode}", "OK");
             }
 
-            if (TripDetails != null)
-            {
-                PrepareMapData();
-            }
+            // USUNIĘTO: Wywołanie PrepareMapData()
+            // (Logika mapowania jest teraz w OnTripDetailsChanged)
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Błąd krytyczny", $"Wystąpił wyjątek: {ex.Message}", "OK");
         }
         finally
         {
@@ -97,65 +113,7 @@ public partial class TripDetailViewModel : BaseViewModel
         }
     }
 
-    private void PrepareMapData()
-    {
-        if (TripDetails.GeoPointList == null || !TripDetails.GeoPointList.Any())
-            return;
-
-        var points = TripDetails.GeoPointList;
-
-        var polyline = new Microsoft.Maui.Controls.Maps.Polyline
-        {
-            StrokeColor = Colors.Blue,
-            StrokeWidth = 5
-        };
-        foreach (var point in points)
-        {
-            polyline.Geopath.Add(new Location(point.Latitude, point.Longitude));
-        }
-        RoutePolyline = polyline;
-
-        var startPoint = points.First();
-        var endPoint = points.Last();
-
-        Pins.Add(new Pin
-        {
-            Label = "Start",
-            Location = new Location(startPoint.Latitude, startPoint.Longitude),
-            Type = PinType.Place
-        });
-        Pins.Add(new Pin
-        {
-            Label = "Koniec",
-            Location = new Location(endPoint.Latitude, endPoint.Longitude),
-            Type = PinType.Place
-        });
-
-        MapStartRegion = MapSpan.FromCenterAndRadius(
-            new Location(startPoint.Latitude, startPoint.Longitude),
-            Distance.FromKilometers(1));
-    }
-
-    private TripDetailDTO MapLocalToDetailDTO(TripWithGeoPoints localData)
-    {
-        return new TripDetailDTO
-        {
-            Id = localData.Trip.ServerId,
-            Name = localData.Trip.Name,
-            TripDate = localData.Trip.TripDate,
-            Distance = localData.Trip.Distance,
-            Duration = localData.Trip.Duration,
-            ElevationGain = localData.Trip.ElevationGain,
-            Steps = (int)localData.Trip.Steps,
-            GeoPointList = localData.GeoPoints.Select(p => new GeoPointDTO
-            {
-                Latitude = p.Latitude,
-                Longitude = p.Longitude,
-                Height = p.Height,
-                Timestamp = p.Timestamp
-            }).ToList()
-        };
-    }
+    // USUNIĘTO: Całą metodę PrepareMapData()
 
     private async Task GoBackAsync()
     {
@@ -183,9 +141,9 @@ public partial class TripDetailViewModel : BaseViewModel
 
         try
         {
-            if (TripDetails != null && !string.IsNullOrEmpty(TripDetails.Id))
+            if (!string.IsNullOrEmpty(ServerTripId))
             {
-                var response = await _apiClient.DeleteAsync($"/api/Trip/delete/{TripDetails.Id}");
+                var response = await _apiClient.DeleteAsync($"/api/Trip/delete/{ServerTripId}");
                 if (!response.IsSuccessStatusCode)
                 {
                     apiError = $"Błąd API: {response.StatusCode}.";
@@ -219,5 +177,14 @@ public partial class TripDetailViewModel : BaseViewModel
         {
             await Shell.Current.DisplayAlert("Błąd", $"Nie udało się usunąć wycieczki. {apiError}", "OK");
         }
+    }
+
+    // Ta metoda jest kluczowa dla mapy WebView i zostaje
+    partial void OnTripDetailsChanged(TripDetailDTO value)
+    {
+        MapParameters = new Dictionary<string, object>
+        {
+            { "GeoPointList", value?.GeoPointList }
+        };
     }
 }

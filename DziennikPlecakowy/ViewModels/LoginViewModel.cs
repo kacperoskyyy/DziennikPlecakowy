@@ -61,6 +61,11 @@ public partial class LoginViewModel : BaseViewModel
                     await Shell.Current.GoToAsync("..");
                 }
             }
+            else
+            {
+
+                ErrorMessage = result.ErrorMessage;
+            }
         }
         catch (Exception ex)
         {

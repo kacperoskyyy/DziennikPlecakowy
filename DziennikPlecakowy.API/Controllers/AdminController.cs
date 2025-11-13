@@ -86,4 +86,24 @@ public class AdminController : ControllerBase
         if (success) return Ok(new { Message = "Rola zmieniona." });
         return BadRequest("Błąd podczas zmiany roli.");
     }
+    [HttpDelete("deleteUser/{userId}")]
+    public async Task<IActionResult> DeleteUser(string userId)
+    {
+        _logger.LogInformation("Endpoint: DELETE /api/Admin/deleteUser/{userId} invoked.", userId);
+        try
+        {
+            var success = await _userService.DeleteUserAsync(userId);
+
+            if (success)
+            {
+                return Ok(new { Message = "Użytkownik usunięty." });
+            }
+            return NotFound("Nie znaleziono użytkownika.");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error during deleteUser for {userId}.", userId);
+            return StatusCode(500, "Błąd serwera.");
+        }
+    }
 }

@@ -49,8 +49,8 @@
                             </VerticalStackLayout>
 
                             <Label Grid.Column="1" Grid.Row="0" 
-                                   Text="ADMIN" FontAttributes="Bold" TextColor="{StaticResource WarningOrange}"
-                                   IsVisible="{Binding Roles.Count, Converter={StaticResource GreaterThanZeroConverter}}" />
+                                   Text="ADMIN" FontAttributes="Bold" TextColor="{StaticResource WarningOrange} "
+                                   IsVisible="{Binding IsAdmin}" />
                             <Label Grid.Column="1" Grid.Row="1" 
                                    Text="ZABLOKOWANY" FontAttributes="Bold" TextColor="{StaticResource DeleteRed}"
                                    IsVisible="{Binding IsLocked}" />

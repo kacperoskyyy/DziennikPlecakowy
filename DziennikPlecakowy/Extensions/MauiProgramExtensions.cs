@@ -28,9 +28,14 @@ public static class MauiProgramExtensions
 
     public static MauiAppBuilder RegisterAppServices(this MauiAppBuilder builder)
     {
-        const string BaseApiUrl = "https://10.0.2.2:7046";
+#if DEBUG
+        //const string BaseApiUrl = "https://10.0.2.2:7046";
+#else
+        const string BaseApiUrl = "http://dziennikplecakowyapi.eu-central-1.elasticbeanstalk.com";
+#endif
 
-        builder.Services.AddHttpClient<ApiClientService>(client =>
+
+        builder.Services.AddHttpClient("ApiClient", client =>
         {
             client.BaseAddress = new Uri(BaseApiUrl);
             client.DefaultRequestHeaders.Accept.Add(
@@ -48,6 +53,15 @@ public static class MauiProgramExtensions
             return new HttpClientHandler();
 #endif
         });
+
+        builder.Services.AddSingleton<ApiClientService>(sp =>
+        {
+            var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
+            var httpClient = httpClientFactory.CreateClient("ApiClient"); 
+            var tokenRepo = sp.GetRequiredService<TokenRepository>();
+            return new ApiClientService(httpClient, tokenRepo);
+        });
+
 
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<SyncService>();

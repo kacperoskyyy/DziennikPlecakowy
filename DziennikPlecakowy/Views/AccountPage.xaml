@@ -78,6 +78,11 @@
                     TextColor="{StaticResource TextPrimary}"
                     Style="{StaticResource MainButton}" />
 
+            <Button Text="Zgłoś błąd" 
+                    Clicked="OnReportBugClicked" 
+                    Style="{StaticResource MainButton}"
+                    BackgroundColor="Gray" />
+
             <Button Text="Wyloguj" 
                     Command="{Binding LogoutCommand}" 
                     Style="{StaticResource DeleteButton}" />

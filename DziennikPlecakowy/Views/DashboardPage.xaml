@@ -4,7 +4,6 @@
              xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
              xmlns:dto="clr-namespace:DziennikPlecakowy.DTO;assembly=DziennikPlecakowy.DTO"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              x:DataType="vm:DashboardViewModel"
              x:Class="DziennikPlecakowy.Views.DashboardPage"
              Shell.NavBarIsVisible="False"
@@ -26,7 +25,7 @@
                 <VerticalStackLayout>
                     <Label Text="Moje Statystyki" FontSize="Large" FontAttributes="Bold" />
                     <Grid x:DataType="dto:UserProfileDTO" 
-                          BindingContext="{Binding UserProfile}"  
+                          BindingContext="{Binding UserProfile}"
                           ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" 
                           Padding="0,10,0,0">
                         <Label Grid.Row="0" Grid.Column="0" Text="Wszystkie Wycieczki:" />
@@ -44,7 +43,9 @@
                     <Label Text="Aktywna Wycieczka" FontSize="Large" FontAttributes="Bold" />
 
                     <VerticalStackLayout IsVisible="{Binding IsNotTracking}">
-                        <Entry Style="{StaticResource DashboardEntry}" />
+                        <Entry Style="{StaticResource DashboardEntry}" 
+                               Placeholder="Nazwa wycieczki (opcjonalnie)"
+                               Text="{Binding TripName}" />
                         <Button Text="START" 
                                 Command="{Binding StartTrackingCommand}"
                                 BackgroundColor="{StaticResource SuccessGreen}"
@@ -53,10 +54,8 @@
 
                     <VerticalStackLayout Spacing="5" IsVisible="{Binding IsTracking}" Padding="0,10,0,0">
 
-                        <maps:Map x:Name="ActiveTripMap"
-                                  HeightRequest="250"
-                                  MapType="Street"
-                                  ItemsSource="{Binding ActivePins}" />
+                        <Label Text="Śledzenie aktywne..." HorizontalOptions="Center" />
+
 
                         <Label Text="{Binding CurrentTripData.Duration, StringFormat='Czas: {0:hh\\:mm\\:ss}'}" FontSize="Medium" />
                         <Label Text="{Binding CurrentTripData.DistanceKm, StringFormat='Dystans: {0:F2} km'}" FontSize="Medium" />

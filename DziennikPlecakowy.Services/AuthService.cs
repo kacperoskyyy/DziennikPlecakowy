@@ -112,4 +112,13 @@ public class AuthService : IAuthService
         rng.GetBytes(randomNumber);
         return Convert.ToBase64String(randomNumber);
     }
+    public async Task LogoutAsync(string token)
+    {
+        var storedToken = await _refreshTokenRepository.GetByTokenAsync(token);
+
+        if (storedToken != null)
+        {
+            await _refreshTokenRepository.DeleteAsync(storedToken.Id);
+        }
+    }
 }

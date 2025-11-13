@@ -28,21 +28,6 @@
                 </VerticalStackLayout>
             </Frame>
 
-            <Frame Style="{StaticResource CardFrame}">
-                <VerticalStackLayout Spacing="5">
-                    <Label Text="Zmień adres e-mail" FontAttributes="Bold" />
-                    <Entry Placeholder="Nowy e-mail" 
-                           Text="{Binding NewEmail}" 
-                           Keyboard="Email" 
-                           Style="{StaticResource MainEntry}" />
-                    <Label Text="{Binding EmailMessage}" 
-                           Style="{StaticResource LabelError}"
-                           IsVisible="{Binding EmailMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
-                    <Button Text="Zapisz e-mail" 
-                            Command="{Binding ChangeEmailCommand}" 
-                            Style="{StaticResource MainButton}" />
-                </VerticalStackLayout>
-            </Frame>
 
             <Frame Style="{StaticResource CardFrame}">
                 <VerticalStackLayout Spacing="5">

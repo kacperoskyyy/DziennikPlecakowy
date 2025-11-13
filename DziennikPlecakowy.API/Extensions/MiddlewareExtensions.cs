@@ -19,7 +19,7 @@ public static class MiddlewareExtensions
             });
         }
 
-        //app.UseHttpsRedirection();        //HTTPS
+        app.UseHttpsRedirection();
         app.UseRouting();
 
         app.UseHealthCheckEndpoint();

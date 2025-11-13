@@ -50,23 +50,41 @@ public class CypherService : ICypherService
     }
     public string Decrypt(string text)
     {
-        byte[] textBytes = Convert.FromBase64String(text);
-        using (Aes aesAlg = Aes.Create())
+        if (string.IsNullOrEmpty(text))
         {
-            aesAlg.Key = Encoding.UTF8.GetBytes(_key);
-            aesAlg.IV = Encoding.UTF8.GetBytes(_iv);
-            ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+            return text;
+        }
 
-            using (MemoryStream msDecrypt = new MemoryStream(textBytes))
+        try
+        {
+            byte[] textBytes = Convert.FromBase64String(text);
+
+            using (Aes aesAlg = Aes.Create())
             {
-                using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                aesAlg.Key = Encoding.UTF8.GetBytes(_key);
+                aesAlg.IV = Encoding.UTF8.GetBytes(_iv);
+                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+                using (MemoryStream msDecrypt = new MemoryStream(textBytes))
                 {
-                    using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                     {
-                        return srDecrypt.ReadToEnd();
+                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                        {
+                            return srDecrypt.ReadToEnd();
+                        }
                     }
                 }
             }
+        }
+        catch (FormatException)
+        {
+            return text;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Błąd deszyfrowania: {ex.Message}");
+            return text;
         }
     }
     public string GenerateJwtToken(User user)

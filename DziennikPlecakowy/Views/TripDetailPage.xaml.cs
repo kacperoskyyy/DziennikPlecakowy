@@ -1,5 +1,7 @@
 using DziennikPlecakowy.ViewModels;
 using System.ComponentModel;
+using System.Text.Json;
+using DziennikPlecakowy.DTO;
 
 namespace DziennikPlecakowy.Views;
 
@@ -7,37 +9,84 @@ public partial class TripDetailPage : ContentPage
 {
     private readonly TripDetailViewModel _viewModel;
 
+    // Zmieniamy flagê:
+    // _isWebViewReady oznacza teraz, ¿e JS potwierdzi³ gotowoœæ
+    private bool _isWebViewReady = false;
+
+    private static readonly System.Text.Json.JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+    };
+
     public TripDetailPage(TripDetailViewModel viewModel)
     {
         InitializeComponent();
         _viewModel = viewModel;
-        BindingContext = _viewModel;
+        BindingContext = viewModel;
 
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
-        UpdateMapElements();
+
+        // Zamiast 'Navigated', u¿ywamy 'Navigating'
+        mapWebView.Navigating += MapWebView_Navigating;
+    }
+
+    private void MapWebView_Navigating(object sender, WebNavigatingEventArgs e)
+    {
+        // --- NOWA LOGIKA: PRZECHWYTYWANIE SYGNA£U ---
+
+        // Sprawdzamy, czy JavaScript wys³a³ nasz specjalny sygna³
+        if (e.Url != null && e.Url.StartsWith("jsready://"))
+        {
+            // JavaScript jest gotowy!
+            _isWebViewReady = true;
+
+            // Anuluj nawigacjê (nie chcemy, ¿eby strona próbowa³a
+            // faktycznie przejœæ do 'jsready://')
+            e.Cancel = true;
+
+            // Skoro JS jest gotowy, wstrzyknij dane (jeœli ViewModel te¿ jest gotowy)
+            if (_viewModel.TripDetails != null)
+            {
+                InjectDataIntoWebView();
+            }
+        }
     }
 
     private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        MainThread.BeginInvokeOnMainThread(() =>
+        // Jeœli ViewModel zaktualizowa³ dane ORAZ JavaScript jest gotowy
+        if (e.PropertyName == nameof(TripDetailViewModel.TripDetails) && _isWebViewReady)
         {
-            if (e.PropertyName == nameof(TripDetailViewModel.MapStartRegion) && _viewModel.MapStartRegion != null)
-            {
-                TripMap.MoveToRegion(_viewModel.MapStartRegion);
-            }
-            else if (e.PropertyName == nameof(TripDetailViewModel.RoutePolyline))
-            {
-                UpdateMapElements();
-            }
-        });
+            InjectDataIntoWebView();
+        }
     }
 
-    private void UpdateMapElements()
+    private async void InjectDataIntoWebView()
     {
-        TripMap.MapElements.Clear();
-        if (_viewModel.RoutePolyline != null)
+        if (_viewModel.TripDetails == null)
+            return;
+
+        var geoPoints = _viewModel.TripDetails.GeoPointList;
+
+        if (geoPoints == null || !geoPoints.Any())
         {
-            TripMap.MapElements.Add(_viewModel.RoutePolyline);
+            System.Diagnostics.Debug.WriteLine("[DEBUG] InjectData: GeoPointList jest pusta lub null.");
+            return;
+        }
+
+        try
+        {
+            string json = JsonSerializer.Serialize(geoPoints, _jsonOptions);
+
+            System.Diagnostics.Debug.WriteLine("[DEBUG] Wstrzykiwanie JSON do WebView:");
+            System.Diagnostics.Debug.WriteLine(json);
+
+            string jsCommand = $"window.loadMapAndRoute({json});";
+            await mapWebView.EvaluateJavaScriptAsync(jsCommand);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[DEBUG] B³¹d wstrzykiwania JSON do WebView: {ex.Message}");
         }
     }
 
@@ -45,5 +94,6 @@ public partial class TripDetailPage : ContentPage
     {
         base.OnDisappearing();
         _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
+        mapWebView.Navigating -= MapWebView_Navigating;
     }
 }

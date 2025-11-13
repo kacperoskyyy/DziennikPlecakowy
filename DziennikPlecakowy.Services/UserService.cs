@@ -50,6 +50,8 @@ public class UserService : IUserService
         User? user = await _userRepository.GetByIdAsync(userId);
         if (user == null) return false;
 
+        DecryptUser(user);
+
         user.Username = newUsername;
         return await EncryptAndSaveUserAsync(user);
     }
@@ -58,6 +60,8 @@ public class UserService : IUserService
     {
         User? user = await _userRepository.GetByIdAsync(userId);
         if (user == null) return false;
+
+        DecryptUser(user);
 
         string encryptedNewEmail = _cypherService.Encrypt(newEmail.ToLower());
         User? existingUser = await _userRepository.GetByEncryptedEmailAsync(encryptedNewEmail);
@@ -191,6 +195,7 @@ public class UserService : IUserService
     {
         var user = await GetUserById(Id);
         if (user == null) return 0;
+        DecryptUser(user);
         user.LastLoginTime = DateTime.Now;
 
         return await EncryptAndSaveUserAsync(user) ? 1 : 0;
@@ -198,10 +203,15 @@ public class UserService : IUserService
 
     public async Task<int> SetAdmin(User user)
     {
-        if (!user.Roles.Contains(UserRole.Admin))
+        var userToUpdate = await _userRepository.GetByIdAsync(user.Id);
+        if (userToUpdate == null) return 0;
+
+        DecryptUser(userToUpdate);
+
+        if (!userToUpdate.Roles.Contains(UserRole.Admin))
         {
-            user.Roles.Add(UserRole.Admin);
-            return await EncryptAndSaveUserAsync(user) ? 1 : 0;
+            userToUpdate.Roles.Add(UserRole.Admin);
+            return await EncryptAndSaveUserAsync(userToUpdate) ? 1 : 0;
         }
         return 0;
     }

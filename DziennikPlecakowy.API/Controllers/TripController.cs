@@ -134,6 +134,58 @@ public class TripController : ControllerBase
             return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera: {e.Message}");
         }
     }
+
+    [HttpGet("{tripId}")]
+    public async Task<IActionResult> GetTripById([FromRoute] string tripId)
+    {
+        _logger.LogInformation("Endpoint: GET api/Trip/{tripId} invoked.", tripId);
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null) return Unauthorized();
+
+        try
+        {
+            var trip = await _tripService.GetTripByIdAsync(tripId, userId);
+
+            if (trip != null)
+            {
+                var tripDetailDto = new TripDetailDTO
+                {
+                    Id = trip.Id,
+                    Name = trip.Name,
+                    TripDate = trip.TripDate,
+                    Distance = trip.Distance,
+                    Duration = trip.Duration,
+                    ElevationGain = trip.ElevationGain,
+                    Steps = trip.Steps,
+                    GeoPointList = trip.GeoPointList.Select(p => new GeoPointDTO
+                    {
+                        Latitude = p.Latitude,
+                        Longitude = p.Longitude,
+                        Height = p.Height,
+                        Timestamp = p.Timestamp
+                    }).ToList()
+                };
+
+                _logger.LogInformation("Trip {tripId} retrieved successfully by user {userId}.", tripId, userId);
+                return Ok(tripDetailDto);
+            }
+
+            _logger.LogWarning("Trip {tripId} not found for user {userId}.", tripId, userId);
+            return NotFound("Nie znaleziono wycieczki.");
+        }
+        catch (UnauthorizedTripModificationException e)
+        {
+            _logger.LogWarning(e, "Trip access forbidden: {Message}", e.Message);
+            return Forbid("Nie masz uprawnień do wyświetlenia tej wycieczki.");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Unexpected error during GetTripById for trip {tripId}.", tripId);
+            return StatusCode(500, $"Wystąpił nieoczekiwany błąd serwera.");
+        }
+    }
+
     [HttpGet("getUserTrips")]
     public async Task<IActionResult> GetUserTrips()
     {

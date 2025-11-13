@@ -4,10 +4,8 @@ using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Services.Local;
 using System.Net.Http.Json;
 using System.Collections.ObjectModel;
-using Microsoft.Maui.Controls.Maps;
-using Microsoft.Maui.Maps;
-using Microsoft.Maui.Devices.Sensors; 
-//using Location = Microsoft.Maui.Devices.Sensors.Location;
+using Microsoft.Maui.Devices.Sensors;
+using System.Text.Json; // Dodany using
 
 namespace DziennikPlecakowy.ViewModels;
 
@@ -30,15 +28,7 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty]
     string tripName;
 
-
-    [ObservableProperty]
-    ObservableCollection<Pin> activePins;
-
-    [ObservableProperty]
-    Polyline activeRoute;
-
-    [ObservableProperty]
-    MapSpan activeMapRegion;
+    // USUNIĘTO: ActivePins, ActiveRoute, ActiveMapRegion
 
     public bool IsNotTracking => !IsTracking;
 
@@ -52,12 +42,7 @@ public partial class DashboardViewModel : BaseViewModel
         _apiClient = apiClient;
         Title = "Dashboard";
 
-        ActivePins = new ObservableCollection<Pin>();
-        ActiveRoute = new Polyline
-        {
-            StrokeColor = Colors.Blue,
-            StrokeWidth = 5
-        };
+        // USUNIĘTO: Inicjalizację ActivePins i ActiveRoute
 
         SubscribeToTrackingEvents();
         IsTracking = _tripTrackingService.IsTracking;
@@ -92,22 +77,7 @@ public partial class DashboardViewModel : BaseViewModel
         MainThread.BeginInvokeOnMainThread(() =>
         {
             if (!IsTracking) return;
-
-            var mapLocation = new Location(newLocation.Latitude, newLocation.Longitude);
-
-            ActiveRoute.Geopath.Add(mapLocation);
-
-            if (ActivePins.Count == 0)
-            {
-                ActivePins.Add(new Pin
-                {
-                    Label = "Start",
-                    Location = mapLocation,
-                    Type = PinType.Place
-                });
-            }
-
-            ActiveMapRegion = MapSpan.FromCenterAndRadius(mapLocation, Distance.FromKilometers(0.5));
+            // USUNIĘTO: Logikę dodawania do ActiveRoute, Pins i MapRegion
         });
     }
 
@@ -117,13 +87,20 @@ public partial class DashboardViewModel : BaseViewModel
         if (IsBusy) return;
         IsBusy = true;
 
+            UserProfile = null;
+
         try
         {
             var response = await _apiClient.GetAsync("/api/User/getUserStats");
 
             if (response.IsSuccessStatusCode)
             {
-                UserProfile = await response.Content.ReadFromJsonAsync<UserProfileDTO>();
+                // Używamy ręcznej deserializacji z poprawnymi opcjami
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+                UserProfile = JsonSerializer.Deserialize<UserProfileDTO>(jsonResponse, jsonOptions);
+
+                _authService.SetCurrentUserProfile(UserProfile);
             }
             else
             {
@@ -146,9 +123,7 @@ public partial class DashboardViewModel : BaseViewModel
         if (IsTracking) return;
         try
         {
-            ActivePins.Clear();
-            ActiveRoute.Geopath.Clear();
-            ActiveMapRegion = null;
+            // USUNIĘTO: Czyszczenie ActivePins, ActiveRoute, ActiveMapRegion
 
             bool success = await _tripTrackingService.StartTrackingAsync(TripName);
             if (success)
@@ -195,6 +170,7 @@ public partial class DashboardViewModel : BaseViewModel
         try
         {
             await _tripTrackingService.StopTrackingAsync();
+            _authService.SetCurrentUserProfile(null);
             await LoadStatsAsync();
         }
         catch (Exception ex)
