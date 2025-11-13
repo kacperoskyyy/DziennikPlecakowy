@@ -3,7 +3,7 @@
 <Project>
   <PropertyGroup>
     <_PublishTargetUrl>C:\Users\Kacper\Documents\GitHub\DziennikPlecakowy\DziennikPlecakowy.API\bin\Release\net8.0\publish\</_PublishTargetUrl>
-    <History>True|2025-11-13T12:05:56.7396711Z||;</History>
+    <History>True|2025-11-13T12:40:05.0130234Z||;True|2025-11-13T13:05:56.7396711+01:00||;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>
