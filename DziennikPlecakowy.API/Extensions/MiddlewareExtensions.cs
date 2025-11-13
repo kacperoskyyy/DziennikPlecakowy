@@ -50,6 +50,16 @@ public static class MiddlewareExtensions
             var statsUserKeys = Builders<UserStat>.IndexKeys.Ascending(s => s.UserId);
             var statsUserIndexModel = new CreateIndexModel<UserStat>(statsUserKeys, new CreateIndexOptions { Unique = true, Name = "StatsUserIdIndex" });
             dbContext.UserStats.Indexes.CreateOne(statsUserIndexModel);
+
+            var tokenKeys = Builders<PasswordResetToken>.IndexKeys.Ascending(t => t.ExpireAt);
+            var tokenIndexModel = new CreateIndexModel<PasswordResetToken>(
+                tokenKeys,
+                new CreateIndexOptions
+                {
+                    Name = "PasswordResetTokenTTLIndex",
+                    ExpireAfter = TimeSpan.Zero
+                });
+            dbContext.PasswordResetTokens.Indexes.CreateOne(tokenIndexModel);
         });
         return app;
     }

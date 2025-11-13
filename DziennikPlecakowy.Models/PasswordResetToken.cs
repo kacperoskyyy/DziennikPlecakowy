@@ -20,6 +20,5 @@ public class PasswordResetToken
     public DateTime ExpiryDate { get; set; }
 
     [BsonElement("expireAt")]
-    [BsonSerializer(typeof(BsonDateTimeSerializer))]
     public DateTime ExpireAt { get; set; }
 }
