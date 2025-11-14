@@ -2,7 +2,6 @@
 
 namespace DziennikPlecakowy.Converters;
 
-
 public class IsNotNullOrEmptyConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

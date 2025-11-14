@@ -1,5 +1,4 @@
 ﻿namespace DziennikPlecakowy.Models.Local;
-// Odpowiedz na wynik próby uwierzytelnienia użytkownika.
 public class AuthResult
 {
     public bool IsSuccess { get; set; }

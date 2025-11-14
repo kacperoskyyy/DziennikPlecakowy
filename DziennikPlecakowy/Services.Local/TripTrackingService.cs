@@ -4,7 +4,6 @@ using DziennikPlecakowy.PermissionsApp;
 using DziennikPlecakowy.Repositories;
 
 namespace DziennikPlecakowy.Services.Local;
-// Serwis śledzenia wycieczek
 
 public class TripTrackingService
 {

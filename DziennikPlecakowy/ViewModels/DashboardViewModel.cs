@@ -2,10 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Services.Local;
-using System.Net.Http.Json;
-using System.Collections.ObjectModel;
-using Microsoft.Maui.Devices.Sensors;
-using System.Text.Json; // Dodany using
+using System.Text.Json;
 
 namespace DziennikPlecakowy.ViewModels;
 
@@ -28,8 +25,6 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty]
     string tripName;
 
-    // USUNIĘTO: ActivePins, ActiveRoute, ActiveMapRegion
-
     public bool IsNotTracking => !IsTracking;
 
     public DashboardViewModel(
@@ -41,8 +36,6 @@ public partial class DashboardViewModel : BaseViewModel
         _authService = authService;
         _apiClient = apiClient;
         Title = "Dashboard";
-
-        // USUNIĘTO: Inicjalizację ActivePins i ActiveRoute
 
         SubscribeToTrackingEvents();
         IsTracking = _tripTrackingService.IsTracking;
@@ -77,7 +70,6 @@ public partial class DashboardViewModel : BaseViewModel
         MainThread.BeginInvokeOnMainThread(() =>
         {
             if (!IsTracking) return;
-            // USUNIĘTO: Logikę dodawania do ActiveRoute, Pins i MapRegion
         });
     }
 
@@ -95,7 +87,6 @@ public partial class DashboardViewModel : BaseViewModel
 
             if (response.IsSuccessStatusCode)
             {
-                // Używamy ręcznej deserializacji z poprawnymi opcjami
                 var jsonResponse = await response.Content.ReadAsStringAsync();
                 var jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
                 UserProfile = JsonSerializer.Deserialize<UserProfileDTO>(jsonResponse, jsonOptions);
@@ -123,7 +114,6 @@ public partial class DashboardViewModel : BaseViewModel
         if (IsTracking) return;
         try
         {
-            // USUNIĘTO: Czyszczenie ActivePins, ActiveRoute, ActiveMapRegion
 
             bool success = await _tripTrackingService.StartTrackingAsync(TripName);
             if (success)

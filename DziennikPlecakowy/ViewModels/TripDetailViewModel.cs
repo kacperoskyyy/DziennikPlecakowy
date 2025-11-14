@@ -6,8 +6,6 @@ using DziennikPlecakowy.Repositories;
 using DziennikPlecakowy.Services.Local;
 using System.Collections.ObjectModel;
 using System.Text.Json;
-// USUNIĘTO: using Microsoft.Maui.Controls.Maps;
-// USUNIĘTO: using Microsoft.Maui.Maps;
 
 namespace DziennikPlecakowy.ViewModels;
 
@@ -33,9 +31,6 @@ public partial class TripDetailViewModel : BaseViewModel
     [ObservableProperty]
     TripDetailDTO tripDetails;
 
-    // USUNIĘTO: pins, routePolyline, mapStartRegion
-
-    // Ta właściwość jest dla WebView (Leaflet) i zostaje
     [ObservableProperty]
     IDictionary<string, object> mapParameters;
 
@@ -47,8 +42,6 @@ public partial class TripDetailViewModel : BaseViewModel
         _tripRepository = tripRepository;
         _apiClient = apiClient;
         Title = "Szczegóły Wycieczki";
-        // USUNIĘTO: Inicjalizację Pins
-
         GoBackAsyncCommand = new AsyncRelayCommand(GoBackAsync);
         DeleteTripCommand = new AsyncRelayCommand(DeleteTripAsync);
     }
@@ -84,7 +77,6 @@ public partial class TripDetailViewModel : BaseViewModel
         IsBusy = true;
         TripDetails = null;
 
-        // USUNIĘTO: Czyszczenie Pins, RoutePolyline, MapStartRegion
 
         try
         {
@@ -100,8 +92,6 @@ public partial class TripDetailViewModel : BaseViewModel
                 await Shell.Current.DisplayAlert("Błąd API", $"Nie udało się pobrać danych: {response.StatusCode}", "OK");
             }
 
-            // USUNIĘTO: Wywołanie PrepareMapData()
-            // (Logika mapowania jest teraz w OnTripDetailsChanged)
         }
         catch (Exception ex)
         {
@@ -113,7 +103,6 @@ public partial class TripDetailViewModel : BaseViewModel
         }
     }
 
-    // USUNIĘTO: Całą metodę PrepareMapData()
 
     private async Task GoBackAsync()
     {
@@ -179,7 +168,6 @@ public partial class TripDetailViewModel : BaseViewModel
         }
     }
 
-    // Ta metoda jest kluczowa dla mapy WebView i zostaje
     partial void OnTripDetailsChanged(TripDetailDTO value)
     {
         MapParameters = new Dictionary<string, object>

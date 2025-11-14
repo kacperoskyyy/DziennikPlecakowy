@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 
 namespace DziennikPlecakowy.ViewModels;
 
-// View Model do rejestracji użytkowników
 public partial class RegisterViewModel : BaseViewModel
 {
     private readonly AuthService _authService;

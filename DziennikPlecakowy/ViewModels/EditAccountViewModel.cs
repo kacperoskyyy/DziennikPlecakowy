@@ -7,7 +7,6 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace DziennikPlecakowy.ViewModels;
-//View Model do edycji konta użytkownika
 
 public partial class EditAccountViewModel : BaseViewModel
 {

@@ -1,8 +1,6 @@
 ﻿using System.Globalization;
 
 namespace DziennikPlecakowy.Converters;
-
-// Converter konwertujący sekundy na godziny z jednym miejscem po przecinku
 public class SecondsToHoursConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

@@ -3,8 +3,6 @@ using Android.Hardware;
 using DziennikPlecakowy.Interfaces.Local;
 using MApplication = Android.App.Application;
 
-//Implementacja krokomierza dla Androida
-
 namespace DziennikPlecakowy.Platforms.Android.Services;
 
 public class AndroidPedometerService : Java.Lang.Object, IPedometerService, ISensorEventListener

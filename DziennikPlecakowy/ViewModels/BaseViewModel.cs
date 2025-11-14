@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DziennikPlecakowy.ViewModels;
-//View Model bazowy dla innych ViewModeli
 
 public partial class BaseViewModel : ObservableObject
 {

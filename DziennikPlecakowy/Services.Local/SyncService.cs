@@ -5,7 +5,7 @@ using DziennikPlecakowy.Repositories;
 using System.Net.Http.Json;
 
 namespace DziennikPlecakowy.Services.Local;
-//Serwis synchronizacji danych z serwerem
+
 public class SyncService
 {
     private readonly LocalTripRepository _tripRepository;

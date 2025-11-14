@@ -9,8 +9,6 @@ public partial class TripDetailPage : ContentPage
 {
     private readonly TripDetailViewModel _viewModel;
 
-    // Zmieniamy flagê:
-    // _isWebViewReady oznacza teraz, ¿e JS potwierdzi³ gotowoœæ
     private bool _isWebViewReady = false;
 
     private static readonly System.Text.Json.JsonSerializerOptions _jsonOptions = new()
@@ -26,25 +24,15 @@ public partial class TripDetailPage : ContentPage
 
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
 
-        // Zamiast 'Navigated', u¿ywamy 'Navigating'
         mapWebView.Navigating += MapWebView_Navigating;
     }
 
     private void MapWebView_Navigating(object sender, WebNavigatingEventArgs e)
     {
-        // --- NOWA LOGIKA: PRZECHWYTYWANIE SYGNA£U ---
-
-        // Sprawdzamy, czy JavaScript wys³a³ nasz specjalny sygna³
         if (e.Url != null && e.Url.StartsWith("jsready://"))
         {
-            // JavaScript jest gotowy!
             _isWebViewReady = true;
-
-            // Anuluj nawigacjê (nie chcemy, ¿eby strona próbowa³a
-            // faktycznie przejœæ do 'jsready://')
             e.Cancel = true;
-
-            // Skoro JS jest gotowy, wstrzyknij dane (jeœli ViewModel te¿ jest gotowy)
             if (_viewModel.TripDetails != null)
             {
                 InjectDataIntoWebView();
@@ -54,7 +42,6 @@ public partial class TripDetailPage : ContentPage
 
     private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        // Jeœli ViewModel zaktualizowa³ dane ORAZ JavaScript jest gotowy
         if (e.PropertyName == nameof(TripDetailViewModel.TripDetails) && _isWebViewReady)
         {
             InjectDataIntoWebView();

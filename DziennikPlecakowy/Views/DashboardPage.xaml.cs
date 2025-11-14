@@ -13,27 +13,18 @@ public partial class DashboardPage : ContentPage
         BindingContext = _viewModel;
         InitializeComponent();
 
-        _viewModel.PropertyChanged += ViewModel_PropertyChanged;
     }
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
         _viewModel.SubscribeToTrackingEvents();
-        // USUNIÊTO: UpdateMapElements();
     }
 
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
         _viewModel.Cleanup();
-        _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
     }
 
-    private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        // USUNIÊTO: Ca³¹ logikê MoveToRegion i UpdateMapElements
-    }
-
-    // USUNIÊTO: Ca³¹ metodê UpdateMapElements()
 }

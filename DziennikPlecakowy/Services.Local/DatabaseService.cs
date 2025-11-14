@@ -4,8 +4,6 @@ using SQLite;
 
 namespace DziennikPlecakowy.Services.Local;
 
-//Serwis zarządzający bazą danych SQLite
-
 public class DatabaseService
 {
     private Task _initializationTask = null;
@@ -97,7 +95,6 @@ public class DatabaseService
 
     public async Task DeleteDatabaseFileAsync()
     {
-        // Najpierw bezpiecznie zamknij aktywne połączenie
         await CloseConnectionAsync();
 
         if (File.Exists(DatabaseConstants.DatabasePath))
