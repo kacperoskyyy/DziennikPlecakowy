@@ -32,10 +32,13 @@
                         </Frame.GestureRecognizers>
                         <Grid ColumnDefinitions="*, Auto">
                             <VerticalStackLayout Grid.Column="0">
-                                <Label Text="{Binding Name}" FontAttributes="Bold" />
-                                <Label Text="{Binding TripDate, StringFormat='{0:dd.MM.yyyy HH:mm}'}" FontSize="Small" TextColor="{StaticResource TextSecondary}" />
+                                <Label Text="{Binding Name}" FontAttributes="Bold" 
+                                       TextColor="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
+                                <Label Text="{Binding TripDate, StringFormat='{0:dd.MM.yyyy HH:mm}'}" FontSize="Small" 
+                                       TextColor="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}" />
                             </VerticalStackLayout>
-                            <Label Grid.Column="1" Text="{Binding Distance, StringFormat='{0:F2} km'}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{Binding Distance, StringFormat='{0:F2} km'}" VerticalOptions="Center" 
+                                   TextColor="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
                         </Grid>
                     </Frame>
                 </DataTemplate>

@@ -24,21 +24,25 @@
                                Style="{StaticResource TitleLabel}"
                                HorizontalOptions="Center"
                                Margin="20,0" />
+
                         <Label Text="{Binding TripDate, StringFormat='{0:dd.MM.yyyy HH:mm}'}"
+                               Style="{StaticResource SecondaryTextLabel}"
                                HorizontalOptions="Center"
-                               TextColor="{StaticResource TextSecondary}"
                                Margin="0,-10,0,0" />
 
                         <Frame Style="{StaticResource CardFrame}">
                             <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto" Padding="5">
-                                <Label Grid.Row="0" Grid.Column="0" Text="Dystans:" />
-                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding Distance, StringFormat='{0:F2} km'}" FontAttributes="Bold" />
-                                <Label Grid.Row="1" Grid.Column="0" Text="Czas trwania:" />
-                                <Label Grid.Row="1" Grid.Column="1" Text="{Binding Duration, Converter={StaticResource SecondsToHoursConverter}}" FontAttributes="Bold" />
-                                <Label Grid.Row="2" Grid.Column="0" Text="Przewyższenie:" />
-                                <Label Grid.Row="2" Grid.Column="1" Text="{Binding ElevationGain, StringFormat='{0:F0} m'}" FontAttributes="Bold" />
-                                <Label Grid.Row="3" Grid.Column="0" Text="Kroki:" />
-                                <Label Grid.Row="3" Grid.Column="1" Text="{Binding Steps}" FontAttributes="Bold" />
+                                <Label Grid.Row="0" Grid.Column="0" Text="Dystans:" Style="{StaticResource StatLabel}" />
+                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding Distance, StringFormat='{0:F2} km'}" Style="{StaticResource StatValueLabel}" />
+
+                                <Label Grid.Row="1" Grid.Column="0" Text="Czas trwania:" Style="{StaticResource StatLabel}" />
+                                <Label Grid.Row="1" Grid.Column="1" Text="{Binding Duration, Converter={StaticResource SecondsToHoursConverter}}" Style="{StaticResource StatValueLabel}" />
+
+                                <Label Grid.Row="2" Grid.Column="0" Text="Przewyższenie:" Style="{StaticResource StatLabel}" />
+                                <Label Grid.Row="2" Grid.Column="1" Text="{Binding ElevationGain, StringFormat='{0:F0} m'}" Style="{StaticResource StatValueLabel}" />
+
+                                <Label Grid.Row="3" Grid.Column="0" Text="Kroki:" Style="{StaticResource StatLabel}" />
+                                <Label Grid.Row="3" Grid.Column="1" Text="{Binding Steps}" Style="{StaticResource StatValueLabel}" />
                             </Grid>
                         </Frame>
 
@@ -47,9 +51,8 @@
 
                 <Button Text="Wróć do listy"
                         Command="{Binding GoBackAsyncCommand}"
-                        Style="{StaticResource MainButton}"
-                        BackgroundColor="Transparent"
-                        TextColor="{StaticResource TextSecondary}" />
+                        Style="{StaticResource TextButton}" />
+
                 <Button Text="Usuń wycieczkę"
                         Command="{Binding DeleteTripCommand}"
                         Style="{StaticResource DeleteButton}" />

@@ -86,6 +86,6 @@ public partial class ResetPasswordViewModel : BaseViewModel
     {
         if (IsBusy) return;
 
-        await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+        await Shell.Current.GoToAsync("../..");
     }
 }

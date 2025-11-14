@@ -21,21 +21,25 @@
         <Label Grid.Row="0" Text="Panel Administratora" Style="{StaticResource TitleLabel}" />
 
         <Button Grid.Row="1" 
-            Text="Wróć do Konta"
-            Command="{Binding GoBackAsyncCommand}"
-            Style="{StaticResource MainButton}"
-            WidthRequest="200" />
+                Text="Wróć do Konta"
+                Command="{Binding GoBackAsyncCommand}"
+                Style="{StaticResource TextButton}"
+                HorizontalOptions="Center" />
 
         <SearchBar Grid.Row="2"
                    Placeholder="Szukaj po emailu lub nazwie..."
                    Text="{Binding SearchText}"
-                   Margin="20,10" />
+                   Margin="20,10"
+                   BackgroundColor="{AppThemeBinding Light={StaticResource LightCardBackground}, Dark={StaticResource DarkCardBackground}}"
+                   TextColor="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}"
+                   PlaceholderColor="{AppThemeBinding Light={StaticResource LightPlaceholder}, Dark={StaticResource DarkPlaceholder}}" />
 
         <CollectionView Grid.Row="3"
                         ItemsSource="{Binding Users}">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="dto:AdminUserDetailDTO">
-                    <Frame Padding="10" Margin="20,5" CornerRadius="8" HeightRequest="100" VerticalOptions="Start" BorderColor="{StaticResource BorderGray}" HasShadow="False">
+
+                    <Frame Style="{StaticResource CardFrame}" Margin="20,5" Padding="15">
                         <Frame.GestureRecognizers>
                             <TapGestureRecognizer
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminViewModel}}, Path=ShowUserActionsCommand}"
@@ -44,19 +48,19 @@
 
                         <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto">
                             <VerticalStackLayout Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" VerticalOptions="Start">
-                                <Label Text="{Binding Username}" FontAttributes="Bold" FontSize="16" />
-                                <Label Text="{Binding Email}" FontSize="Small" TextColor="{StaticResource TextSecondary}" />
+                                <Label Text="{Binding Username}" Style="{StaticResource StatValueLabel}" HorizontalOptions="Start" />
+                                <Label Text="{Binding Email}" Style="{StaticResource StatLabel}" HorizontalOptions="Start" />
                             </VerticalStackLayout>
 
                             <Label Grid.Column="1" Grid.Row="0" 
-                                   Text="ADMIN" FontAttributes="Bold" TextColor="{StaticResource WarningOrange} "
-                                   IsVisible="{Binding IsAdmin}" />
+                                   Text="ADMIN" FontAttributes="Bold" TextColor="{StaticResource WarningOrange}"
+                                   IsVisible="{Binding IsAdmin}" FontSize="Small" />
                             <Label Grid.Column="1" Grid.Row="1" 
                                    Text="ZABLOKOWANY" FontAttributes="Bold" TextColor="{StaticResource DeleteRed}"
-                                   IsVisible="{Binding IsLocked}" />
+                                   IsVisible="{Binding IsLocked}" FontSize="Small" />
                             <Label Grid.Column="1" Grid.Row="2" 
                                    Text="ZMIEŃ HASŁO" FontAttributes="Bold" TextColor="{StaticResource MainBlue}"
-                                   IsVisible="{Binding MustChangePassword}" />
+                                   IsVisible="{Binding MustChangePassword}" FontSize="Small" />
                         </Grid>
                     </Frame>
                 </DataTemplate>

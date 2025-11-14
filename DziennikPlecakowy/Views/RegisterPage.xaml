@@ -47,9 +47,7 @@
 
             <Button Text="Masz już konto? Zaloguj się"
                     Command="{Binding GoToLoginCommand}" 
-                    Style="{StaticResource MainButton}"
-                    BackgroundColor="Transparent"
-                    TextColor="{StaticResource TextSecondary}" />
+                    Style="{StaticResource TextButton}" />
 
         </VerticalStackLayout>
     </ScrollView>

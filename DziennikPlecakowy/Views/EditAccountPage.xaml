@@ -15,7 +15,8 @@
 
             <Frame Style="{StaticResource CardFrame}">
                 <VerticalStackLayout Spacing="5">
-                    <Label Text="Zmień nazwę użytkownika" FontAttributes="Bold" />
+                    <Label Text="Zmień nazwę użytkownika" Style="{StaticResource CardTitleLabel}" />
+
                     <Entry Placeholder="Nowa nazwa" 
                            Text="{Binding NewUsername}" 
                            Style="{StaticResource MainEntry}" />
@@ -31,7 +32,8 @@
 
             <Frame Style="{StaticResource CardFrame}">
                 <VerticalStackLayout Spacing="5">
-                    <Label Text="Zmień hasło" FontAttributes="Bold" />
+                    <Label Text="Zmień hasło" Style="{StaticResource CardTitleLabel}" />
+
                     <Entry Placeholder="Bieżące hasło" 
                            Text="{Binding CurrentPassword}" 
                            IsPassword="True" 
@@ -55,9 +57,7 @@
 
             <Button Text="Wróć" 
                     Command="{Binding GoBackCommand}" 
-                    Style="{StaticResource MainButton}"
-                    BackgroundColor="Transparent"
-                    TextColor="{StaticResource TextSecondary}" />
+                    Style="{StaticResource TextButton}" />
 
         </VerticalStackLayout>
     </ScrollView>

@@ -6,17 +6,23 @@
     <Color x:Key="MainBlue">#6168FF</Color>
     <Color x:Key="MainBlueDark">#4148D4</Color>
     <Color x:Key="DeleteRed">#E53935</Color>
-
-    <Color x:Key="AppBackgroundGray">#F5F5F5</Color>
-    <Color x:Key="CardBackgroundWhite">#FFFFFF</Color>
-    <Color x:Key="TextPrimary">#1F1F1F</Color>
-    <Color x:Key="TextSecondary">#6E6E6E</Color>
-    <Color x:Key="PlaceholderGray">#BDBDBD</Color>
-    <Color x:Key="BorderGray">#E0E0E0</Color>
-
+    <Color x:Key="SuccessGreen">#10B981</Color>
+    <Color x:Key="WarningOrange">#FFC107</Color>
     <Color x:Key="White">#FFFFFF</Color>
     <Color x:Key="Black">#000000</Color>
-    <Color x:Key="SuccessGreen">#28A745</Color>
-    <Color x:Key="WarningOrange">#FFC107</Color>
+
+    <Color x:Key="LightAppBackground">#F5F5F5</Color>
+    <Color x:Key="LightCardBackground">#FFFFFF</Color>
+    <Color x:Key="LightTextPrimary">#1F1F1F</Color>
+    <Color x:Key="LightTextSecondary">#6E6E6E</Color>
+    <Color x:Key="LightPlaceholder">#BDBDBD</Color>
+    <Color x:Key="LightBorder">#E0E0E0</Color>
+
+    <Color x:Key="DarkAppBackground">#121212</Color>
+    <Color x:Key="DarkCardBackground">#1E1E1E</Color>
+    <Color x:Key="DarkTextPrimary">#FFFFFF</Color>
+    <Color x:Key="DarkTextSecondary">#AEAEAE</Color>
+    <Color x:Key="DarkPlaceholder">#757575</Color>
+    <Color x:Key="DarkBorder">#2E2E2E</Color>
 
 </ResourceDictionary>

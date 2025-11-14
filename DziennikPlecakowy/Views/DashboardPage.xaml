@@ -23,39 +23,41 @@
 
             <Frame Style="{StaticResource CardFrame}">
                 <VerticalStackLayout>
-                    <Label Text="Moje Statystyki" FontSize="Large" FontAttributes="Bold" />
+                    <Label Text="Moje Statystyki" Style="{StaticResource CardTitleLabel}" />
+
                     <Grid x:DataType="dto:UserProfileDTO" 
                           BindingContext="{Binding UserProfile}"
-                          ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" 
+                          ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" 
                           Padding="0,10,0,0">
-                        <Label Grid.Row="0" Grid.Column="0" Text="Wszystkie Wycieczki:" />
-                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding Stats.TripsCount}" FontAttributes="Bold" />
-                        <Label Grid.Row="1" Grid.Column="0" Text="Total Dystans:" />
-                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding Stats.TotalDistance, StringFormat='{0:F2} km'}" FontAttributes="Bold" />
-                        <Label Grid.Row="2" Grid.Column="0" Text="Total Kroki:" />
-                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding Stats.TotalSteps}" FontAttributes="Bold" />
+
+                        <Label Grid.Row="0" Grid.Column="0" Text="Wszystkie Wycieczki:" Style="{StaticResource StatLabel}" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding Stats.TripsCount}" Style="{StaticResource StatValueLabel}" />
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="Total Dystans:" Style="{StaticResource StatLabel}" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding Stats.TotalDistance, StringFormat='{0:F2} km'}" Style="{StaticResource StatValueLabel}" />
+
+                        <Label Grid.Row="2" Grid.Column="0" Text="Total Kroki:" Style="{StaticResource StatLabel}" />
+                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding Stats.TotalSteps}" Style="{StaticResource StatValueLabel}" />
                     </Grid>
                 </VerticalStackLayout>
             </Frame>
 
             <Frame Style="{StaticResource CardFrame}">
                 <VerticalStackLayout>
-                    <Label Text="Aktywna Wycieczka" FontSize="Large" FontAttributes="Bold" />
+                    <Label Text="Aktywna Wycieczka" Style="{StaticResource CardTitleLabel}" />
 
                     <VerticalStackLayout IsVisible="{Binding IsNotTracking}">
                         <Entry Style="{StaticResource DashboardEntry}" 
-                               Placeholder="Nazwa wycieczki (opcjonalnie)"
                                Text="{Binding TripName}" />
+
                         <Button Text="START" 
                                 Command="{Binding StartTrackingCommand}"
-                                BackgroundColor="{StaticResource SuccessGreen}"
-                                Style="{StaticResource MainButton}" />
+                                Style="{StaticResource SuccessButton}" />
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="5" IsVisible="{Binding IsTracking}" Padding="0,10,0,0">
 
-                        <Label Text="Śledzenie aktywne..." HorizontalOptions="Center" />
-
+                        <Label Text="Śledzenie aktywne..." HorizontalOptions="Center" Style="{StaticResource SecondaryTextLabel}" />
 
                         <Label Text="{Binding CurrentTripData.Duration, StringFormat='Czas: {0:hh\\:mm\\:ss}'}" FontSize="Medium" />
                         <Label Text="{Binding CurrentTripData.DistanceKm, StringFormat='Dystans: {0:F2} km'}" FontSize="Medium" />

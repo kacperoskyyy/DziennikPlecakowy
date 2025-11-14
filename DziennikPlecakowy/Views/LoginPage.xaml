@@ -13,10 +13,10 @@
         <VerticalStackLayout Padding="20" Spacing="10" VerticalOptions="Center">
 
             <Image Source="logo_bez_tla.png"
-                HorizontalOptions="Center"
-                HeightRequest="256" 
-                WidthRequest="256"
-                SemanticProperties.Description="Logo aplikacji" />
+                   HorizontalOptions="Center"
+                   HeightRequest="256" 
+                   WidthRequest="256"
+                   SemanticProperties.Description="Logo aplikacji" />
 
             <Label Text="Zaloguj się" 
                    Style="{StaticResource TitleLabel}" 
@@ -45,20 +45,11 @@
 
             <Button Text="Nie pamiętasz hasła?"
                     Command="{Binding GoToForgotPasswordCommand}"
-                    Style="{StaticResource MainButton}"
-                    BackgroundColor="Transparent"
-                    TextColor="{StaticResource TextSecondary}"
-                    HorizontalOptions="Center"
-                    FontSize="Small"
-                    Padding="0" />
+                    Style="{StaticResource TextButton}" />
 
             <Button Text="Nie masz konta? Zarejestruj się"
                     Command="{Binding GoToRegisterCommand}" 
-                    Style="{StaticResource MainButton}"
-                    BackgroundColor="Transparent"
-                    TextColor="{StaticResource MainBlue}"
-                    BorderColor="{StaticResource MainBlue}"
-                    BorderWidth="1" />
+                    Style="{StaticResource SecondaryButton}" />
 
         </VerticalStackLayout>
     </ScrollView>
