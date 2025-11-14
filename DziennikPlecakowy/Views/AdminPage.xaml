@@ -47,10 +47,11 @@
                         </Frame.GestureRecognizers>
 
                         <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto">
-                            <VerticalStackLayout Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" VerticalOptions="Start">
-                                <Label Text="{Binding Username}" Style="{StaticResource StatValueLabel}" HorizontalOptions="Start" />
-                                <Label Text="{Binding Email}" Style="{StaticResource StatLabel}" HorizontalOptions="Start" />
-                            </VerticalStackLayout>
+
+                            <Label Grid.Column="0" Grid.Row="0" 
+                                   Text="{Binding Username}" Style="{StaticResource StatValueLabel}" HorizontalOptions="Start" VerticalOptions="Start" />
+                            <Label Grid.Column="0" Grid.Row="1" 
+                                   Text="{Binding Email}" Style="{StaticResource StatLabel}" HorizontalOptions="Start" VerticalOptions="Start" />
 
                             <Label Grid.Column="1" Grid.Row="0" 
                                    Text="ADMIN" FontAttributes="Bold" TextColor="{StaticResource WarningOrange}"

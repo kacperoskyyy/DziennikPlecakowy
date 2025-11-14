@@ -70,8 +70,8 @@ public partial class AdminViewModel : BaseViewModel
         else
         {
             filtered = allUsers.Where(u =>
-                u.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                u.Username.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                (u.Email?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (u.Username?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false)
             );
         }
 

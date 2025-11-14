@@ -29,16 +29,16 @@
                         <Label>
                             <Label.FormattedText>
                                 <FormattedString>
-                                    <Span Text="Nazwa: " Style="{StaticResource StatLabel}" />
-                                    <Span Text="{Binding Username}" Style="{StaticResource StatValueLabel}" />
+                                    <Span Text="Nazwa: " Style="{StaticResource StatLabelSpan}" />
+                                    <Span Text="{Binding Username}" Style="{StaticResource StatValueLabelSpan}" />
                                 </FormattedString>
                             </Label.FormattedText>
                         </Label>
                         <Label>
                             <Label.FormattedText>
                                 <FormattedString>
-                                    <Span Text="Email: " Style="{StaticResource StatLabel}" />
-                                    <Span Text="{Binding Email}" Style="{StaticResource StatValueLabel}" />
+                                    <Span Text="Email: " Style="{StaticResource StatLabelSpan}" />
+                                    <Span Text="{Binding Email}" Style="{StaticResource StatValueLabelSpan}" />
                                 </FormattedString>
                             </Label.FormattedText>
                         </Label>

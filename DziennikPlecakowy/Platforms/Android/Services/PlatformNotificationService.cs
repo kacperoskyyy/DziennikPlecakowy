@@ -1,85 +1,50 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.OS;
-using AndroidX.Core.App;
 using DziennikPlecakowy.Interfaces.Local;
+using DziennikPlecakowy.Platforms.Android.Services;
 using MApplication = Android.App.Application;
 
-namespace DziennikPlecakowy.Platforms.Android.Services;
-
-internal class PlatformNotificationService : IPlatformNotificationService
+namespace DziennikPlecakowy.Platforms.Android.Services
 {
-    public const string ChannelId = "DziennikPlecakowyChannel";
-    public const int NotificationId = 101;
-
-    private readonly Context _context;
-    private readonly NotificationManager _notificationManager;
-
-    public PlatformNotificationService()
+    internal class PlatformNotificationService : IPlatformNotificationService
     {
-        _context = MApplication.Context;
-        _notificationManager = (NotificationManager)_context.GetSystemService(Context.NotificationService);
-    }
+        private readonly Context _context;
 
-    public void StartForegroundService(string title, string text)
-    {
-        CreateNotificationChannel();
-        var notification = BuildNotification(title, text);
-
-        _notificationManager.Notify(NotificationId, notification);
-    }
-
-    public void UpdateNotification(string title, string text)
-    {
-        var notification = BuildNotification(title, text);
-        _notificationManager.Notify(NotificationId, notification);
-    }
-
-    public void StopForegroundService()
-    {
-        _notificationManager.Cancel(NotificationId);
-    }
-
-    private Notification BuildNotification(string title, string text)
-    {
-        var intent = _context.PackageManager.GetLaunchIntentForPackage(_context.PackageName);
-        var pendingIntent = PendingIntent.GetActivity(_context, 0, intent, PendingIntentFlags.Immutable);
-
-        var notification = new NotificationCompat.Builder(_context, ChannelId)
-            .SetContentTitle(title)
-            .SetContentText(text)
-            .SetSmallIcon(Resource.Mipmap.appicon_foreground)
-            .SetOngoing(true)
-            .SetContentIntent(pendingIntent)
-
-            .SetPriority(NotificationCompat.PriorityLow) 
-            .SetSilent(true) 
-
-            .Build();
-
-        return notification;
-    }
-
-    private void CreateNotificationChannel()
-    {
-        if (Build.VERSION.SdkInt < BuildVersionCodes.O)
+        public PlatformNotificationService()
         {
-            return;
+            _context = MApplication.Context;
         }
 
-        var channelName = "Dziennik Plecakowy";
-        var channelDescription = "Powiadomienia o śledzeniu wycieczki";
-
-        var channel = new NotificationChannel(ChannelId, channelName, NotificationImportance.Low)
+        public void StartForegroundService(string title, string text)
         {
-            Description = channelDescription
-        };
+            var intent = new Intent(_context, typeof(TrackingService));
+            intent.PutExtra("title", title);
+            intent.PutExtra("text", text);
 
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+            {
+                _context.StartForegroundService(intent);
+            }
+            else
+            {
+                _context.StartService(intent);
+            }
+        }
 
-        channel.SetSound(null, null);
-        channel.EnableVibration(false);
-        channel.EnableLights(false);
+        public void UpdateNotification(string title, string text)
+        {
+            var intent = new Intent(_context, typeof(TrackingService));
+            intent.PutExtra("title", title);
+            intent.PutExtra("text", text);
 
-        _notificationManager.CreateNotificationChannel(channel);
+            _context.StartService(intent);
+        }
+
+        public void StopForegroundService()
+        {
+            var intent = new Intent(_context, typeof(TrackingService));
+            _context.StopService(intent);
+        }
     }
 }

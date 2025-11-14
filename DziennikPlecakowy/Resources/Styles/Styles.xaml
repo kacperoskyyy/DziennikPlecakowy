@@ -145,6 +145,15 @@
         <Setter Property="VerticalOptions" Value="Center" />
     </Style>
 
+    <Style x:Key="StatLabelSpan" TargetType="Span">
+        <Setter Property="TextColor" Value="{StaticResource LightPlaceholder}" />
+        <Setter Property="FontAttributes" Value="Bold" />
+    </Style>
+
+    <Style x:Key="StatValueLabelSpan" TargetType="Span">
+        <Setter Property="TextColor" Value="{StaticResource MainBlue}" />
+    </Style>
+
     <Style x:Key="StatValueLabel" TargetType="Label">
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
