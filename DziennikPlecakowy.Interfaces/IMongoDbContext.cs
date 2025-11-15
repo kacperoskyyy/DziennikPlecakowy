@@ -10,4 +10,5 @@ public interface IMongoDbContext
     IMongoCollection<UserStat> UserStats { get; }
     IMongoCollection<RefreshToken> RefreshTokens { get; }
     IMongoCollection<PasswordResetToken> PasswordResetTokens { get; }
+    IMongoCollection<AccountDeletionToken> AccountDeletionTokens { get; }
 }

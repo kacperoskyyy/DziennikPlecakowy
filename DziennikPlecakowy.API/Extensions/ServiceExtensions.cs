@@ -22,6 +22,7 @@ public static class ServiceExtensions
         services.AddScoped<IUserStatRepository, UserStatRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
+        services.AddScoped<IAccountDeletionTokenRepository, AccountDeletionTokenRepository>();
 
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthService, AuthService>();

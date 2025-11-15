@@ -12,11 +12,13 @@ namespace DziennikPlecakowy.API.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IAuthService _authService;
     private readonly ILogger<UserController> _logger;
-    public UserController(IUserService userService, ILogger<UserController> logger)
+    public UserController(IUserService userService, ILogger<UserController> logger, IAuthService authService)
     {
         _userService = userService;
         _logger = logger;
+        _authService = authService;
     }
     private string? GetUserIdFromToken()
     {
@@ -103,33 +105,58 @@ public class UserController : ControllerBase
             return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
         }
     }
-    [HttpDelete("delete")]
-    public async Task<IActionResult> DeleteUser()
+    [HttpPost("request-deletion")]
+    public async Task<IActionResult> RequestAccountDeletion()
     {
-        _logger.LogInformation("Endpoint: DELETE api/User/delete invoked.");
-
+        _logger.LogInformation("Endpoint: POST api/User/request-deletion invoked.");
         var userId = GetUserIdFromToken();
         if (userId == null) return Unauthorized();
 
         try
         {
-            var success = await _userService.DeleteUserAsync(userId);
-
-            if (success)
-            {
-                _logger.LogInformation("User {UserId} deleted successfully.", userId);
-                return Ok(new { Message = "Użytkownik został pomyślnie usunięty." });
-            }
-
-            _logger.LogWarning("Failed to delete user {UserId}.", userId);
-            return NotFound("Nie udało się usunąć użytkownika. Nie znaleziono użytkownika.");
+            await _authService.RequestAccountDeletionAsync(userId);
+            _logger.LogInformation("Account deletion code sent for user {UserId}.", userId);
+            return Ok(new { Message = "Kod potwierdzający został wysłany na Twój adres e-mail." });
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error during delete user {UserId}.", userId);
-            return StatusCode(500, "Wystąpił nieoczekiwany błąd serwera.");
+            _logger.LogError(e, "Error during request-deletion for user {UserId}.", userId);
+            return StatusCode(500, new ErrorResponseDTO { Message = "Wystąpił błąd podczas wysyłania kodu." });
         }
     }
+
+    [HttpPost("confirm-deletion")]
+    public async Task<IActionResult> ConfirmAccountDeletion([FromBody] ConfirmDeletionRequestDTO request)
+    {
+        _logger.LogInformation("Endpoint: POST api/User/confirm-deletion invoked.");
+        var userId = GetUserIdFromToken();
+        if (userId == null) return Unauthorized();
+
+        if (string.IsNullOrEmpty(request.Token))
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "Kod jest wymagany." });
+        }
+
+        try
+        {
+            var success = await _authService.ConfirmAccountDeletionAsync(userId, request.Token);
+
+            if (success)
+            {
+                _logger.LogInformation("User {UserId} deleted successfully after code confirmation.", userId);
+                return Ok(new { Message = "Konto zostało pomyślnie usunięte." });
+            }
+
+            _logger.LogWarning("Failed to confirm account deletion for user {UserId}. Invalid token.", userId);
+            return BadRequest(new ErrorResponseDTO { Message = "Nieprawidłowy lub wygasły kod." });
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error during confirm-deletion for user {UserId}.", userId);
+            return StatusCode(500, new ErrorResponseDTO { Message = "Wystąpił nieoczekiwany błąd serwera." });
+        }
+    }
+
     [HttpGet("setLastLogin")]
     public async Task<IActionResult> SetLastLogin()
     {

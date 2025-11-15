@@ -16,7 +16,7 @@
     </ContentPage.Behaviors>
 
     <ScrollView>
-        <VerticalStackLayout Padding="0,20,0,20" Spacing="10">
+        <VerticalStackLayout>
 
             <Label Text="Dashboard" Style="{StaticResource TitleLabel}" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" />

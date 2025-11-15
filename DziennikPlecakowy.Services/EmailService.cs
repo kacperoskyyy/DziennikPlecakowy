@@ -71,4 +71,50 @@ public class EmailService : IEmailService
             }
         }
     }
+    public async Task SendAccountDeletionEmailAsync(string toEmail, string deletionCode)
+    {
+        var smtpHost = _config["SmtpSettings:Host"];
+        var smtpPortString = _config["SmtpSettings:Port"];
+        var smtpPort = int.TryParse(smtpPortString, out var p) ? p : 0;
+        var fromEmail = _config["SmtpSettings:FromEmail"];
+        var fromName = _config["SmtpSettings:FromName"] ?? "Dziennik Plecakowy";
+        var appPassword = _config["SmtpSettings:AppPassword"];
+
+        if (string.IsNullOrEmpty(smtpHost) || string.IsNullOrEmpty(fromEmail) || string.IsNullOrEmpty(appPassword) || smtpPort == 0)
+        {
+            _logger.LogError("Ustawienia SMTP (SmtpSettings) nie są poprawnie skonfigurowane w appsettings.json.");
+            return;
+        }
+
+        var subject = "Dziennik Plecakowy - Potwierdzenie Usunięcia Konta";
+        var body = $"Witaj,\n\nOtrzymaliśmy prośbę o usunięcie Twojego konta.\n\nTwój jednorazowy kod do potwierdzenia usunięcia to: {deletionCode}\n\nKod jest ważny przez 15 minut.\n\nJeśli to nie Ty prosiłeś o usunięcie konta, natychmiast zmień hasło i zignoruj tę wiadomość.\n\nPozdrawiamy,\nZespół Dziennik Plecakowy";
+
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress(fromName, fromEmail));
+        message.To.Add(new MailboxAddress(toEmail, toEmail));
+        message.Subject = subject;
+        message.Body = new TextPart("plain")
+        {
+            Text = body
+        };
+
+        using (var client = new SmtpClient())
+        {
+            try
+            {
+                _logger.LogInformation("Łączenie z serwerem SMTP: {Host}:{Port}...", smtpHost, smtpPort);
+                await client.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);
+                _logger.LogInformation("Uwierzytelnianie na serwerze SMTP...");
+                await client.AuthenticateAsync(fromEmail, appPassword);
+                _logger.LogInformation("Wysyłanie e-maila potwierdzającego usunięcie do {Email}", toEmail);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
+                _logger.LogInformation("E-mail wysłany pomyślnie do {Email}", toEmail);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Błąd podczas wysyłania e-maila (MailKit) do {Email}", toEmail);
+            }
+        }
+    }
 }

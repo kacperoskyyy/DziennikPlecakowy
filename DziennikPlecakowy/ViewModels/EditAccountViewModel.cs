@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Services.Local;
+using DziennikPlecakowy.Views;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -21,6 +22,7 @@ public partial class EditAccountViewModel : BaseViewModel
     [ObservableProperty] string usernameMessage;
     [ObservableProperty] string emailMessage;
     [ObservableProperty] string passwordMessage;
+    [ObservableProperty] string deleteMessage;
 
     private const string PasswordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$";
 
@@ -126,6 +128,37 @@ public partial class EditAccountViewModel : BaseViewModel
         catch (Exception ex)
         {
             PasswordMessage = $"Wyjątek: {ex.Message}";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteAccountAsync()
+    {
+        if (IsBusy) return;
+
+        IsBusy = true;
+        DeleteMessage = string.Empty;
+
+        try
+        {
+            string error = await _authService.RequestAccountDeletionAsync();
+
+            if (error == null)
+            {
+                await Shell.Current.GoToAsync(nameof(ConfirmDeletionPage));
+            }
+            else
+            {
+                DeleteMessage = error;
+            }
+        }
+        catch (Exception ex)
+        {
+            DeleteMessage = $"Wystąpił wyjątek: {ex.Message}";
         }
         finally
         {

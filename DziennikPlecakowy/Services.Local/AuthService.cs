@@ -197,6 +197,55 @@ public class AuthService
         return "Wystąpił nieoczekiwany błąd serwera.";
     }
 
+    public async Task<string> RequestAccountDeletionAsync()
+    {
+        var response = await _apiClient.RequestAccountDeletionAsync();
+
+        if (response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        try
+        {
+            var errorDto = await response.Content.ReadFromJsonAsync<ErrorResponseDTO>();
+            if (errorDto != null && !string.IsNullOrEmpty(errorDto.Message))
+            {
+                return errorDto.Message;
+            }
+        }
+        catch { }
+
+        return "Wystąpił nieoczekiwany błąd serwera. Spróbuj ponownie później.";
+    }
+
+    public async Task<string> ConfirmAccountDeletionAsync(string token)
+    {
+        var response = await _apiClient.ConfirmAccountDeletionAsync(token);
+
+        if (response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        try
+        {
+            var errorDto = await response.Content.ReadFromJsonAsync<ErrorResponseDTO>();
+            if (errorDto != null && !string.IsNullOrEmpty(errorDto.Message))
+            {
+                return errorDto.Message;
+            }
+        }
+        catch { }
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            return "Nieprawidłowy lub wygasły kod.";
+        }
+
+        return "Wystąpił nieoczekiwany błąd serwera.";
+    }
+
     private async Task<UserProfileDTO> FetchAndSaveUserDataAsync()
     {
         var userResponse = await _apiClient.GetAsync("/api/User/getUserStats", handleUnauthorized: false);

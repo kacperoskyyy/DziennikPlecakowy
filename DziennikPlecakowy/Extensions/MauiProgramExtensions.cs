@@ -103,6 +103,9 @@ public static class MauiProgramExtensions
         builder.Services.AddTransient<ResetPasswordViewModel>();
         builder.Services.AddTransient<ResetPasswordPage>();
 
+        builder.Services.AddTransient<ConfirmDeletionViewModel>();
+        builder.Services.AddTransient<ConfirmDeletionPage>();
+
         return builder;
     }
 

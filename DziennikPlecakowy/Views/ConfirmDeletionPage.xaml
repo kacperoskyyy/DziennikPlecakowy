@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
+             x:DataType="vm:ConfirmDeletionViewModel"
+             x:Class="DziennikPlecakowy.Views.ConfirmDeletionPage"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
+             Style="{StaticResource PageStyle}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10" VerticalOptions="Center">
+
+            <Label Text="Potwierdź usunięcie" 
+                   Style="{StaticResource TitleLabel}" 
+                   HorizontalOptions="Center" />
+
+            <Label Text="Sprawdź swój e-mail i wpisz otrzymany kod, aby nieodwracalnie usunąć swoje konto."
+                   Style="{StaticResource SecondaryTextLabel}"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,10" />
+
+            <Entry Placeholder="Kod z e-maila" 
+                   Text="{Binding Token}" 
+                   Keyboard="Numeric"
+                   Style="{StaticResource MainEntry}" />
+
+            <Label Text="{Binding ErrorMessage}" 
+                   Style="{StaticResource LabelError}"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" />
+
+            <Button Text="Potwierdź usunięcie" 
+                    Command="{Binding ConfirmDeletionCommand}" 
+                    IsEnabled="{Binding IsNotBusy}" 
+                    Style="{StaticResource DeleteButton}" />
+
+            <Button Text="Anuluj"
+                    Command="{Binding GoBackCommand}" 
+                    IsEnabled="{Binding IsNotBusy}" 
+                    Style="{StaticResource TextButton}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

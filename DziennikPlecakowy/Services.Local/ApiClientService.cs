@@ -262,4 +262,16 @@ public class ApiClientService
 
         return await PostAsJsonAsync("/api/Auth/reset-password", requestDto, handleUnauthorized: false);
     }
+
+    public async Task<HttpResponseMessage> RequestAccountDeletionAsync()
+    {
+        return await PostAsJsonAsync<object>("/api/User/request-deletion", null, handleUnauthorized: true);
+    }
+
+    private sealed record ConfirmDeletionRequest(string Token);
+    public async Task<HttpResponseMessage> ConfirmAccountDeletionAsync(string token)
+    {
+        var requestDto = new ConfirmDeletionRequest(token);
+        return await PostAsJsonAsync("/api/User/confirm-deletion", requestDto, handleUnauthorized: true);
+    }
 }

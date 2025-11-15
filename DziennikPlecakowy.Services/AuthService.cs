@@ -13,6 +13,7 @@ public class AuthService : IAuthService
     private readonly IPasswordResetTokenRepository _passwordResetTokenRepository;
     private readonly IEmailService _emailService;
     private readonly IHashService _hashService;
+    private readonly IAccountDeletionTokenRepository _accountDeletionTokenRepository;
 
     public AuthService(
         IUserService userService,
@@ -20,7 +21,8 @@ public class AuthService : IAuthService
         IRefreshTokenRepository refreshTokenRepository,
         IPasswordResetTokenRepository passwordResetTokenRepository,
         IEmailService emailService,
-        IHashService hashService)
+        IHashService hashService,
+        IAccountDeletionTokenRepository accountDeletionTokenRepository)
     {
         _userService = userService;
         _cypherService = cypherService;
@@ -28,6 +30,7 @@ public class AuthService : IAuthService
         _passwordResetTokenRepository = passwordResetTokenRepository;
         _emailService = emailService;
         _hashService = hashService;
+        _accountDeletionTokenRepository = accountDeletionTokenRepository;
     }
     public async Task RegisterAsync(UserRegisterRequestDTO request)
     {
@@ -180,6 +183,55 @@ public class AuthService : IAuthService
  
             await _passwordResetTokenRepository.DeleteAsync(storedToken.Id);
         }
+        return success;
+    }
+
+    public async Task<bool> RequestAccountDeletionAsync(string userId)
+    {
+        var user = await _userService.GetUserById(userId);
+        if (user == null)
+        {
+            return false;
+        }
+
+        await _accountDeletionTokenRepository.DeleteAllByUserIdAsync(user.Id);
+
+        var plainTextToken = new Random().Next(100000, 999999).ToString();
+        var hashedToken = _hashService.Hash(plainTextToken);
+        var expiryTime = DateTime.UtcNow.AddMinutes(15);
+
+        var deletionToken = new AccountDeletionToken
+        {
+            UserId = user.Id,
+            TokenHash = hashedToken,
+            ExpiryDate = expiryTime,
+            ExpireAt = expiryTime
+        };
+
+        await _accountDeletionTokenRepository.AddAsync(deletionToken);
+
+        await _emailService.SendAccountDeletionEmailAsync(user.Email, plainTextToken);
+
+        return true;
+    }
+
+    public async Task<bool> ConfirmAccountDeletionAsync(string userId, string token)
+    {
+        var hashedToken = _hashService.Hash(token);
+        var storedToken = await _accountDeletionTokenRepository.GetByHashedTokenAsync(hashedToken);
+
+        if (storedToken == null || storedToken.ExpiryDate <= DateTime.UtcNow || storedToken.UserId != userId)
+        {
+            return false;
+        }
+
+        var success = await _userService.DeleteUserAsync(userId);
+
+        if (success)
+        {
+            await _accountDeletionTokenRepository.DeleteAsync(storedToken.Id);
+        }
+
         return success;
     }
 }

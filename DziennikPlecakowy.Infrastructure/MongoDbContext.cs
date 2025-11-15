@@ -17,4 +17,5 @@ public class MongoDbContext : IMongoDbContext
     public IMongoCollection<UserStat> UserStats => _database.GetCollection<UserStat>("UserStats");
     public IMongoCollection<RefreshToken> RefreshTokens => _database.GetCollection<RefreshToken>("RefreshTokens");
     public IMongoCollection<PasswordResetToken> PasswordResetTokens => _database.GetCollection<PasswordResetToken>("PasswordResetTokens");
+    public IMongoCollection<AccountDeletionToken> AccountDeletionTokens => _database.GetCollection<AccountDeletionToken>("AccountDeletionTokens");
 }
