@@ -1,10 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DziennikPlecakowy.DTO;
-using DziennikPlecakowy.Models.Local;
 using DziennikPlecakowy.Repositories;
 using DziennikPlecakowy.Services.Local;
-using System.Collections.ObjectModel;
 using System.Text.Json;
 
 namespace DziennikPlecakowy.ViewModels;
@@ -33,6 +31,27 @@ public partial class TripDetailViewModel : BaseViewModel
 
     [ObservableProperty]
     IDictionary<string, object> mapParameters;
+
+    [ObservableProperty]
+    double averageSpeed;
+
+    [ObservableProperty]
+    double averagePace;
+
+    [ObservableProperty]
+    double maxSpeed;
+
+    [ObservableProperty]
+    double fastestPace;
+
+    [ObservableProperty]
+    double elevationLoss;
+
+    [ObservableProperty]
+    double maxAltitude;
+
+    [ObservableProperty]
+    double minAltitude;
 
     public IAsyncRelayCommand GoBackAsyncCommand { get; }
     public IAsyncRelayCommand DeleteTripCommand { get; }
@@ -174,5 +193,102 @@ public partial class TripDetailViewModel : BaseViewModel
         {
             { "GeoPointList", value?.GeoPointList }
         };
+
+        if (value != null && value.Duration > 0)
+        {
+            AverageSpeed = value.Distance / (value.Duration / 3600.0);
+            AveragePace = (AverageSpeed > 0) ? (60.0 / AverageSpeed) : 0;
+        }
+        else
+        {
+            AverageSpeed = 0;
+            AveragePace = 0;
+        }
+
+        MaxSpeed = 0;
+        FastestPace = 0;
+        ElevationLoss = 0;
+        MaxAltitude = 0;
+        MinAltitude = 0;
+
+        if (value?.GeoPointList != null && value.GeoPointList.Any())
+        {
+            var pointsCopy = new List<GeoPointDTO>(value.GeoPointList);
+            Task.Run(() => CalculateAdvancedStats(pointsCopy));
+        }
+    }
+
+
+    private void CalculateAdvancedStats(List<GeoPointDTO> geoPoints)
+    {
+        if (geoPoints.Count < 2) return;
+
+        double tempMaxSpeed = 0;
+        double tempElevationLoss = 0;
+        double tempMaxAltitude = double.MinValue;
+        double tempMinAltitude = double.MaxValue;
+
+        var points = geoPoints.OrderBy(p => p.Timestamp).ToList();
+
+        if (points.Any())
+        {
+            tempMaxAltitude = points.First().Height;
+            tempMinAltitude = points.First().Height;
+        }
+
+        for (int i = 1; i < points.Count; i++)
+        {
+            var p1 = points[i - 1];
+            var p2 = points[i];
+
+            var timeDiffSeconds = (p2.Timestamp - p1.Timestamp).TotalSeconds;
+            if (timeDiffSeconds <= 0) continue;
+
+            double distanceKm = GetDistance(p1.Latitude, p1.Longitude, p2.Latitude, p2.Longitude);
+
+            if (distanceKm > 0)
+            {
+                double speedKmh = distanceKm / (timeDiffSeconds / 3600.0);
+                if (speedKmh > tempMaxSpeed && speedKmh < 80.0)
+                {
+                    tempMaxSpeed = speedKmh;
+                }
+            }
+            if (p2.Height > tempMaxAltitude) tempMaxAltitude = p2.Height;
+            if (p2.Height < tempMinAltitude) tempMinAltitude = p2.Height;
+
+            double altitudeDiff = p2.Height - p1.Height;
+            if (altitudeDiff < 0)
+            {
+                tempElevationLoss += Math.Abs(altitudeDiff);
+            }
+        }
+
+        MaxSpeed = tempMaxSpeed;
+        FastestPace = (tempMaxSpeed > 0) ? (60.0 / tempMaxSpeed) : 0;
+        ElevationLoss = tempElevationLoss;
+        MaxAltitude = tempMaxAltitude;
+        MinAltitude = tempMinAltitude;
+    }
+
+    private double GetDistance(double lat1, double lon1, double lat2, double lon2)
+    {
+        const double R = 6371.0;
+
+        double dLat = ToRadians(lat2 - lat1);
+        double dLon = ToRadians(lon2 - lon1);
+        double rLat1 = ToRadians(lat1);
+        double rLat2 = ToRadians(lat2);
+
+        double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                   Math.Cos(rLat1) * Math.Cos(rLat2) *
+                   Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+        double c = 2 * Math.Asin(Math.Min(1, Math.Sqrt(a)));
+        return R * c;
+    }
+
+    private double ToRadians(double angle)
+    {
+        return Math.PI * angle / 180.0;
     }
 }

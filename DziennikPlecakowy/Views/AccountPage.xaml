@@ -60,9 +60,6 @@
                         <Label Grid.Row="2" Grid.Column="0" Text="Total Czas:" Style="{StaticResource StatLabel}" />
                         <Label Grid.Row="2" Grid.Column="1" Text="{Binding Stats.TotalDuration, Converter={StaticResource SecondsToHoursConverter}}" Style="{StaticResource StatValueLabel}" />
 
-                        <Label Grid.Row="3" Grid.Column="0" Text="Total Przewyższenia:" Style="{StaticResource StatLabel}" />
-                        <Label Grid.Row="3" Grid.Column="1" Text="{Binding Stats.TotalElevationGain, StringFormat='{0:F0} m'}" Style="{StaticResource StatValueLabel}" />
-
                         <Label Grid.Row="4" Grid.Column="0" Text="Total Kroki:" Style="{StaticResource StatLabel}" />
                         <Label Grid.Row="4" Grid.Column="1" Text="{Binding Stats.TotalSteps}" Style="{StaticResource StatValueLabel}" />
                     </Grid>

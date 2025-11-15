@@ -7,10 +7,15 @@ public class SecondsToHoursConverter : IValueConverter
     {
         if (value is double seconds)
         {
-            double hours = seconds / 3600.0;
-            return $"{hours:F2} h";
+            TimeSpan time = TimeSpan.FromSeconds(seconds);
+
+            int totalHours = (int)time.TotalHours;
+            int minutes = time.Minutes;
+
+            return $"{totalHours}h {minutes}m";
         }
-        return "0.00 h";
+
+        return "0h 0m";
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
