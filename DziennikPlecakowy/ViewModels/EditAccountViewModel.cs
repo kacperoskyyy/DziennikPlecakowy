@@ -24,7 +24,9 @@ public partial class EditAccountViewModel : BaseViewModel
     [ObservableProperty] string passwordMessage;
     [ObservableProperty] string deleteMessage;
 
+
     private const string PasswordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$";
+    private const string UsernameRegex = @"^[a-zA-Z0-9_]+$";
 
     public EditAccountViewModel(ApiClientService apiClient, AuthService authService)
     {
@@ -36,15 +38,31 @@ public partial class EditAccountViewModel : BaseViewModel
     [RelayCommand]
     private async Task ChangeUsernameAsync()
     {
-        if (string.IsNullOrWhiteSpace(NewUsername))
+        var cleanNewUsername = NewUsername?.Trim();
+
+        if (string.IsNullOrWhiteSpace(cleanNewUsername))
         {
             UsernameMessage = "Nazwa użytkownika nie może być pusta.";
             return;
         }
-        if(IsBusy) return;
-        IsBusy = true;
 
-        var request = new UserChangeNameRequestDTO { NewUsername = NewUsername };
+        if (cleanNewUsername.Length > 30)
+        {
+            UsernameMessage = "Nazwa użytkownika nie może przekraczać 30 znaków.";
+            return;
+        }
+
+        if (!Regex.IsMatch(cleanNewUsername, UsernameRegex))
+        {
+            UsernameMessage = "Nazwa użytkownika może zawierać tylko litery (a-z), cyfry (0-9) i podkreślenia (_).";
+            return;
+        }
+
+        if (IsBusy) return;
+        IsBusy = true;
+        UsernameMessage = string.Empty;
+
+        var request = new UserChangeNameRequestDTO { NewUsername = cleanNewUsername };
         var response = await _apiClient.PutAsync("/api/User/changeName", JsonContent.Create(request));
 
         if (response.IsSuccessStatusCode)
@@ -63,18 +81,34 @@ public partial class EditAccountViewModel : BaseViewModel
     [RelayCommand]
     private async Task ChangePasswordAsync()
     {
-        if (string.IsNullOrWhiteSpace(CurrentPassword) || string.IsNullOrWhiteSpace(NewPassword))
+        var cleanCurrentPassword = CurrentPassword;
+        var cleanNewPassword = NewPassword;
+        var cleanConfirmNewPassword = ConfirmNewPassword;
+
+        if (string.IsNullOrWhiteSpace(cleanCurrentPassword) || string.IsNullOrWhiteSpace(cleanNewPassword))
         {
             PasswordMessage = "Wszystkie pola hasła są wymagane.";
             return;
         }
-        if (NewPassword != ConfirmNewPassword)
+        if (cleanNewPassword != cleanConfirmNewPassword)
         {
             PasswordMessage = "Nowe hasła nie są takie same.";
             return;
         }
 
-        if (!Regex.IsMatch(NewPassword, PasswordRegex))
+        if (cleanNewPassword.Length > 50)
+        {
+            PasswordMessage = "Nowe hasło nie może przekraczać 50 znaków.";
+            return;
+        }
+
+        if (cleanCurrentPassword.Length > 50)
+        {
+            PasswordMessage = "Bieżące hasło jest nieprawidłowe.";
+            return;
+        }
+
+        if (!Regex.IsMatch(cleanNewPassword, PasswordRegex))
         {
             PasswordMessage = "Nowe hasło musi mieć min. 6 znaków, 1 dużą literę, 1 cyfrę i 1 znak specjalny.";
             return;
@@ -88,8 +122,8 @@ public partial class EditAccountViewModel : BaseViewModel
         {
             var request = new UserChangePasswordRequestDTO
             {
-                Password = CurrentPassword,
-                NewPassword = NewPassword
+                Password = cleanCurrentPassword,
+                NewPassword = cleanNewPassword
             };
             var response = await _apiClient.PutAsJsonAsync("/api/User/changePassword", request);
 
@@ -120,7 +154,6 @@ public partial class EditAccountViewModel : BaseViewModel
                 }
                 catch (JsonException)
                 {
-                   
                 }
                 PasswordMessage = errorMsg;
             }
@@ -171,5 +204,4 @@ public partial class EditAccountViewModel : BaseViewModel
     {
         await Shell.Current.GoToAsync("..");
     }
-
 }

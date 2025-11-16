@@ -47,8 +47,10 @@
                     <Label Text="Aktywna Wycieczka" Style="{StaticResource CardTitleLabel}" />
 
                     <VerticalStackLayout IsVisible="{Binding IsNotTracking}">
+
                         <Entry Style="{StaticResource DashboardEntry}" 
-                               Text="{Binding TripName}" />
+                               Text="{Binding TripName}" 
+                               MaxLength="50" />
 
                         <Button Text="START" 
                                 Command="{Binding StartTrackingCommand}"

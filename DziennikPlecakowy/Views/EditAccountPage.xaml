@@ -19,7 +19,9 @@
 
                     <Entry Placeholder="Nowa nazwa" 
                            Text="{Binding NewUsername}" 
-                           Style="{StaticResource MainEntry}" />
+                           Style="{StaticResource MainEntry}" 
+                           MaxLength="30" />
+
                     <Label Text="{Binding UsernameMessage}" 
                            Style="{StaticResource LabelError}"
                            IsVisible="{Binding UsernameMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
@@ -29,7 +31,6 @@
                 </VerticalStackLayout>
             </Frame>
 
-
             <Frame Style="{StaticResource CardFrame}">
                 <VerticalStackLayout Spacing="5">
                     <Label Text="Zmień hasło" Style="{StaticResource CardTitleLabel}" />
@@ -37,15 +38,21 @@
                     <Entry Placeholder="Bieżące hasło" 
                            Text="{Binding CurrentPassword}" 
                            IsPassword="True" 
-                           Style="{StaticResource MainEntry}" />
+                           Style="{StaticResource MainEntry}" 
+                           MaxLength="50" />
+
                     <Entry Placeholder="Nowe hasło" 
                            Text="{Binding NewPassword}" 
                            IsPassword="True" 
-                           Style="{StaticResource MainEntry}" />
+                           Style="{StaticResource MainEntry}" 
+                           MaxLength="50" />
+
                     <Entry Placeholder="Potwierdź nowe hasło" 
                            Text="{Binding ConfirmNewPassword}" 
                            IsPassword="True" 
-                           Style="{StaticResource MainEntry}" />
+                           Style="{StaticResource MainEntry}" 
+                           MaxLength="50" />
+
                     <Label Text="{Binding PasswordMessage}" 
                            Style="{StaticResource LabelError}"
                            IsVisible="{Binding PasswordMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
@@ -54,6 +61,7 @@
                             Style="{StaticResource MainButton}" />
                 </VerticalStackLayout>
             </Frame>
+
             <Frame Style="{StaticResource CardFrame}">
                 <VerticalStackLayout Spacing="5">
                     <Button Text="Usuń konto" 

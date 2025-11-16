@@ -4,6 +4,7 @@ using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Services.Local;
 using DziennikPlecakowy.Views;
 using System.Net.Http.Json;
+using System.Text.RegularExpressions;
 
 namespace DziennikPlecakowy.ViewModels;
 
@@ -21,6 +22,8 @@ public partial class ChangePasswordViewModel : BaseViewModel
     [ObservableProperty]
     string errorMessage;
 
+    private const string PasswordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$";
+
     public ChangePasswordViewModel(ApiClientService apiClient, SyncService syncService)
     {
         _apiClient = apiClient;
@@ -31,17 +34,32 @@ public partial class ChangePasswordViewModel : BaseViewModel
     [RelayCommand]
     private async Task ChangePasswordAsync()
     {
+        var cleanNewPassword = NewPassword;
+        var cleanConfirmNewPassword = ConfirmNewPassword;
+
         if (IsBusy) return;
 
-        if (string.IsNullOrWhiteSpace(NewPassword) || string.IsNullOrWhiteSpace(ConfirmNewPassword))
+        if (string.IsNullOrWhiteSpace(cleanNewPassword) || string.IsNullOrWhiteSpace(cleanConfirmNewPassword))
         {
             ErrorMessage = "Wszystkie pola są wymagane.";
             return;
         }
 
-        if (NewPassword != ConfirmNewPassword)
+        if (cleanNewPassword != cleanConfirmNewPassword)
         {
             ErrorMessage = "Hasła nie są zgodne.";
+            return;
+        }
+
+        if (cleanNewPassword.Length > 50)
+        {
+            ErrorMessage = "Hasło nie może przekraczać 50 znaków.";
+            return;
+        }
+
+        if (!Regex.IsMatch(cleanNewPassword, PasswordRegex))
+        {
+            ErrorMessage = "Hasło musi mieć min. 6 znaków, 1 dużą literę, 1 cyfrę i 1 znak specjalny.";
             return;
         }
 
@@ -53,7 +71,7 @@ public partial class ChangePasswordViewModel : BaseViewModel
             var request = new UserChangePasswordRequestDTO
             {
                 Password = "",
-                NewPassword = NewPassword
+                NewPassword = cleanNewPassword
             };
 
 

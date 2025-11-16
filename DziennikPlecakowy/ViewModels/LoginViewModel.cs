@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using DziennikPlecakowy.Services.Local;
 using DziennikPlecakowy.Views;
+using System.Text.RegularExpressions;
 
 namespace DziennikPlecakowy.ViewModels;
 
@@ -22,6 +23,8 @@ public partial class LoginViewModel : BaseViewModel
     [ObservableProperty]
     bool isCheckingAutoLogin;
 
+    private const string EmailRegex = @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$";
+
     public LoginViewModel(AuthService authService, SyncService syncService)
     {
         _authService = authService;
@@ -32,9 +35,29 @@ public partial class LoginViewModel : BaseViewModel
     [RelayCommand]
     private async Task LoginAsync()
     {
-        if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
+        var cleanEmail = Email?.Trim();
+        var cleanPassword = Password;
+
+        if (string.IsNullOrWhiteSpace(cleanEmail) || string.IsNullOrWhiteSpace(cleanPassword))
         {
             ErrorMessage = "Email i hasło są wymagane.";
+            return;
+        }
+
+        if (cleanEmail.Length > 100)
+        {
+            ErrorMessage = "Email lub hasło są nieprawidłowe.";
+            return;
+        }
+        if (cleanPassword.Length > 50)
+        {
+            ErrorMessage = "Email lub hasło są nieprawidłowe.";
+            return;
+        }
+
+        if (!Regex.IsMatch(cleanEmail, EmailRegex))
+        {
+            ErrorMessage = "Wprowadź poprawny adres e-mail.";
             return;
         }
 
@@ -45,7 +68,7 @@ public partial class LoginViewModel : BaseViewModel
             IsBusy = true;
             ErrorMessage = string.Empty;
 
-            var result = await _authService.LoginAsync(Email, Password);
+            var result = await _authService.LoginAsync(cleanEmail, cleanPassword);
 
             if (result.IsSuccess)
             {
@@ -56,13 +79,11 @@ public partial class LoginViewModel : BaseViewModel
                 else
                 {
                     await _syncService.SynchronizePendingTripsAsync();
-
                     await Shell.Current.GoToAsync("..");
                 }
             }
             else
             {
-
                 ErrorMessage = result.ErrorMessage;
             }
         }

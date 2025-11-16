@@ -23,7 +23,8 @@
             <Entry Placeholder="Kod z e-maila" 
                    Text="{Binding Token}" 
                    Keyboard="Numeric"
-                   Style="{StaticResource MainEntry}" />
+                   Style="{StaticResource MainEntry}" 
+                   MaxLength="6" />
 
             <Label Text="{Binding ErrorMessage}" 
                    Style="{StaticResource LabelError}"

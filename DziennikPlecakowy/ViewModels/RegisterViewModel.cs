@@ -27,6 +27,8 @@ public partial class RegisterViewModel : BaseViewModel
     string errorMessage;
 
     private const string PasswordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$";
+    private const string EmailRegex = @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$";
+    private const string UsernameRegex = @"^[a-zA-Z0-9_]+$";
 
     public RegisterViewModel(AuthService authService, SyncService syncService)
     {
@@ -38,15 +40,48 @@ public partial class RegisterViewModel : BaseViewModel
     [RelayCommand]
     private async Task RegisterAsync()
     {
-        if (string.IsNullOrWhiteSpace(Username) ||
-            string.IsNullOrWhiteSpace(Email) ||
-            string.IsNullOrWhiteSpace(Password))
+        var cleanUsername = Username?.Trim();
+        var cleanEmail = Email?.Trim();
+        var cleanPassword = Password;
+        var cleanConfirmPassword = ConfirmPassword;
+
+        if (string.IsNullOrWhiteSpace(cleanUsername) ||
+            string.IsNullOrWhiteSpace(cleanEmail) ||
+            string.IsNullOrWhiteSpace(cleanPassword))
         {
             ErrorMessage = "Wszystkie pola są wymagane.";
             return;
         }
 
-        if (Password != ConfirmPassword)
+        if (cleanUsername.Length > 30)
+        {
+            ErrorMessage = "Nazwa użytkownika nie może przekraczać 30 znaków.";
+            return;
+        }
+        if (cleanEmail.Length > 100)
+        {
+            ErrorMessage = "E-mail nie może przekraczać 100 znaków.";
+            return;
+        }
+        if (cleanPassword.Length > 50)
+        {
+            ErrorMessage = "Hasło nie może przekraczać 50 znaków.";
+            return;
+        }
+
+        if (!Regex.IsMatch(cleanUsername, UsernameRegex))
+        {
+            ErrorMessage = "Nazwa użytkownika może zawierać tylko litery (a-z), cyfry (0-9) i podkreślenia (_).";
+            return;
+        }
+
+        if (!Regex.IsMatch(cleanEmail, EmailRegex))
+        {
+            ErrorMessage = "Wprowadź poprawny adres e-mail.";
+            return;
+        }
+
+        if (cleanPassword != cleanConfirmPassword)
         {
             ErrorMessage = "Hasła nie są takie same.";
             return;
@@ -54,13 +89,7 @@ public partial class RegisterViewModel : BaseViewModel
 
         if (IsBusy) return;
 
-        if (Password != ConfirmPassword)
-        {
-            ErrorMessage = "Hasła nie są zgodne.";
-            return;
-        }
-
-        if (!Regex.IsMatch(Password, PasswordRegex))
+        if (!Regex.IsMatch(cleanPassword, PasswordRegex))
         {
             ErrorMessage = "Hasło musi mieć min. 6 znaków, 1 dużą literę, 1 cyfrę i 1 znak specjalny.";
             return;
@@ -71,7 +100,7 @@ public partial class RegisterViewModel : BaseViewModel
             IsBusy = true;
             ErrorMessage = string.Empty;
 
-            var result = await _authService.RegisterAsync(Username, Email, Password);
+            var result = await _authService.RegisterAsync(cleanUsername, cleanEmail, cleanPassword);
 
             if (result.IsSuccess)
             {

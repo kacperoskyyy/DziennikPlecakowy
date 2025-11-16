@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 namespace DziennikPlecakowy.ViewModels;
 
 public partial class ForgotPasswordViewModel : BaseViewModel
-{                 
+{
 
     [ObservableProperty]
     string email;
@@ -19,6 +19,9 @@ public partial class ForgotPasswordViewModel : BaseViewModel
     string successMessage;
 
     private readonly AuthService _authService;
+
+    private const string EmailRegex = @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$";
+
     public ForgotPasswordViewModel(AuthService authService)
     {
         _authService = authService;
@@ -28,12 +31,26 @@ public partial class ForgotPasswordViewModel : BaseViewModel
     [RelayCommand]
     private async Task SendResetLinkAsync()
     {
+        var cleanEmail = Email?.Trim();
+
         if (IsBusy) return;
 
         ErrorMessage = string.Empty;
         SuccessMessage = string.Empty;
 
-        if (string.IsNullOrWhiteSpace(Email) || !Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+        if (string.IsNullOrWhiteSpace(cleanEmail))
+        {
+            ErrorMessage = "Proszę podać poprawny adres e-mail.";
+            return;
+        }
+
+        if (cleanEmail.Length > 100)
+        {
+            ErrorMessage = "E-mail nie może przekraczać 100 znaków.";
+            return;
+        }
+
+        if (!Regex.IsMatch(cleanEmail, EmailRegex))
         {
             ErrorMessage = "Proszę podać poprawny adres e-mail.";
             return;
@@ -43,7 +60,7 @@ public partial class ForgotPasswordViewModel : BaseViewModel
         {
             IsBusy = true;
 
-            string error = await _authService.RequestPasswordResetAsync(Email);
+            string error = await _authService.RequestPasswordResetAsync(cleanEmail);
 
             if (error == null)
             {

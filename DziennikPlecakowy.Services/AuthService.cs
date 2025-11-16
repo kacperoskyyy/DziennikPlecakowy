@@ -32,11 +32,12 @@ public class AuthService : IAuthService
         _hashService = hashService;
         _accountDeletionTokenRepository = accountDeletionTokenRepository;
     }
+
     public async Task RegisterAsync(UserRegisterRequestDTO request)
     {
-
         await _userService.UserRegister(request);
     }
+
     public async Task<AuthResponseDTO?> Login(UserAuthRequestDTO userAuthData)
     {
         var user = await _userService.GetUserByEmail(userAuthData.Email);
@@ -46,7 +47,7 @@ public class AuthService : IAuthService
             return null;
         }
 
-        if(user.IsBlocked)
+        if (user.IsBlocked)
         {
             return new AuthResponseDTO
             {
@@ -70,6 +71,7 @@ public class AuthService : IAuthService
             MustChangePassword = user.MustChangePassword
         };
     }
+
     public async Task<AuthResponseDTO?> RefreshTokenAsync(string token)
     {
         var storedToken = await _refreshTokenRepository.GetByTokenAsync(token);
@@ -84,6 +86,7 @@ public class AuthService : IAuthService
         {
             return null;
         }
+
         if (user.IsBlocked)
         {
             return new AuthResponseDTO
@@ -105,6 +108,7 @@ public class AuthService : IAuthService
             RefreshToken = newRefreshToken.Token
         };
     }
+
     private async Task<RefreshToken> CreateAndStoreRefreshToken(string userId)
     {
         var refreshToken = new RefreshToken
@@ -117,6 +121,7 @@ public class AuthService : IAuthService
         await _refreshTokenRepository.AddAsync(refreshToken);
         return refreshToken;
     }
+
     private string GenerateRefreshTokenString()
     {
         var randomNumber = new byte[32];
@@ -124,6 +129,7 @@ public class AuthService : IAuthService
         rng.GetBytes(randomNumber);
         return Convert.ToBase64String(randomNumber);
     }
+
     public async Task LogoutAsync(string token)
     {
         var storedToken = await _refreshTokenRepository.GetByTokenAsync(token);
@@ -135,7 +141,7 @@ public class AuthService : IAuthService
     }
 
     public async Task<bool> RequestPasswordResetAsync(string email)
-    { 
+    {
         var user = await _userService.GetUserByEmail(email);
 
         if (user == null)
@@ -146,7 +152,7 @@ public class AuthService : IAuthService
         await _passwordResetTokenRepository.DeleteAllByUserIdAsync(user.Id);
 
         var plainTextToken = new Random().Next(100000, 999999).ToString();
-        var hashedToken = _hashService.Hash(plainTextToken);
+        var hashedToken = _hashService.HashShortToken(plainTextToken);
 
         var expiryTime = DateTime.UtcNow.AddMinutes(15);
 
@@ -167,7 +173,7 @@ public class AuthService : IAuthService
 
     public async Task<bool> ResetPasswordAsync(string token, string newPassword)
     {
-        var hashedToken = _hashService.Hash(token);
+        var hashedToken = _hashService.HashShortToken(token);
 
         var storedToken = await _passwordResetTokenRepository.GetByHashedTokenAsync(hashedToken);
 
@@ -180,7 +186,6 @@ public class AuthService : IAuthService
 
         if (success)
         {
- 
             await _passwordResetTokenRepository.DeleteAsync(storedToken.Id);
         }
         return success;
@@ -197,7 +202,7 @@ public class AuthService : IAuthService
         await _accountDeletionTokenRepository.DeleteAllByUserIdAsync(user.Id);
 
         var plainTextToken = new Random().Next(100000, 999999).ToString();
-        var hashedToken = _hashService.Hash(plainTextToken);
+        var hashedToken = _hashService.HashShortToken(plainTextToken);
         var expiryTime = DateTime.UtcNow.AddMinutes(15);
 
         var deletionToken = new AccountDeletionToken
@@ -217,7 +222,7 @@ public class AuthService : IAuthService
 
     public async Task<bool> ConfirmAccountDeletionAsync(string userId, string token)
     {
-        var hashedToken = _hashService.Hash(token);
+        var hashedToken = _hashService.HashShortToken(token);
         var storedToken = await _accountDeletionTokenRepository.GetByHashedTokenAsync(hashedToken);
 
         if (storedToken == null || storedToken.ExpiryDate <= DateTime.UtcNow || storedToken.UserId != userId)

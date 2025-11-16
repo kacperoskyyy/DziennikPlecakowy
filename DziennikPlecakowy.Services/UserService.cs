@@ -44,35 +44,23 @@ public class UserService : IUserService
         return success;
     }
 
-
-    public async Task<bool> ChangeUsernameAsync(string userId, string newUsername)
+    public bool CheckPassword(User user, string password)
     {
-        User? user = await _userRepository.GetByIdAsync(userId);
-        if (user == null) return false;
+        if (!_hash.IsLegacyMd5Hash(user.HashedPassword))
+            return _hash.Verify(password, user.HashedPassword);
 
-        DecryptUser(user);
-
-        user.Username = newUsername;
-        return await EncryptAndSaveUserAsync(user);
-    }
-
-    public async Task<bool> ChangeEmailAsync(string userId, string newEmail)
-    {
-        User? user = await _userRepository.GetByIdAsync(userId);
-        if (user == null) return false;
-
-        DecryptUser(user);
-
-        string encryptedNewEmail = _cypherService.Encrypt(newEmail.ToLower());
-        User? existingUser = await _userRepository.GetByEncryptedEmailAsync(encryptedNewEmail);
-
-        if (existingUser != null && existingUser.Id != userId)
+        if (_hash.HashLegacyMd5(password) == user.HashedPassword)
         {
-            return false;
+            string newHash = _hash.Hash(password);
+
+            user.PasswordHashesHistory.Add(user.HashedPassword);
+            user.HashedPassword = newHash;
+
+            _ = _userRepository.UpdateAsync(user);
+            return true;
         }
 
-        user.Email = newEmail;
-        return await EncryptAndSaveUserAsync(user);
+        return false;
     }
 
     public async Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword)
@@ -88,14 +76,17 @@ public class UserService : IUserService
             }
         }
 
-        string newPasswordHash = _hash.Hash(newPassword);
-
-        if (user.HashedPassword == newPasswordHash  || user.PasswordHashesHistory.Contains(newPasswordHash) )
+        if (_hash.Verify(newPassword, user.HashedPassword) ||
+            user.PasswordHashesHistory.Any(h =>
+                _hash.IsLegacyMd5Hash(h)
+                    ? _hash.HashLegacyMd5(newPassword) == h
+                    : _hash.Verify(newPassword, h)))
         {
             return false;
         }
 
         string oldPasswordHash = user.HashedPassword;
+        string newPasswordHash = _hash.Hash(newPassword);
 
         user.HashedPassword = newPasswordHash;
         user.MustChangePassword = false;
@@ -109,7 +100,6 @@ public class UserService : IUserService
         {
             user.PasswordHashesHistory.Remove(user.PasswordHashesHistory.First());
         }
-
 
         var success = await _userRepository.UpdateAsync(user);
         if (success) DecryptUser(user);
@@ -126,7 +116,6 @@ public class UserService : IUserService
 
         return await _userRepository.DeleteAsync(userId);
     }
-
 
     public async Task UserRegister(UserRegisterRequestDTO userRegister)
     {
@@ -172,12 +161,6 @@ public class UserService : IUserService
         DecryptUser(user);
         return user;
     }
-
-    public bool CheckPassword(User user, string password)
-    {
-        return user.HashedPassword == _hash.Hash(password);
-    }
-
 
     public async Task<int> UpdateUser(User user)
     {
@@ -285,14 +268,18 @@ public class UserService : IUserService
         User? user = await _userRepository.GetByIdAsync(userId);
         if (user == null) return false;
 
-        string newPasswordHash = _hash.Hash(newPassword);
-
-        if (user.HashedPassword == newPasswordHash || user.PasswordHashesHistory.Contains(newPasswordHash))
+        if (_hash.Verify(newPassword, user.HashedPassword) ||
+            user.PasswordHashesHistory.Any(h =>
+                _hash.IsLegacyMd5Hash(h)
+                    ? _hash.HashLegacyMd5(newPassword) == h
+                    : _hash.Verify(newPassword, h)))
         {
             return false;
         }
 
         string oldPasswordHash = user.HashedPassword;
+        string newPasswordHash = _hash.Hash(newPassword);
+
         user.HashedPassword = newPasswordHash;
         user.MustChangePassword = false;
 
@@ -310,4 +297,36 @@ public class UserService : IUserService
         if (success) DecryptUser(user);
         return success;
     }
+
+    public async Task<bool> ChangeUsernameAsync(string userId, string newUsername)
+    {
+        User? user = await _userRepository.GetByIdAsync(userId);
+        if (user == null) return false;
+
+        DecryptUser(user);
+
+        user.Username = newUsername;
+        return await EncryptAndSaveUserAsync(user);
+    }
+
+
+    public async Task<bool> ChangeEmailAsync(string userId, string newEmail)
+    {
+        User? user = await _userRepository.GetByIdAsync(userId);
+        if (user == null) return false;
+
+        DecryptUser(user);
+
+        string encryptedNewEmail = _cypherService.Encrypt(newEmail.ToLower());
+        User? existingUser = await _userRepository.GetByEncryptedEmailAsync(encryptedNewEmail);
+
+        if (existingUser != null && existingUser.Id != userId)
+        {
+            return false;
+        }
+
+        user.Email = newEmail;
+        return await EncryptAndSaveUserAsync(user);
+    }
+
 }

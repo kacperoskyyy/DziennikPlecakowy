@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using DziennikPlecakowy.DTO;
 using DziennikPlecakowy.Services.Local;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace DziennikPlecakowy.ViewModels;
 
@@ -24,6 +25,8 @@ public partial class DashboardViewModel : BaseViewModel
 
     [ObservableProperty]
     string tripName;
+
+    private const string TripNameRegex = @"^[a-zA-Z0-9_ąćęłńóśźżĄĆĘŁŃÓŚŹŻ .,-]+$";
 
     public bool IsNotTracking => !IsTracking;
 
@@ -79,7 +82,7 @@ public partial class DashboardViewModel : BaseViewModel
         if (IsBusy) return;
         IsBusy = true;
 
-            UserProfile = null;
+        UserProfile = null;
 
         try
         {
@@ -111,11 +114,27 @@ public partial class DashboardViewModel : BaseViewModel
     [RelayCommand]
     private async Task StartTrackingAsync()
     {
+        var cleanTripName = TripName?.Trim();
+
         if (IsTracking) return;
         try
         {
+            if (!string.IsNullOrWhiteSpace(cleanTripName))
+            {
+                if (cleanTripName.Length > 50)
+                {
+                    await Shell.Current.DisplayAlert("Błąd", "Nazwa wycieczki nie może przekraczać 50 znaków.", "OK");
+                    return;
+                }
 
-            bool success = await _tripTrackingService.StartTrackingAsync(TripName);
+                if (!Regex.IsMatch(cleanTripName, TripNameRegex))
+                {
+                    await Shell.Current.DisplayAlert("Błąd", "Nazwa wycieczki zawiera niedozwolone znaki (np. emotikony).", "OK");
+                    return;
+                }
+            }
+
+            bool success = await _tripTrackingService.StartTrackingAsync(cleanTripName);
             if (success)
             {
                 IsTracking = true;

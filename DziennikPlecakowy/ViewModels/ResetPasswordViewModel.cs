@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using DziennikPlecakowy.Services.Local;
 using DziennikPlecakowy.Views;
+using System.Text.RegularExpressions;
 
 namespace DziennikPlecakowy.ViewModels;
 
@@ -24,6 +25,9 @@ public partial class ResetPasswordViewModel : BaseViewModel
     [ObservableProperty]
     string successMessage;
 
+    private const string PasswordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$";
+    private const string TokenRegex = @"^[0-9]{6}$";
+
     public ResetPasswordViewModel(AuthService authService)
     {
         _authService = authService;
@@ -33,26 +37,42 @@ public partial class ResetPasswordViewModel : BaseViewModel
     [RelayCommand]
     private async Task ResetPasswordAsync()
     {
+        var cleanToken = Token?.Trim();
+        var cleanNewPassword = NewPassword;
+        var cleanConfirmPassword = ConfirmPassword;
+
         if (IsBusy) return;
 
         ErrorMessage = string.Empty;
         SuccessMessage = string.Empty;
 
-        if (string.IsNullOrWhiteSpace(Token) || string.IsNullOrWhiteSpace(NewPassword) || string.IsNullOrWhiteSpace(ConfirmPassword))
+        if (string.IsNullOrWhiteSpace(cleanToken) || string.IsNullOrWhiteSpace(cleanNewPassword) || string.IsNullOrWhiteSpace(cleanConfirmPassword))
         {
             ErrorMessage = "Wszystkie pola są wymagane.";
             return;
         }
 
-        if (NewPassword != ConfirmPassword)
+        if (!Regex.IsMatch(cleanToken, TokenRegex))
+        {
+            ErrorMessage = "Kod jest wymagany i musi składać się z 6 cyfr.";
+            return;
+        }
+
+        if (cleanNewPassword != cleanConfirmPassword)
         {
             ErrorMessage = "Hasła nie są identyczne.";
             return;
         }
 
-        if (NewPassword.Length < 6)
+        if (cleanNewPassword.Length > 50)
         {
-            ErrorMessage = "Hasło musi mieć co najmniej 6 znaków.";
+            ErrorMessage = "Hasło nie może przekraczać 50 znaków.";
+            return;
+        }
+
+        if (!Regex.IsMatch(cleanNewPassword, PasswordRegex))
+        {
+            ErrorMessage = "Hasło musi mieć min. 6 znaków, 1 dużą literę, 1 cyfrę i 1 znak specjalny.";
             return;
         }
 
@@ -60,7 +80,7 @@ public partial class ResetPasswordViewModel : BaseViewModel
         {
             IsBusy = true;
 
-            string error = await _authService.ResetPasswordAsync(Token, NewPassword);
+            string error = await _authService.ResetPasswordAsync(cleanToken, cleanNewPassword);
 
             if (error == null)
             {

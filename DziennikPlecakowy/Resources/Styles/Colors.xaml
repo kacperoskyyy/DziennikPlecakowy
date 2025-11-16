@@ -7,8 +7,8 @@
     <Color x:Key="MainBlueDark">#5B7D52</Color>
 
     <Color x:Key="DeleteRed">#E53935</Color>
-    <Color x:Key="SuccessGreen">#10B981</Color>
     <Color x:Key="WarningOrange">#FFC107</Color>
+    
     <Color x:Key="White">#FFFFFF</Color>
     <Color x:Key="Black">#000000</Color>
 

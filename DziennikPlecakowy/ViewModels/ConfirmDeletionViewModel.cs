@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using DziennikPlecakowy.Services.Local;
 using DziennikPlecakowy.Views;
+using System.Text.RegularExpressions;
 
 namespace DziennikPlecakowy.ViewModels;
 
@@ -15,6 +16,9 @@ public partial class ConfirmDeletionViewModel : BaseViewModel
     [ObservableProperty]
     string errorMessage;
 
+
+    private const string TokenRegex = @"^[0-9]{6}$";
+
     public ConfirmDeletionViewModel(AuthService authService)
     {
         _authService = authService;
@@ -24,13 +28,15 @@ public partial class ConfirmDeletionViewModel : BaseViewModel
     [RelayCommand]
     private async Task ConfirmDeletionAsync()
     {
+        var cleanToken = Token?.Trim();
+
         if (IsBusy) return;
 
         ErrorMessage = string.Empty;
 
-        if (string.IsNullOrWhiteSpace(Token))
+        if (string.IsNullOrWhiteSpace(cleanToken) || !Regex.IsMatch(cleanToken, TokenRegex))
         {
-            ErrorMessage = "Kod jest wymagany.";
+            ErrorMessage = "Kod jest wymagany i musi składać się z 6 cyfr.";
             return;
         }
 
@@ -38,7 +44,7 @@ public partial class ConfirmDeletionViewModel : BaseViewModel
         {
             IsBusy = true;
 
-            string error = await _authService.ConfirmAccountDeletionAsync(Token);
+            string error = await _authService.ConfirmAccountDeletionAsync(cleanToken);
 
             if (error == null)
             {

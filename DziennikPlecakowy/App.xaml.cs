@@ -8,6 +8,8 @@ namespace DziennikPlecakowy
         public App(AuthService authService)
         {
             InitializeComponent();
+
+            UserAppTheme = AppTheme.Unspecified;
             MainPage = new AppShell();
 
             RegisterRoutes();
