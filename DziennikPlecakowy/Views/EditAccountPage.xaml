@@ -58,7 +58,7 @@
                 <VerticalStackLayout Spacing="5">
                     <Button Text="Usuń konto" 
                             Command="{Binding DeleteAccountCommand}" 
-                            BackgroundColor="red"
+                            BackgroundColor="{StaticResource DeleteButton}"
                             Style="{StaticResource MainButton}" />
 
                     <Label Text="{Binding DeleteMessage}" 

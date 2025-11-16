@@ -271,7 +271,7 @@ public class ApiClientService
     private sealed record ConfirmDeletionRequest(string Token);
     public async Task<HttpResponseMessage> ConfirmAccountDeletionAsync(string token)
     {
-        var requestDto = new ConfirmDeletionRequest(token);
+        var requestDto = new { Token = token };
         return await PostAsJsonAsync("/api/User/confirm-deletion", requestDto, handleUnauthorized: true);
     }
 }

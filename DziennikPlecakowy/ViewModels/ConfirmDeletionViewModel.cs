@@ -43,6 +43,7 @@ public partial class ConfirmDeletionViewModel : BaseViewModel
             if (error == null)
             {
                 await _authService.LogoutAsync();
+                await Shell.Current.Navigation.PopToRootAsync();
                 await Shell.Current.GoToAsync(nameof(LoginPage));
             }
             else
@@ -64,6 +65,6 @@ public partial class ConfirmDeletionViewModel : BaseViewModel
     private async Task GoBackAsync()
     {
         if (IsBusy) return;
-        await Shell.Current.GoToAsync("..");
+        await Shell.Current.Navigation.PopAsync();
     }
 }

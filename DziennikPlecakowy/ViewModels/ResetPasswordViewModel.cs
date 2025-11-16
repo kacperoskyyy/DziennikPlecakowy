@@ -64,7 +64,8 @@ public partial class ResetPasswordViewModel : BaseViewModel
 
             if (error == null)
             {
-                SuccessMessage = "Hasło zostało pomyślnie zmienione. Możesz się teraz zalogować.";
+                SuccessMessage = "Hasło zostało pomyślnie zmienione. Wróć  do logowania...";
+                await GoToLoginAsync();
             }
             else
             {
@@ -85,7 +86,15 @@ public partial class ResetPasswordViewModel : BaseViewModel
     private async Task GoToLoginAsync()
     {
         if (IsBusy) return;
-
-        await Shell.Current.GoToAsync("../..");
+        try
+        {
+            await Shell.Current.Navigation.PopAsync(false);
+            await Shell.Current.Navigation.PopAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Błąd nawigacji pop: {ex.Message}");
+            await Shell.Current.GoToAsync(nameof(LoginPage));
+        }
     }
 }

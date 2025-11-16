@@ -45,12 +45,14 @@ public partial class AccountViewModel : BaseViewModel
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine($"Nie udało się załadować profilu użytkownika: {response}");
-                }
+                System.Diagnostics.Debug.WriteLine($"Nie udało się załadować profilu użytkownika: {response.StatusCode}");
+                await LogoutAsync();
+            }
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Wystąpił błąd podczas ładowania profilu użytkownika: {ex.Message}");
+            await LogoutAsync();
         }
         finally
         {
