@@ -60,7 +60,33 @@ public static class MiddlewareExtensions
                     ExpireAfter = TimeSpan.Zero
                 });
             dbContext.PasswordResetTokens.Indexes.CreateOne(tokenIndexModel);
+
+            var refreshKeys = Builders<RefreshToken>.IndexKeys.Ascending(t => t.ExpiryDate);
+            var refreshIndexModel = new CreateIndexModel<RefreshToken>(
+                refreshKeys,
+                new CreateIndexOptions
+                {
+                    Name = "RefreshTokenTTLIndex",
+                    ExpireAfter = TimeSpan.Zero
+                });
+            dbContext.RefreshTokens.Indexes.CreateOne(refreshIndexModel);
+
+            var deletionKeys = Builders<AccountDeletionToken>.IndexKeys.Ascending(t => t.ExpireAt);
+            var deletionIndexModel = new CreateIndexModel<AccountDeletionToken>(
+                deletionKeys,
+                new CreateIndexOptions
+                {
+                    Name = "AccountDeletionTokenTTLIndex",
+                    ExpireAfter = TimeSpan.Zero
+                });
+            dbContext.AccountDeletionTokens.Indexes.CreateOne(deletionIndexModel);
+
         });
+
+        
+
+
+
         return app;
     }
 
