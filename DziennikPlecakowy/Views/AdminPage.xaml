@@ -7,8 +7,7 @@
              x:DataType="vm:AdminViewModel"
              x:Class="DziennikPlecakowy.Views.AdminPage"
              Shell.NavBarIsVisible="False"
-             Shell.TabBarIsVisible="False"
-             Style="{StaticResource PageStyle}">
+             Shell.TabBarIsVisible="False">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
@@ -31,8 +30,8 @@
                    Text="{Binding SearchText}"
                    Margin="20,10"
                    BackgroundColor="{AppThemeBinding Light={StaticResource LightCardBackground}, Dark={StaticResource DarkCardBackground}}"
-                   TextColor="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}"
-                   PlaceholderColor="{AppThemeBinding Light={StaticResource LightPlaceholder}, Dark={StaticResource DarkPlaceholder}}" />
+                   TextColor="{AppThemeBinding Light={StaticResource LightText}, Dark={StaticResource DarkText}}"
+                   PlaceholderColor="{AppThemeBinding Light={StaticResource LightText}, Dark={StaticResource DarkText}}" />
 
         <CollectionView Grid.Row="3"
                         ItemsSource="{Binding Users}">
@@ -57,10 +56,10 @@
                                    Text="ADMIN" FontAttributes="Bold" TextColor="{StaticResource WarningOrange}"
                                    IsVisible="{Binding IsAdmin}" FontSize="Small" />
                             <Label Grid.Column="1" Grid.Row="1" 
-                                   Text="ZABLOKOWANY" FontAttributes="Bold" TextColor="{StaticResource DeleteRed}"
+                                   Text="ZABLOKOWANY" FontAttributes="Bold" TextColor="{StaticResource WarningRed}"
                                    IsVisible="{Binding IsLocked}" FontSize="Small" />
                             <Label Grid.Column="1" Grid.Row="2" 
-                                   Text="ZMIEŃ HASŁO" FontAttributes="Bold" TextColor="{StaticResource MainBlue}"
+                                   Text="ZMIEŃ HASŁO" FontAttributes="Bold" TextColor="{StaticResource Primary}"
                                    IsVisible="{Binding MustChangePassword}" FontSize="Small" />
                         </Grid>
                     </Frame>

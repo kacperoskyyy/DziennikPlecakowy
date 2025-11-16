@@ -6,8 +6,7 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:DataType="vm:TripListViewModel"
              x:Class="DziennikPlecakowy.Views.TripListPage"
-             Shell.NavBarIsVisible="False"
-             Style="{StaticResource PageStyle}">
+             Shell.NavBarIsVisible="False">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
@@ -18,10 +17,9 @@
     <Grid RowDefinitions="Auto, *">
 
         <Label Grid.Row="0" Text="Moje Wycieczki" Style="{StaticResource TitleLabel}" />
-        <ActivityIndicator Grid.Row="0" IsRunning="{Binding IsBusy}" HorizontalOptions="Center" VerticalOptions="Center" />
 
         <CollectionView Grid.Row="1"
-                         ItemsSource="{Binding Trips}" SelectionMode="None">
+                       ItemsSource="{Binding Trips}" SelectionMode="None">
             <CollectionView.ItemTemplate>
 
                 <DataTemplate x:DataType="localModels:LocalTrip">
@@ -37,13 +35,12 @@
                             <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
 
                                 <Label Text="{Binding Name}" 
-                                       Style="{StaticResource BaseLabel}" 
-                                       FontAttributes="Bold"
+                                       Style="{StaticResource CardTitleLabel}" 
                                        FontSize="Medium" 
                                        HorizontalOptions="Start" />
 
                                 <Label Text="{Binding TripDate, StringFormat='{0:dd.MM.yyyy HH:mm}'}" 
-                                       Style="{StaticResource SecondaryTextLabel}" 
+                                       Style="{StaticResource BaseLabel}" 
                                        FontSize="Small" 
                                        HorizontalOptions="Start"
                                        Margin="0" />
@@ -58,6 +55,11 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
+        <ActivityIndicator Grid.Row="0" Grid.RowSpan="2" 
+                           IsRunning="{Binding IsBusy}" 
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center" />
 
     </Grid>
 </ContentPage>

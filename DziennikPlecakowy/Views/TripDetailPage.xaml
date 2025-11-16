@@ -5,8 +5,7 @@
              xmlns:dto="clr-namespace:DziennikPlecakowy.DTO;assembly=DziennikPlecakowy.DTO"
              x:DataType="vm:TripDetailViewModel"
              x:Class="DziennikPlecakowy.Views.TripDetailPage"
-             Shell.NavBarIsVisible="False"
-             Style="{StaticResource PageStyle}">
+             Shell.NavBarIsVisible="False">
 
 
     <Grid RowDefinitions="300, *">
@@ -26,7 +25,6 @@
 
                         <Label Text="{Binding TripDetails.TripDate, StringFormat='{0:dd.MM.yyyy HH:mm}'}"
                                Style="{StaticResource SecondaryTextLabel}"
-                               HorizontalOptions="Center"
                                Margin="0,-10,0,0" />
 
                         <Frame Style="{StaticResource CardFrame}">
@@ -93,4 +91,4 @@
                            VerticalOptions="Center"
                            Grid.RowSpan="2" />
     </Grid>
-</ContentPage> 
+</ContentPage>

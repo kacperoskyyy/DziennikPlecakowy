@@ -5,8 +5,7 @@
              x:DataType="vm:RegisterViewModel"
              x:Class="DziennikPlecakowy.Views.RegisterPage"
              Shell.NavBarIsVisible="False"
-             Shell.TabBarIsVisible="False"
-             Style="{StaticResource PageStyle}">
+             Shell.TabBarIsVisible="False">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="10" VerticalOptions="Center">

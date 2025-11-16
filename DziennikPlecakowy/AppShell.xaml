@@ -7,11 +7,7 @@
     Shell.FlyoutBehavior="Disabled"
     Title="DziennikPlecakowy"
     
-    Shell.TabBarBackgroundColor="{AppThemeBinding Light={StaticResource LightCardBackground}, Dark={StaticResource DarkCardBackground}}"
-    
-    Shell.TabBarUnselectedColor="{AppThemeBinding Light={StaticResource LightPlaceholder}, Dark={StaticResource DarkPlaceholder}}"
-    
-    Shell.TabBarTitleColor="{StaticResource MainBlue}">
+    Shell.TabBarUnselectedColor="{AppThemeBinding Light={StaticResource LightText}, Dark={StaticResource DarkText}}">
 
     <TabBar>
         <Tab Title="Dashboard" Icon="dashboard_icon.png">

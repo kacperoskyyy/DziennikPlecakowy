@@ -6,8 +6,7 @@
              NavigationPage.HasNavigationBar="False"
              Shell.NavBarIsVisible="False"
              Shell.TabBarIsVisible="False"
-             x:Class="DziennikPlecakowy.Views.LoginPage"
-             Style="{StaticResource PageStyle}">
+             x:Class="DziennikPlecakowy.Views.LoginPage">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="10" VerticalOptions="Center">

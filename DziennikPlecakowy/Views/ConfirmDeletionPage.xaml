@@ -5,8 +5,7 @@
              x:DataType="vm:ConfirmDeletionViewModel"
              x:Class="DziennikPlecakowy.Views.ConfirmDeletionPage"
              Shell.NavBarIsVisible="False"
-             Shell.TabBarIsVisible="False"
-             Style="{StaticResource PageStyle}">
+             Shell.TabBarIsVisible="False">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="10" VerticalOptions="Center">

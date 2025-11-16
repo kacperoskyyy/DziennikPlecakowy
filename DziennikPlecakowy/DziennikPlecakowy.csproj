@@ -62,7 +62,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <AndroidResource Include="Resources\Images\Resources\values\styles.xml" />
+	  <AndroidResource Include="Resources\Images\Resources\values\colors.xml" />
+	  <AndroidResource Include="Resources\Images\Resources\values-night\colors.xml" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -6,8 +6,7 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:DataType="vm:AccountViewModel"
              x:Class="DziennikPlecakowy.Views.AccountPage"
-             Shell.NavBarIsVisible="False"
-             Style="{StaticResource PageStyle}">
+             Shell.NavBarIsVisible="False">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
@@ -48,9 +47,9 @@
 
             <Frame Style="{StaticResource CardFrame}" x:DataType="dto:UserProfileDTO" BindingContext="{Binding UserProfile}">
                 <VerticalStackLayout>
-                    <Label Text="Globalne Statystyki" Style="{StaticResource CardTitleLabel}" />
+                    <Label Text="Statystyki" Style="{StaticResource CardTitleLabel}" />
 
-                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Padding="0,10,0,0">
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto" Padding="0,10,0,0">
                         <Label Grid.Row="0" Grid.Column="0" Text="Wszystkie Wycieczki:" Style="{StaticResource StatLabel}" />
                         <Label Grid.Row="0" Grid.Column="1" Text="{Binding Stats.TripsCount}" Style="{StaticResource StatValueLabel}" />
 
@@ -60,8 +59,8 @@
                         <Label Grid.Row="2" Grid.Column="0" Text="Total Czas:" Style="{StaticResource StatLabel}" />
                         <Label Grid.Row="2" Grid.Column="1" Text="{Binding Stats.TotalDuration, Converter={StaticResource SecondsToHoursConverter}}" Style="{StaticResource StatValueLabel}" />
 
-                        <Label Grid.Row="4" Grid.Column="0" Text="Total Kroki:" Style="{StaticResource StatLabel}" />
-                        <Label Grid.Row="4" Grid.Column="1" Text="{Binding Stats.TotalSteps}" Style="{StaticResource StatValueLabel}" />
+                        <Label Grid.Row="3" Grid.Column="0" Text="Total Kroki:" Style="{StaticResource StatLabel}" />
+                        <Label Grid.Row="3" Grid.Column="1" Text="{Binding Stats.TotalSteps}" Style="{StaticResource StatValueLabel}" />
                     </Grid>
                 </VerticalStackLayout>
             </Frame>
@@ -70,15 +69,14 @@
                     Command="{Binding GoToEditAccountCommand}" 
                     Style="{StaticResource MainButton}" />
 
+            <Button Text="Zgłoś błąd" 
+                    Clicked="OnReportBugClicked" 
+                    Style="{StaticResource MainButton}"/>
+
             <Button Text="Panel Administratora" 
                     Command="{Binding GoToAdminPanelCommand}"
                     IsVisible="{Binding IsAdmin}"
                     Style="{StaticResource WarningButton}" />
-
-            <Button Text="Zgłoś błąd" 
-                    Clicked="OnReportBugClicked" 
-                    Style="{StaticResource MainButton}"
-                    BackgroundColor="Gray" />
 
             <Button Text="Wyloguj" 
                     Command="{Binding LogoutCommand}" 

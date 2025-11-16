@@ -4,8 +4,7 @@
              xmlns:vm="clr-namespace:DziennikPlecakowy.ViewModels"
              x:DataType="vm:EditAccountViewModel"
              x:Class="DziennikPlecakowy.Views.EditAccountPage"
-             Shell.NavBarIsVisible="False"
-             Style="{StaticResource PageStyle}">
+             Shell.NavBarIsVisible="False">
 
     <ScrollView>
         <VerticalStackLayout Padding="0,20,0,20" Spacing="10" IsEnabled="{Binding IsNotBusy}">
@@ -63,12 +62,10 @@
             </Frame>
 
             <Frame Style="{StaticResource CardFrame}">
-                <VerticalStackLayout Spacing="5">
+                <VerticalStackLayout>
                     <Button Text="Usuń konto" 
                             Command="{Binding DeleteAccountCommand}" 
-                            BackgroundColor="{StaticResource DeleteButton}"
-                            Style="{StaticResource MainButton}" />
-
+                            Style="{StaticResource DeleteButton}" />
                     <Label Text="{Binding DeleteMessage}" 
                            Style="{StaticResource LabelError}"
                            IsVisible="{Binding DeleteMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
