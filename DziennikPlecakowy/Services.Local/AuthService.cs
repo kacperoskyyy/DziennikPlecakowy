@@ -97,7 +97,7 @@ public class AuthService
         {
             Token = authResponse.RefreshToken,
             UserId = userDto.Id,
-            ExpiryDate = DateTime.UtcNow.AddDays(30)
+            ExpiryDate = DateTime.UtcNow.AddDays(7)
         };
         await _tokenRepository.SaveTokenAsync(localToken);
 

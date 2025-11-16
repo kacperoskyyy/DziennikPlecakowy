@@ -19,6 +19,7 @@ public class TripTrackingService
     private DateTime _startTime;
     private double _totalDistanceKm = 0.0;
     private long _currentSteps = 0;
+    private List<LocalGeoPoint> _currentGeoPoints;
     private System.Threading.Timer _autoStopTimer;
     private System.Threading.Timer _uiUpdateTimer;
 
@@ -66,7 +67,9 @@ public class TripTrackingService
             IsSynchronized = false
         };
 
-        await _tripRepository.SaveTripAsync(_currentTrip, new List<LocalGeoPoint>());
+        _currentGeoPoints = new List<LocalGeoPoint>();
+
+        //await _tripRepository.SaveTripAsync(_currentTrip, new List<LocalGeoPoint>());
 
         _totalDistanceKm = 0.0;
         _currentSteps = 0;
@@ -110,7 +113,7 @@ public class TripTrackingService
         _currentTrip.Distance = _totalDistanceKm;
         _currentTrip.Steps = _currentSteps;
 
-        await _tripRepository.SaveTripAsync(_currentTrip, new List<LocalGeoPoint>());
+        await _tripRepository.SaveTripAsync(_currentTrip, _currentGeoPoints);
 
         _notificationService.StopForegroundService();
 
@@ -204,13 +207,18 @@ public class TripTrackingService
     {
         var newPoint = new LocalGeoPoint
         {
-            LocalTripId = _currentTrip.LocalId,
+            //LocalTripId = _currentTrip.LocalId,
             Latitude = lat,
             Longitude = lon,
             Height = alt,
             Timestamp = time
         };
-        await _tripRepository.AddGeoPointAsync(newPoint);
+
+        if(_currentTrip != null)
+        {
+            _currentGeoPoints.Add(newPoint);
+        }
+        //await _tripRepository.AddGeoPointAsync(newPoint);
         OnNewGeoPointAdded?.Invoke(new Location(lat, lon));
     }
 
