@@ -59,9 +59,9 @@
 
                         <Label Text="Śledzenie aktywne..." HorizontalOptions="Center" Style="{StaticResource SecondaryTextLabel}" />
 
-                        <Label Text="{Binding CurrentTripData.Duration, StringFormat='Czas: {0:hh\\:mm\\:ss}'}" FontSize="Medium" />
-                        <Label Text="{Binding CurrentTripData.DistanceKm, StringFormat='Dystans: {0:F2} km'}" FontSize="Medium" />
-                        <Label Text="{Binding CurrentTripData.Steps, StringFormat='Kroki: {0}'}" FontSize="Medium" />
+                        <Label Text="{Binding CurrentTripData.Duration, StringFormat='Czas: {0:hh\\:mm\\:ss}'}" Style="{StaticResource StatLabel}" />
+                        <Label Text="{Binding CurrentTripData.DistanceKm, StringFormat='Dystans: {0:F2} km'}" Style="{StaticResource StatLabel}" />
+                        <Label Text="{Binding CurrentTripData.Steps, StringFormat='Kroki: {0}'}" Style="{StaticResource StatLabel}" />
 
                         <Button Text="STOP" 
                                 Command="{Binding StopTrackingCommand}"

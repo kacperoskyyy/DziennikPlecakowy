@@ -21,8 +21,9 @@
         <ActivityIndicator Grid.Row="0" IsRunning="{Binding IsBusy}" HorizontalOptions="Center" VerticalOptions="Center" />
 
         <CollectionView Grid.Row="1"
-                        ItemsSource="{Binding Trips}" SelectionMode="None">
+                         ItemsSource="{Binding Trips}" SelectionMode="None">
             <CollectionView.ItemTemplate>
+
                 <DataTemplate x:DataType="localModels:LocalTrip">
                     <Frame Style="{StaticResource CardFrame}" Margin="20,5" Padding="15">
                         <Frame.GestureRecognizers>
@@ -30,15 +31,28 @@
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TripListViewModel}}, Path=GoToTripDetailCommand}"
                                 CommandParameter="{Binding .}" />
                         </Frame.GestureRecognizers>
+
                         <Grid ColumnDefinitions="*, Auto">
-                            <VerticalStackLayout Grid.Column="0">
-                                <Label Text="{Binding Name}" FontAttributes="Bold" 
-                                       TextColor="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
-                                <Label Text="{Binding TripDate, StringFormat='{0:dd.MM.yyyy HH:mm}'}" FontSize="Small" 
-                                       TextColor="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}" />
+
+                            <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+
+                                <Label Text="{Binding Name}" 
+                                       Style="{StaticResource BaseLabel}" 
+                                       FontAttributes="Bold"
+                                       FontSize="Medium" 
+                                       HorizontalOptions="Start" />
+
+                                <Label Text="{Binding TripDate, StringFormat='{0:dd.MM.yyyy HH:mm}'}" 
+                                       Style="{StaticResource SecondaryTextLabel}" 
+                                       FontSize="Small" 
+                                       HorizontalOptions="Start"
+                                       Margin="0" />
                             </VerticalStackLayout>
-                            <Label Grid.Column="1" Text="{Binding Distance, StringFormat='{0:F2} km'}" VerticalOptions="Center" 
-                                   TextColor="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
+
+                            <Label Grid.Column="1" 
+                                   Text="{Binding Distance, StringFormat='{0:F2} km'}" 
+                                   Style="{StaticResource StatValueLabel}"
+                                   VerticalOptions="Center" />
                         </Grid>
                     </Frame>
                 </DataTemplate>

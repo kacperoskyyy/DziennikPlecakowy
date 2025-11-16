@@ -7,11 +7,9 @@
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightAppBackground}, Dark={StaticResource DarkAppBackground}}" />
         <Setter Property="Padding" Value="0" />
     </Style>
-
     <Style TargetType="ScrollView">
         <Setter Property="VerticalScrollBarVisibility" Value="Never" />
     </Style>
-
     <Style x:Key="CardFrame" TargetType="Frame">
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightCardBackground}, Dark={StaticResource DarkCardBackground}}" />
         <Setter Property="Padding" Value="15" />
@@ -38,7 +36,6 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
     <Style x:Key="MainEntry" TargetType="Entry">
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightCardBackground}, Dark={StaticResource DarkCardBackground}}" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
@@ -48,12 +45,10 @@
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="Margin" Value="0,5,0,0" />
     </Style>
-
     <Style x:Key="DashboardEntry" TargetType="Entry" BasedOn="{StaticResource MainEntry}">
         <Setter Property="Placeholder" Value="Nazwa nowej wycieczki (opcjonalnie)" />
         <Setter Property="Margin" Value="0,10" />
     </Style>
-
     <Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{StaticResource MainBlue}" />
         <Setter Property="Margin" Value="10" />
@@ -91,31 +86,25 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
     <Style x:Key="MainButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
         <Setter Property="BackgroundColor" Value="{StaticResource MainBlue}" />
     </Style>
-
     <Style x:Key="DeleteButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
         <Setter Property="BackgroundColor" Value="{StaticResource DeleteRed}" />
     </Style>
-
     <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
         <Setter Property="BackgroundColor" Value="{StaticResource SuccessGreen}" />
     </Style>
-
     <Style x:Key="WarningButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
         <Setter Property="BackgroundColor" Value="{StaticResource WarningOrange}" />
         <Setter Property="TextColor" Value="{StaticResource Black}" />
     </Style>
-
     <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="BorderColor" Value="{StaticResource MainBlue}" />
         <Setter Property="BorderWidth" Value="1" />
         <Setter Property="TextColor" Value="{StaticResource MainBlue}" />
     </Style>
-
     <Style x:Key="TextButton" TargetType="Button">
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}" />
@@ -125,56 +114,62 @@
         <Setter Property="Margin" Value="0,5,0,0" />
     </Style>
 
+    <Style x:Key="BaseLabel" TargetType="Label">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="VerticalOptions" Value="Center" />
+    </Style>
 
-    <Style x:Key="TitleLabel" TargetType="Label">
+    <Style x:Key="TitleLabel" TargetType="Label"
+           BasedOn="{StaticResource BaseLabel}">
         <Setter Property="FontSize" Value="28" />
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
         <Setter Property="Margin" Value="20,20,20,10" />
         <Setter Property="HorizontalOptions" Value="Start" />
     </Style>
 
-    <Style x:Key="CardTitleLabel" TargetType="Label">
+    <Style x:Key="CardTitleLabel" TargetType="Label"
+           BasedOn="{StaticResource BaseLabel}">
         <Setter Property="FontSize" Value="Large" />
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
     </Style>
 
-    <Style x:Key="StatLabel" TargetType="Label">
+    <Style x:Key="StatLabel" TargetType="Label"
+           BasedOn="{StaticResource BaseLabel}">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}" />
-        <Setter Property="VerticalOptions" Value="Center" />
     </Style>
 
     <Style x:Key="StatLabelSpan" TargetType="Span">
-        <Setter Property="TextColor" Value="{StaticResource LightPlaceholder}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}" />
         <Setter Property="FontAttributes" Value="Bold" />
     </Style>
-
     <Style x:Key="StatValueLabelSpan" TargetType="Span">
-        <Setter Property="TextColor" Value="{StaticResource MainBlue}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MainBlue}, Dark={StaticResource DarkTextPrimary}}" />
     </Style>
 
-    <Style x:Key="StatValueLabel" TargetType="Label">
+    <Style x:Key="StatValueLabel" TargetType="Label"
+           BasedOn="{StaticResource BaseLabel}">
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
-        <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="HorizontalOptions" Value="End" />
     </Style>
 
-    <Style x:Key="SecondaryTextLabel" TargetType="Label">
+    <Style x:Key="SecondaryTextLabel" TargetType="Label"
+           BasedOn="{StaticResource BaseLabel}">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
         <Setter Property="Margin" Value="0,0,0,10" />
     </Style>
 
-    <Style x:Key="LabelError" TargetType="Label">
+    <Style x:Key="LabelError" TargetType="Label"
+           BasedOn="{StaticResource BaseLabel}">
         <Setter Property="TextColor" Value="{StaticResource DeleteRed}" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
         <Setter Property="Margin" Value="0,5" />
     </Style>
 
-    <Style x:Key="LabelSuccess" TargetType="Label">
+    <Style x:Key="LabelSuccess" TargetType="Label"
+           BasedOn="{StaticResource BaseLabel}">
         <Setter Property="TextColor" Value="{StaticResource SuccessGreen}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
@@ -185,7 +180,6 @@
         <Setter Property="Shell.TabBarBackgroundColor" Value="{AppThemeBinding Light={StaticResource LightCardBackground}, Dark={StaticResource DarkCardBackground}}" />
         <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource MainBlue}" />
     </Style>
-
     <Style x:Key="PageStyle" TargetType="ContentPage">
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightAppBackground}, Dark={StaticResource DarkAppBackground}}" />
         <Setter Property="Padding" Value="0" />

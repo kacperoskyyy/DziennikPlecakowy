@@ -65,9 +65,9 @@
                                 <Label Grid.Row="9" Grid.Column="1" Style="{StaticResource StatValueLabel}">
                                     <Label.FormattedText>
                                         <FormattedString>
-                                            <Span Text="{Binding MinAltitude, StringFormat='{0:F0} m'}" />
-                                            <Span Text=" / " />
-                                            <Span Text="{Binding MaxAltitude, StringFormat='{0:F0} m'}" />
+                                            <Span Text="{Binding MinAltitude, StringFormat='{0:F0} m'}" Style="{StaticResource StatValueLabelSpan}" />
+                                            <Span Text=" / " Style="{StaticResource StatLabelSpan}" />
+                                            <Span Text="{Binding MaxAltitude, StringFormat='{0:F0} m'}" Style="{StaticResource StatValueLabelSpan}" />
                                         </FormattedString>
                                     </Label.FormattedText>
                                 </Label>
