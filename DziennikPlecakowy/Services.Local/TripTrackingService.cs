@@ -27,7 +27,7 @@ public class TripTrackingService
     public event Action<Location> OnNewGeoPointAdded;
     public bool IsTracking => _isRunning;
 
-    private const double MinDistanceThresholdMeters = 15.0;
+    private const double MinDistanceThresholdMeters = 10.0;
 
     public TripTrackingService(
         LocalTripRepository tripRepository,
@@ -68,8 +68,6 @@ public class TripTrackingService
         };
 
         _currentGeoPoints = new List<LocalGeoPoint>();
-
-        //await _tripRepository.SaveTripAsync(_currentTrip, new List<LocalGeoPoint>());
 
         _totalDistanceKm = 0.0;
         _currentSteps = 0;
@@ -141,7 +139,7 @@ public class TripTrackingService
         try
         {
             Geolocation.Default.LocationChanged += OnLocationChanged;
-            var request = new GeolocationListeningRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(5));
+            var request = new GeolocationListeningRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(3));
             await Geolocation.Default.StartListeningForegroundAsync(request);
         }
         catch (Exception ex)
@@ -207,7 +205,6 @@ public class TripTrackingService
     {
         var newPoint = new LocalGeoPoint
         {
-            //LocalTripId = _currentTrip.LocalId,
             Latitude = lat,
             Longitude = lon,
             Height = alt,
@@ -218,7 +215,6 @@ public class TripTrackingService
         {
             _currentGeoPoints.Add(newPoint);
         }
-        //await _tripRepository.AddGeoPointAsync(newPoint);
         OnNewGeoPointAdded?.Invoke(new Location(lat, lon));
     }
 

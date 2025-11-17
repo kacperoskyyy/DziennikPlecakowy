@@ -207,7 +207,6 @@ public partial class TripDetailViewModel : BaseViewModel
 
         MaxSpeed = 0;
         FastestPace = 0;
-        ElevationLoss = 0;
         MaxAltitude = 0;
         MinAltitude = 0;
 
@@ -224,7 +223,6 @@ public partial class TripDetailViewModel : BaseViewModel
         if (geoPoints.Count < 2) return;
 
         double tempMaxSpeed = 0;
-        double tempElevationLoss = 0;
         double tempMaxAltitude = double.MinValue;
         double tempMinAltitude = double.MaxValue;
 
@@ -254,19 +252,10 @@ public partial class TripDetailViewModel : BaseViewModel
                     tempMaxSpeed = speedKmh;
                 }
             }
-            if (p2.Height > tempMaxAltitude) tempMaxAltitude = p2.Height;
-            if (p2.Height < tempMinAltitude) tempMinAltitude = p2.Height;
-
-            double altitudeDiff = p2.Height - p1.Height;
-            if (altitudeDiff < 0)
-            {
-                tempElevationLoss += Math.Abs(altitudeDiff);
-            }
         }
 
         MaxSpeed = tempMaxSpeed;
         FastestPace = (tempMaxSpeed > 0) ? (60.0 / tempMaxSpeed) : 0;
-        ElevationLoss = tempElevationLoss;
         MaxAltitude = tempMaxAltitude;
         MinAltitude = tempMinAltitude;
     }
